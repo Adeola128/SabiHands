@@ -1,0 +1,192 @@
+/* Membership Page Styles */
+.membership-page {
+  background-color: var(--paper);
+  padding-bottom: 120px;
+}
+
+.membership-hero {
+  padding: 100px 0 60px;
+  text-align: center;
+  background-color: var(--white);
+  border-bottom: 1px solid #E4E1F5;
+}
+
+.membership-hero .eyebrow {
+  margin-bottom: 16px;
+}
+
+.membership-hero h1 {
+  font-size: 48px;
+  line-height: 1.1;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.membership-hero h1 em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--teal-600);
+}
+
+.membership-lede {
+  margin-top: 24px;
+  font-size: 18px;
+  color: var(--body);
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  max-width: 1000px;
+  margin: 80px auto 0;
+  padding: 0 24px;
+}
+
+.pricing-card {
+  background: var(--white);
+  border-radius: 24px;
+  padding: 48px;
+  border: 1px solid #E4E1F5;
+  box-shadow: 0 16px 40px -16px rgba(38,33,92,0.1);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.pricing-card.pro {
+  border-color: var(--teal-400);
+  background: var(--teal-900);
+  color: var(--white);
+}
+
+.pricing-card.pro::before {
+  content: "Most Popular";
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--teal-400);
+  color: var(--teal-900);
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.plan-name {
+  font-size: 24px;
+  font-family: var(--display);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.pricing-card.pro .plan-name {
+  color: var(--white);
+}
+
+.plan-price {
+  font-size: 48px;
+  font-weight: 700;
+  font-family: var(--sans);
+  color: var(--ink);
+  margin-bottom: 24px;
+}
+
+.pricing-card.pro .plan-price {
+  color: var(--teal-200);
+}
+
+.plan-price span {
+  font-size: 16px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.pricing-card.pro .plan-price span {
+  color: var(--teal-50);
+  opacity: 0.8;
+}
+
+.plan-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 40px 0;
+  flex: 1;
+}
+
+.plan-features li {
+  font-size: 15px;
+  padding: 12px 0 12px 32px;
+  position: relative;
+  border-bottom: 1px solid #E4E1F5;
+}
+
+.pricing-card.pro .plan-features li {
+  border-bottom-color: rgba(255,255,255,0.1);
+  color: var(--teal-50);
+}
+
+.plan-features li:last-child {
+  border-bottom: none;
+}
+
+.plan-features li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--purple-600);
+  font-weight: 700;
+}
+
+.pricing-card.pro .plan-features li::before {
+  color: var(--teal-400);
+}
+
+.plan-btn {
+  text-align: center;
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  display: block;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.plan-btn:hover {
+  transform: translateY(-2px);
+}
+
+.plan-btn-outline {
+  background: transparent;
+  border: 2px solid var(--purple-200);
+  color: var(--purple-600);
+}
+
+.plan-btn-outline:hover {
+  border-color: var(--purple-600);
+}
+
+.plan-btn-solid {
+  background: var(--teal-400);
+  color: var(--teal-900);
+  border: 2px solid var(--teal-400);
+}
+
+.plan-btn-solid:hover {
+  background: var(--teal-200);
+  border-color: var(--teal-200);
+  box-shadow: 0 8px 20px -8px rgba(93, 202, 165, 0.5);
+}
+
+@media (max-width: 768px) {
+  .pricing-grid {
+    grid-template-columns: 1fr;
+  }
+}

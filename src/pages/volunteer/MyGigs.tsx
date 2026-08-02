@@ -1,0 +1,252 @@
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../contexts/AuthContext';
+import LoadingScreen from '../../components/LoadingScreen';
+
+type Tab = 'upcoming' | 'completed';
+
+const statusStyles: Record<string, { bg: string; color: string; label: string }> = {
+  active:    { bg: '#D4EDDA', color: '#155724', label: 'Check-In Open' },
+  upcoming:  { bg: '#FFF3CD', color: '#856404', label: 'Pending / Confirmed' },
+  completed: { bg: '#D4EDDA', color: '#155724', label: 'Completed' },
+};
+
+const MyGigs: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<Tab>('upcoming');
+  const [upcomingGigs, setUpcomingGigs] = useState<any[]>([]);
+  const [completedGigs, setCompletedGigs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    const fetchGigs = async () => {
+      if (!user) return;
+      const { data } = await supabase
+        .from('applications')
+        .select(`
+          id,
+          status,
+          gigs (
+            id,
+            title,
+            description,
+            location,
+            date_start,
+            date_end,
+            organizations (
+              name
+            )
+          ),
+          certificates(id)
+        `)
+        .eq('volunteer_id', user.id);
+
+      if (data) {
+        const upcoming: any[] = [];
+        const completed: any[] = [];
+
+        data.forEach((app: any) => {
+          if (!app.gigs) return;
+          const gigDate = app.gigs.date_start ? new Date(app.gigs.date_start) : new Date();
+          const isPast = app.gigs.date_start ? gigDate < new Date() : false;
+          const hasCert = app.certificates && app.certificates.length > 0;
+          
+          const mappedGig = {
+            id: app.gigs.id,
+            app_id: app.id,
+            title: app.gigs.title,
+            org: app.gigs.organizations?.name || 'Organization',
+            location: app.gigs.location,
+            date: app.gigs.date_start ? gigDate.toLocaleDateString() : 'TBD',
+            time: app.gigs.date_start ? gigDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '',
+            status: (isPast || hasCert) ? 'completed' : (app.status === 'accepted' ? 'active' : 'upcoming'),
+            coverImg: '/images/hero_illustration.png',
+            orgImg: '/images/diverse_gigs.png',
+            description: app.gigs.description,
+            certId: hasCert ? app.certificates[0].id : null
+          };
+
+          if (isPast || hasCert || app.status === 'completed') {
+            completed.push(mappedGig);
+          } else {
+            if (app.status !== 'declined' && app.status !== 'withdrawn') {
+               upcoming.push(mappedGig);
+            }
+          }
+        });
+        
+        setUpcomingGigs(upcoming);
+        setCompletedGigs(completed);
+      }
+      setLoading(false);
+    };
+
+    fetchGigs();
+  }, [user]);
+
+  if (loading) {
+    return <LoadingScreen message="Loading your gigs..." fullScreen={false} />;
+  }
+
+  return (
+    <>
+      <aside className="context-col">
+        <div className="dash-card">
+          <div className="dash-card-padding">
+            <h2 className="dash-card-title" style={{ fontSize: '16px', marginBottom: '20px' }}>Filter by Status</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {[
+                { label: 'All Gigs', count: upcomingGigs.length + completedGigs.length },
+                { label: 'Upcoming & Active', count: upcomingGigs.length },
+                { label: 'Completed', count: completedGigs.length },
+              ].map(f => (
+                <label key={f.label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '14px', cursor: 'pointer', padding: '6px 0' }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <input type="checkbox" defaultChecked={f.label === 'All Gigs'} style={{ width: '16px', height: '16px', accentColor: 'var(--purple-600)' }} />
+                    {f.label}
+                  </span>
+                  <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--muted)', backgroundColor: 'var(--paper)', padding: '2px 8px', borderRadius: '99px' }}>{f.count}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="dash-card">
+          <div className="dash-card-padding">
+            <h2 className="dash-card-title" style={{ fontSize: '16px', marginBottom: '16px' }}>Quick Actions</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <Link to="/dashboard/volunteer/gigs" style={{ display: 'block', textAlign: 'center', width: '100%', padding: '10px 16px', backgroundColor: 'var(--purple-600)', border: 'none', borderRadius: '8px', color: 'var(--white)', fontWeight: 600, fontSize: '14px', textDecoration: 'none' }}>
+                Browse New Gigs
+              </Link>
+              <Link to="/dashboard/volunteer/check-in" style={{ display: 'block', textAlign: 'center', width: '100%', padding: '10px 16px', backgroundColor: 'var(--white)', border: '1.5px solid #E4E1F5', borderRadius: '8px', color: 'var(--ink)', fontWeight: 600, fontSize: '14px', textDecoration: 'none' }}>
+                Check In Now
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        <div className="dash-card">
+          <div className="dash-card-padding" style={{ textAlign: 'center' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '8px' }}>
+              <div style={{ padding: '16px 8px', backgroundColor: 'var(--paper)', borderRadius: '12px' }}>
+                <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--ink)', fontFamily: 'var(--display)' }}>{upcomingGigs.length + completedGigs.length}</div>
+                <div style={{ fontSize: '12px', color: 'var(--muted)', fontWeight: 500 }}>Total</div>
+              </div>
+              <div style={{ padding: '16px 8px', backgroundColor: 'var(--paper)', borderRadius: '12px' }}>
+                <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--teal-600)', fontFamily: 'var(--display)' }}>{completedGigs.length}</div>
+                <div style={{ fontSize: '12px', color: 'var(--muted)', fontWeight: 500 }}>Completed</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <div className="main-content">
+        <div className="dash-card">
+          <div className="dash-card-header" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '0', padding: '0' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 24px 0', width: '100%' }}>
+              <h2 className="dash-card-title">My Gigs</h2>
+              <Link to="/dashboard/volunteer/gigs" className="gig-action" style={{ textDecoration: 'none', fontSize: '13px', padding: '8px 16px' }}>
+                + Find Gigs
+              </Link>
+            </div>
+            <div style={{ display: 'flex', gap: '0', borderBottom: '1px solid #E4E1F5', padding: '0 24px', width: '100%', marginTop: '16px', overflowX: 'auto', whiteSpace: 'nowrap' }}>
+              {(['upcoming', 'completed'] as Tab[]).map(tab => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  style={{
+                    background: 'none', border: 'none', padding: '10px 20px 12px', fontSize: '14px', fontWeight: 600, cursor: 'pointer',
+                    color: activeTab === tab ? 'var(--purple-600)' : 'var(--muted)',
+                    borderBottom: `2px solid ${activeTab === tab ? 'var(--purple-600)' : 'transparent'}`,
+                    marginBottom: '-1px', transition: 'all 0.15s ease',
+                  }}
+                >
+                  {tab === 'upcoming' ? `Upcoming & Active (${upcomingGigs.length})` : `Completed (${completedGigs.length})`}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {activeTab === 'upcoming' ? (
+            upcomingGigs.length > 0 ? (
+              upcomingGigs.map(gig => (
+                <div key={gig.id} className="gig-media-card">
+                  <div className="gig-media-cover" style={{ backgroundImage: `url(${gig.coverImg})` }} />
+                  <div className="gig-media-body">
+                    <div className="gig-media-header">
+                      <div>
+                        <h3 className="gig-media-title">{gig.title}</h3>
+                        <Link to="/dashboard/organization/profile" className="gig-media-org" style={{ textDecoration: 'none' }}>
+                          <img src={gig.orgImg} alt={gig.org} />
+                          <strong>{gig.org}</strong>
+                          <span style={{ color: '#D1CEDF', margin: '0 4px' }}>•</span>
+                          <span style={{ color: 'var(--body)' }}>{gig.location}</span>
+                        </Link>
+                      </div>
+                      <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                        <span className="tag status" style={{ backgroundColor: statusStyles[gig.status]?.bg || '#EEE', color: statusStyles[gig.status]?.color || '#333' }}>
+                          {statusStyles[gig.status]?.label || gig.status}
+                        </span>
+                        <div style={{ fontSize: '12px', color: 'var(--body)', marginTop: '6px' }}>{gig.date} • {gig.time}</div>
+                      </div>
+                    </div>
+                    <p style={{ color: 'var(--body)', fontSize: '14px', margin: '0 0 16px 0', lineHeight: 1.6 }}>{gig.description}</p>
+                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                      {gig.status === 'active' && (
+                        <Link to="/dashboard/volunteer/check-in" className="gig-action" style={{ textDecoration: 'none' }}>Check In Now</Link>
+                      )}
+                      <Link to={`/dashboard/volunteer/gigs/${gig.id}`} className="gig-action" style={{ background: 'none', border: '1.5px solid #E4E1F5', color: 'var(--body)', textDecoration: 'none' }}>View Gig Details</Link>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div style={{ padding: '40px 24px', textAlign: 'center', color: 'var(--muted)' }}>
+                You don't have any upcoming gigs yet. <Link to="/dashboard/volunteer/gigs" style={{ color: 'var(--purple-600)' }}>Find one today!</Link>
+              </div>
+            )
+          ) : (
+            completedGigs.length > 0 ? (
+              completedGigs.map(gig => (
+                <div key={gig.id} className="gig-media-card">
+                  <div className="gig-media-cover" style={{ backgroundImage: `url(${gig.coverImg})` }} />
+                  <div className="gig-media-body">
+                    <div className="gig-media-header">
+                      <div>
+                        <h3 className="gig-media-title">{gig.title}</h3>
+                        <Link to="/dashboard/organization/profile" className="gig-media-org" style={{ textDecoration: 'none' }}>
+                          <img src={gig.orgImg} alt={gig.org} />
+                          <strong>{gig.org}</strong>
+                        </Link>
+                      </div>
+                      <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                        <span className="tag status" style={{ backgroundColor: '#D4EDDA', color: '#155724' }}>Completed</span>
+                        <div style={{ fontSize: '12px', color: 'var(--body)', marginTop: '6px' }}>{gig.date}</div>
+                      </div>
+                    </div>
+                    <p style={{ color: 'var(--body)', fontSize: '14px', margin: '0 0 16px 0', lineHeight: 1.6 }}>{gig.description}</p>
+                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                      {gig.certId && (
+                        <Link to={`/dashboard/volunteer/certificates/${gig.certId}`} className="gig-action" style={{ textDecoration: 'none' }}>View Certificate</Link>
+                      )}
+                      <Link to={`/dashboard/volunteer/gigs/${gig.id}`} className="gig-action" style={{ background: 'none', border: '1.5px solid #E4E1F5', color: 'var(--body)', textDecoration: 'none' }}>View Gig</Link>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div style={{ padding: '40px 24px', textAlign: 'center', color: 'var(--muted)' }}>
+                No completed gigs to show yet.
+              </div>
+            )
+          )}
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default MyGigs;

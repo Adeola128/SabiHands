@@ -1,0 +1,163 @@
+import React, { useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../contexts/AuthContext';
+import LoadingScreen from '../../components/LoadingScreen';
+
+const statusStyle: Record<string, { bg: string; color: string; label: string }> = {
+  accepted: { bg: '#D4EDDA', color: '#155724', label: 'Accepted' },
+  pending:  { bg: 'var(--paper)', color: 'var(--body)', label: 'Pending' },
+  declined: { bg: '#fef2f2', color: '#dc2626', label: 'Declined' },
+};
+
+const OrgGigDetail: React.FC = () => {
+  const { id } = useParams();
+  const { user } = useAuth();
+  const [gig, setGig] = useState<any>(null);
+  const [applicants, setApplicants] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchGigDetails = async () => {
+      if (!id || !user) return;
+
+      const { data: gigData } = await supabase
+        .from('gigs')
+        .select(`
+          *,
+          organizations (name)
+        `)
+        .eq('id', id)
+        .single();
+        
+      if (gigData) setGig(gigData);
+
+      const { data: appsData } = await supabase
+        .from('applications')
+        .select(`
+          *,
+          volunteer_profiles(full_name, bio, interests)
+        `)
+        .eq('gig_id', id);
+
+      if (appsData) setApplicants(appsData);
+      
+      setLoading(false);
+    };
+
+    fetchGigDetails();
+  }, [id, user]);
+
+  if (loading) return <LoadingScreen message="Loading gig details..." fullScreen={true} />;
+  if (!gig) return <div style={{ padding: '48px', textAlign: 'center' }}>Gig not found.</div>;
+
+  return (
+    <>
+      {/* ── SIDEBAR ── */}
+      <aside className="context-col">
+        <div className="dash-card">
+          <div className="dash-card-padding">
+            <span className="tag status" style={{ backgroundColor: gig.status === 'published' ? '#D4EDDA' : '#E4E1F5', color: gig.status === 'published' ? '#155724' : 'var(--body)', marginBottom: '14px', display: 'inline-block', textTransform: 'capitalize' }}>{gig.status}</span>
+            <h2 style={{ fontSize: '17px', fontWeight: 700, color: 'var(--ink)', fontFamily: 'var(--display)', marginBottom: '4px' }}>{gig.title}</h2>
+            <p style={{ fontSize: '13px', color: 'var(--body)', marginBottom: '20px' }}>{gig.organizations?.name}</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {[
+                { label: 'Applicants', value: `${applicants.length}` },
+                { label: 'Spots', value: gig.type === 'skilled' ? '1 filled' : 'Unlimited' },
+                { label: 'Date', value: gig.date_start ? new Date(gig.date_start).toLocaleDateString() : 'TBD' },
+              ].map(r => (
+                <div key={r.label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
+                  <span style={{ color: 'var(--muted)', fontWeight: 500 }}>{r.label}</span>
+                  <span style={{ color: 'var(--ink)', fontWeight: 600 }}>{r.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="dash-card">
+          <div className="dash-card-padding" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <Link to={`/dashboard/org/gigs/${gig.id}/applicants`} className="gig-action" style={{ textDecoration: 'none', textAlign: 'center', display: 'block' }}>Review Applicants</Link>
+            <Link to="/dashboard/org/gigs/new" className="gig-action" style={{ textDecoration: 'none', textAlign: 'center', display: 'block', background: 'none', border: '1.5px solid #E4E1F5', color: 'var(--body)' }}>Edit Gig</Link>
+            <button className="gig-action" style={{ background: 'none', border: '1.5px solid #fecaca', color: '#dc2626', width: '100%' }}>Close Gig</button>
+          </div>
+        </div>
+
+        <Link to="/dashboard/org/gigs" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--muted)', textDecoration: 'none', fontSize: '14px', fontWeight: 600, padding: '8px 0' }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Back to Manage Gigs
+        </Link>
+      </aside>
+
+      {/* ── MAIN CONTENT ── */}
+      <div className="main-content">
+        {/* Cover hero */}
+        <div className="dash-card" style={{ marginBottom: '24px', overflow: 'hidden' }}>
+          <div style={{ height: '220px', backgroundImage: 'url(/images/hero_illustration.png)', backgroundSize: 'cover', backgroundPosition: 'center', position: 'relative' }}>
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 30%, rgba(15,12,41,0.7) 100%)' }} />
+            <div style={{ position: 'absolute', bottom: '24px', left: '24px', right: '24px' }}>
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
+                <span className={`tag ${gig.type === 'skilled' ? 'skilled' : 'physical'}`}>{gig.type === 'skilled' ? 'Skilled' : 'Physical'}</span>
+              </div>
+              <h1 style={{ fontSize: '26px', fontFamily: 'var(--display)', color: '#ffffff', margin: 0, lineHeight: 1.2 }}>{gig.title}</h1>
+            </div>
+          </div>
+          <div style={{ padding: '16px 24px', borderBottom: '1px solid #E4E1F5', display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+            {[
+              { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>, text: gig.date_start ? new Date(gig.date_start).toLocaleDateString() : 'TBD' },
+              { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>, text: gig.location || 'Remote' },
+            ].map((m, i) => (
+              <span key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: 'var(--body)', fontWeight: 500 }}>{m.icon}{m.text}</span>
+            ))}
+          </div>
+        </div>
+
+        {/* Gig body */}
+        <div className="dash-card" style={{ marginBottom: '24px' }}>
+          <div className="dash-card-padding">
+            <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--ink)', marginBottom: '14px' }}>About this Gig</h2>
+            <p style={{ fontSize: '15px', color: 'var(--body)', lineHeight: 1.7, marginBottom: '16px' }}>{gig.description}</p>
+          </div>
+        </div>
+
+        {/* Accepted applicants */}
+        <div className="dash-card">
+          <div className="dash-card-header">
+            <h2 className="dash-card-title">Applicants</h2>
+            <Link to={`/dashboard/org/gigs/${gig.id}/applicants`} className="gig-action" style={{ textDecoration: 'none', fontSize: '13px', padding: '8px 16px' }}>Review All</Link>
+          </div>
+          {applicants.length === 0 ? (
+            <div style={{ padding: '24px', textAlign: 'center', color: 'var(--muted)' }}>No applicants yet.</div>
+          ) : applicants.map((a) => {
+            const name = a.volunteer_profiles?.full_name || 'Volunteer';
+            const initials = name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase();
+            return (
+              <div key={a.id} className="gig-media-card" style={{ alignItems: 'center' }}>
+                <div style={{ width: '48px', minWidth: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', paddingLeft: '20px' }}>
+                  <div style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: 'var(--purple-600)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '14px', fontFamily: 'var(--display)' }}>{initials}</div>
+                </div>
+                <div className="gig-media-body" style={{ padding: '14px 16px' }}>
+                  <div className="gig-media-header" style={{ marginBottom: '6px' }}>
+                    <div>
+                      <h3 className="gig-media-title" style={{ fontSize: '15px', marginBottom: '2px' }}>{name}</h3>
+                      <p style={{ fontSize: '13px', color: 'var(--body)', margin: 0 }}>{a.volunteer_profiles?.bio || 'No bio provided.'}</p>
+                    </div>
+                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                      <span className="tag status" style={{ backgroundColor: statusStyle[a.status]?.bg || '#E4E1F5', color: statusStyle[a.status]?.color || 'var(--body)', textTransform: 'capitalize' }}>{a.status}</span>
+                      <div style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '4px' }}>{new Date(a.applied_at).toLocaleDateString()}</div>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                    {a.volunteer_profiles?.interests?.map((sk: string) => <span key={sk} className="tag skilled">{sk}</span>)}
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default OrgGigDetail;

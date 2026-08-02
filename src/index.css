@@ -1,0 +1,239 @@
+:root {
+  /* Purple - Primary */
+  --purple-900: #26215C;
+  --purple-600: #534AB7;
+  --purple-400: #7F77DD;
+  --purple-200: #AFA9EC;
+  --purple-50: #EEEDFE;
+  
+  /* Teal - Accent/Success */
+  --teal-900: #04342C;
+  --teal-600: #0F6E56;
+  --teal-400: #1D9E75;
+  --teal-200: #5DCAA5;
+  --teal-50: #E1F5EE;
+  
+  /* System */
+  --ink: #26215C;
+  --body: #4A4770;
+  --muted: #8B87B0;
+  --paper: #FBFAFF;
+  --white: #FFFFFF;
+  
+  /* Typography */
+  --display: 'Fraunces', serif;
+  --sans: 'Inter', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--sans);
+  color: var(--body);
+  background: var(--paper);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--display);
+  color: var(--ink);
+  margin: 0;
+  font-weight: 600;
+}
+
+a {
+  color: var(--purple-600);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Global Focus States */
+*:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--purple-100), 0 0 0 1px var(--purple-400);
+  border-radius: 4px;
+}
+
+button:focus-visible, input:focus-visible, textarea:focus-visible {
+  border-radius: inherit; /* respects the element's existing radius */
+}
+
+/* Custom Scrollbar for Webkit */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D1CEDF;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #A5A0C3;
+}
+
+button, input, textarea, select {
+  font-family: inherit;
+}
+
+/* Base utility classes */
+.wrap {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* Global Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 26px;
+  border-radius: 999px;
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: transform .15s ease, background .15s ease, border-color .15s ease;
+  text-decoration: none;
+}
+.btn:hover {
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+.btn-solid-purple {
+  background: var(--purple-600);
+  color: var(--white);
+}
+.btn-solid-purple:hover {
+  background: var(--purple-900);
+}
+.btn-outline-teal {
+  background: transparent;
+  border-color: var(--teal-400);
+  color: var(--teal-900);
+}
+.btn-outline-teal:hover {
+  background: var(--teal-50);
+}
+.btn-outline-white {
+  background: transparent;
+  border-color: rgba(255,255,255,0.5);
+  color: var(--white);
+}
+.btn-outline-white:hover {
+  background: rgba(255,255,255,0.1);
+}
+.btn-solid-teal {
+  background: var(--teal-400);
+  color: var(--teal-900);
+}
+.btn-solid-teal:hover {
+  background: var(--teal-200);
+}
+
+.text-display {
+  font-family: var(--display);
+}
+
+.text-sans {
+  font-family: var(--sans);
+}
+
+/* Common Section Styles */
+section.block {
+  padding: 96px 32px;
+}
+
+@media (max-width: 768px) {
+  section.block {
+    padding: 64px 16px;
+  }
+}
+
+section.block.alt {
+  background: var(--white);
+}
+
+.eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--teal-600);
+}
+
+.section-title {
+  font-size: 34px;
+  margin-top: 10px;
+  max-width: 640px;
+}
+
+.section-lede {
+  font-size: 16px;
+  color: var(--body);
+  max-width: 640px;
+  margin-top: 16px;
+}
+
+/* Auth Error Popup Animation */
+@keyframes slideDownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.auth-error-popup {
+  color: var(--pink-700);
+  background-color: var(--pink-50);
+  border: 1px solid var(--pink-100);
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: slideDownFade 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.auth-error-popup::before {
+  content: "!";
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--pink-600);
+  color: white;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}

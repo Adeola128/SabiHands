@@ -1,0 +1,55 @@
+/* Error Page Styles */
+.error-page {
+  background-color: var(--white);
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+}
+
+.error-content {
+  text-align: center;
+  max-width: 500px;
+}
+
+.error-code {
+  font-family: var(--display);
+  font-size: 120px;
+  line-height: 1;
+  color: var(--purple-100);
+  margin-bottom: 24px;
+  font-weight: 700;
+}
+
+.error-content h1 {
+  font-size: 32px;
+  color: var(--ink);
+  margin-bottom: 16px;
+}
+
+.error-content p {
+  font-size: 16px;
+  color: var(--body);
+  margin-bottom: 32px;
+  line-height: 1.6;
+}
+
+.error-content .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 32px;
+  background: var(--purple-600);
+  color: var(--white);
+  border-radius: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.error-content .btn:hover {
+  background: var(--purple-900);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(38, 33, 92, 0.15);
+}

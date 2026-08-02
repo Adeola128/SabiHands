@@ -1,0 +1,51 @@
+.post-gig-container {
+  display: flex;
+  min-height: calc(100vh - 72px);
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  background-color: var(--paper);
+  flex-direction: row;
+}
+
+.post-gig-sidebar {
+  width: 380px;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.post-gig-main {
+  flex: 1;
+  padding: 48px 64px;
+  overflow-y: auto;
+  position: relative;
+}
+
+@media (max-width: 992px) {
+  .post-gig-container {
+    flex-direction: column;
+  }
+  
+  .post-gig-sidebar {
+    width: 100%;
+    height: auto;
+    min-height: 400px;
+  }
+
+  .post-gig-main {
+    padding: 32px 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .post-gig-type-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .post-gig-logistics-grid {
+    grid-template-columns: 1fr !important;
+  }
+}

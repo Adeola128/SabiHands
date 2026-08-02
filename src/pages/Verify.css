@@ -1,0 +1,144 @@
+/* Verify Page Styles */
+.verify-page {
+  background-color: var(--white);
+  padding-bottom: 120px;
+  min-height: 80vh;
+}
+
+.verify-hero {
+  padding: 100px 0 60px;
+  text-align: center;
+  background-color: var(--paper);
+}
+
+.verify-hero h1 {
+  font-size: 42px;
+  margin-bottom: 16px;
+}
+
+.verify-hero p {
+  font-size: 18px;
+  color: var(--body);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.verify-container {
+  max-width: 600px;
+  margin: -30px auto 0;
+  padding: 0 24px;
+  position: relative;
+  z-index: 2;
+}
+
+.verify-search {
+  background: var(--white);
+  padding: 12px;
+  border-radius: 16px;
+  box-shadow: 0 16px 40px -16px rgba(38,33,92,0.15);
+  display: flex;
+  gap: 12px;
+  border: 1px solid #E4E1F5;
+}
+
+.verify-search input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 16px 20px;
+  font-size: 18px;
+  font-family: var(--sans);
+  outline: none;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.verify-search input::placeholder {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.verify-search button {
+  background: var(--teal-600);
+  color: var(--white);
+  border: none;
+  padding: 0 32px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.verify-search button:hover {
+  background: var(--teal-900);
+  transform: translateY(-2px);
+}
+
+.verify-result {
+  margin-top: 60px;
+}
+
+.certificate-mock {
+  background: var(--white);
+  border: 2px solid var(--teal-200);
+  border-radius: 20px;
+  padding: 48px;
+  text-align: center;
+  box-shadow: 0 20px 40px -20px rgba(4, 52, 44, 0.15);
+}
+
+.cert-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--teal-50);
+  color: var(--teal-900);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 32px;
+}
+
+.cert-badge svg {
+  width: 16px;
+  height: 16px;
+}
+
+.cert-title {
+  font-family: var(--display);
+  font-size: 32px;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+
+.cert-name {
+  font-family: var(--display);
+  font-size: 48px;
+  font-style: italic;
+  color: var(--purple-600);
+  margin-bottom: 24px;
+}
+
+.cert-details {
+  font-size: 16px;
+  color: var(--body);
+  line-height: 1.6;
+}
+
+.cert-details strong {
+  color: var(--ink);
+}
+
+.cert-footer {
+  margin-top: 40px;
+  padding-top: 32px;
+  border-top: 1px dashed #E4E1F5;
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: 14px;
+}

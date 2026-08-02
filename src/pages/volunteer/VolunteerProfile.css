@@ -1,0 +1,312 @@
+.vol-profile-container {
+  max-width: 1120px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 0 64px 0;
+}
+
+/* ── Hero Section ── */
+.vol-profile-hero {
+  background-color: var(--white);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 16px 40px -10px rgba(38, 33, 92, 0.08);
+  margin-bottom: 32px;
+  position: relative;
+}
+
+.vol-profile-cover {
+  height: 240px;
+  background-image: url('/images/diverse_gigs.png');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+.vol-profile-cover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 100%);
+}
+
+.vol-profile-header-content {
+  padding: 0 40px 40px;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: -64px;
+}
+
+.vol-profile-avatar-wrapper {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background-color: var(--white);
+  padding: 6px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+}
+.vol-profile-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--purple-400), var(--purple-600));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  font-weight: 700;
+  font-family: var(--display);
+}
+
+.vol-verified-badge {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  background-color: var(--teal-500);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4px solid var(--white);
+}
+
+.vol-profile-info {
+  margin-top: 24px;
+}
+
+.vol-profile-name {
+  font-size: 32px;
+  font-family: var(--display);
+  color: var(--ink);
+  margin: 0 0 8px 0;
+  line-height: 1.1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.vol-profile-headline {
+  font-size: 16px;
+  color: var(--body);
+  margin: 0 0 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vol-profile-stats-bar {
+  display: flex;
+  gap: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #E4E1F5;
+  margin-top: 24px;
+}
+
+.vol-stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.vol-stat-value {
+  font-size: 24px;
+  font-family: var(--display);
+  color: var(--ink);
+  font-weight: 700;
+}
+.vol-stat-label {
+  font-size: 13px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+}
+
+
+/* ── Grid Layout ── */
+.vol-profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 24px;
+}
+
+.vol-card {
+  background-color: var(--white);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 8px 30px rgba(38, 33, 92, 0.04), 0 1px 3px rgba(38, 33, 92, 0.02);
+  margin-bottom: 24px;
+}
+
+.vol-card-title {
+  font-size: 18px;
+  font-family: var(--display);
+  color: var(--ink);
+  margin: 0 0 24px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── Tags & Items ── */
+.vol-skill-tag {
+  display: inline-flex;
+  padding: 8px 16px;
+  background-color: var(--paper);
+  color: var(--ink);
+  border-radius: 99px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+  border: 1px solid #E4E1F5;
+}
+.vol-skill-tag:hover {
+  background-color: var(--purple-50);
+  color: var(--purple-700);
+  border-color: var(--purple-200);
+}
+
+.vol-cause-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background-color: var(--teal-50);
+  color: var(--teal-800);
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.vol-timeline-item {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  position: relative;
+}
+.vol-timeline-item:last-child {
+  margin-bottom: 0;
+}
+.vol-timeline-item::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 40px;
+  bottom: -24px;
+  width: 2px;
+  background-color: #E4E1F5;
+}
+.vol-timeline-item:last-child::before {
+  display: none;
+}
+.vol-timeline-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--purple-100);
+  color: var(--purple-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.vol-cert-mini {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background-color: var(--paper);
+  border-radius: 12px;
+  border: 1px solid #E4E1F5;
+  transition: all 0.2s;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+.vol-cert-mini:hover {
+  background-color: var(--white);
+  box-shadow: 0 4px 12px rgba(38,33,92,0.05);
+  border-color: var(--purple-300);
+}
+
+
+@media (max-width: 992px) {
+  .vol-profile-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .vol-profile-header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .vol-profile-stats-bar {
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+  
+  .vol-edit-btn {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .vol-profile-container {
+    padding: 0 16px 48px;
+  }
+
+  .vol-profile-cover {
+    height: 180px;
+  }
+
+  .vol-profile-header-content {
+    padding: 0 24px 32px;
+    margin-top: -48px;
+  }
+
+  .vol-profile-avatar-wrapper {
+    width: 100px;
+    height: 100px;
+    padding: 4px;
+  }
+
+  .vol-profile-avatar {
+    font-size: 32px;
+  }
+
+  .vol-profile-name {
+    font-size: 24px;
+  }
+
+  .vol-profile-headline {
+    font-size: 14px;
+    flex-wrap: wrap;
+  }
+
+  .vol-stat-value {
+    font-size: 20px;
+  }
+
+  .vol-card {
+    padding: 24px;
+  }
+
+  .vol-edit-btn {
+    top: auto;
+    right: auto;
+    position: relative;
+    margin-top: 24px;
+    width: 100%;
+    justify-content: center;
+  }
+}

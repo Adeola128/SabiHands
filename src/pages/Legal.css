@@ -1,0 +1,58 @@
+/* Legal Page Styles */
+.legal-page {
+  background-color: var(--white);
+  padding-bottom: 120px;
+}
+
+.legal-hero {
+  padding: 140px 0 100px;
+  text-align: center;
+  background: linear-gradient(135deg, var(--paper) 0%, #E4E1F5 100%);
+  position: relative;
+  overflow: hidden;
+}
+.legal-hero::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: var(--white);
+  clip-path: ellipse(60% 100% at 50% 100%);
+}
+
+.legal-hero h1 {
+  font-size: 42px;
+  margin-bottom: 12px;
+}
+
+.legal-hero p {
+  font-size: 16px;
+  color: var(--muted);
+}
+
+.legal-content {
+  max-width: 800px;
+  margin: 60px auto 0;
+  padding: 0 24px;
+}
+
+.legal-content h2 {
+  font-size: 24px;
+  color: var(--ink);
+  margin-top: 40px;
+  margin-bottom: 16px;
+}
+
+.legal-content p, .legal-content li {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--body);
+  margin-bottom: 16px;
+}
+
+.legal-content ul {
+  padding-left: 20px;
+  margin-bottom: 24px;
+}

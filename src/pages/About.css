@@ -1,0 +1,137 @@
+/* About Page Styles */
+.about-page {
+  background-color: var(--white);
+  padding-bottom: 120px;
+}
+
+.about-hero {
+  padding: 140px 0 100px;
+  text-align: center;
+  background: linear-gradient(135deg, var(--purple-50) 0%, var(--purple-100) 100%);
+  position: relative;
+  overflow: hidden;
+}
+.about-hero::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: var(--white);
+  clip-path: ellipse(60% 100% at 50% 100%);
+}
+
+.about-hero .eyebrow {
+  margin-bottom: 16px;
+}
+
+.about-hero h1 {
+  font-size: 52px;
+  line-height: 1.1;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.about-hero h1 em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--purple-600);
+}
+
+.about-lede {
+  margin-top: 24px;
+  font-size: 18px;
+  color: var(--body);
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.about-content {
+  max-width: 800px;
+  margin: 80px auto 0;
+  padding: 0 24px;
+}
+
+.about-section {
+  margin-bottom: 80px;
+}
+
+.about-section h2 {
+  font-size: 32px;
+  margin-bottom: 24px;
+  color: var(--ink);
+}
+
+.about-section p {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--body);
+  margin-bottom: 20px;
+}
+
+.about-section blockquote {
+  font-family: var(--display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 24px;
+  color: var(--purple-600);
+  border-left: 4px solid var(--purple-200);
+  margin: 40px 0;
+  padding: 20px 0 20px 30px;
+  background: var(--purple-50);
+  border-radius: 0 12px 12px 0;
+}
+
+.founder-card {
+  display: flex;
+  gap: 32px;
+  background: var(--paper);
+  padding: 40px;
+  border-radius: 20px;
+  align-items: center;
+  border: 1px solid #E4E1F5;
+}
+
+.founder-img {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 4px solid var(--white);
+  box-shadow: 0 10px 30px -10px rgba(38,33,92,0.15);
+}
+
+.founder-info h3 {
+  font-family: var(--display);
+  font-size: 24px;
+  color: var(--ink);
+}
+
+.founder-info span {
+  display: block;
+  font-size: 14px;
+  color: var(--teal-600);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  margin-top: 4px;
+  margin-bottom: 12px;
+}
+
+.founder-info p {
+  font-size: 15px;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .about-hero h1 {
+    font-size: 38px;
+  }
+  .founder-card {
+    flex-direction: column;
+    text-align: center;
+  }
+}

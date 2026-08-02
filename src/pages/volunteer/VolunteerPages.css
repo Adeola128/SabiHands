@@ -1,0 +1,253 @@
+/* VolunteerPages.css - Responsive styles for Volunteer Dashboard Pages */
+
+.volunteer-page-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 40px 24px;
+}
+
+.volunteer-page-container.narrow {
+  max-width: 800px;
+}
+
+.volunteer-page-container.x-narrow {
+  max-width: 600px;
+}
+
+/* Grid Layouts */
+.responsive-grid {
+  display: grid;
+  gap: 24px;
+}
+
+.grid-2col {
+  grid-template-columns: 1fr 1fr;
+}
+
+.gig-detail-grid {
+  grid-template-columns: 2fr 1fr;
+  gap: 40px;
+}
+
+.certs-grid {
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+/* Flex utilities */
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flex-gap-small {
+  display: flex;
+  gap: 16px;
+}
+
+.flex-gap-medium {
+  display: flex;
+  gap: 24px;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+/* Common Card */
+.vol-card {
+  background-color: var(--white);
+  border-radius: 20px;
+  padding: 32px;
+  border: 1px solid #E4E1F5;
+  box-shadow: 0 8px 24px -12px rgba(38, 33, 92, 0.1);
+}
+
+.vol-card-header {
+  margin-bottom: 24px;
+}
+
+/* Specific component tweaks */
+.gig-detail-sidebar-inner {
+  position: sticky;
+  top: 100px;
+}
+
+.gig-card-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.cert-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  background-color: var(--white);
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid #E4E1F5;
+  transition: box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.cert-list-item:hover {
+  box-shadow: 0 12px 32px -12px rgba(38, 33, 92, 0.15);
+}
+
+.cert-list-item-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.cert-icon-wrapper {
+  min-width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--teal-50) 0%, var(--teal-100) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.profile-header-content {
+  padding: 56px 40px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.profile-avatar {
+  position: absolute;
+  bottom: -40px;
+  left: 40px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background-color: var(--purple-600);
+  border: 4px solid var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+  font-size: 36px;
+  font-weight: 700;
+  font-family: var(--display);
+}
+
+.cert-detail-card {
+  padding: 48px;
+  border: 2px solid var(--teal-200);
+  box-shadow: 0 20px 40px -20px rgba(4, 52, 44, 0.15);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  background-color: var(--white);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .volunteer-page-container {
+    padding: 24px 16px;
+  }
+
+  .grid-2col,
+  .gig-detail-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .certs-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .gig-detail-sidebar-inner {
+    position: static;
+  }
+
+  .gig-card-list-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .gig-card-list-item>div:last-child,
+  .gig-card-list-item a {
+    width: 100%;
+    text-align: center;
+    margin-top: 16px;
+  }
+
+  .cert-list-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .cert-list-item>div:last-child {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px dashed #E4E1F5;
+    padding-top: 16px;
+  }
+
+  .profile-header-content {
+    flex-direction: column;
+    padding: 64px 24px 32px;
+  }
+
+  .profile-header-content>a {
+    margin-top: 24px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .profile-avatar {
+    width: 100px;
+    height: 100px;
+    bottom: -30px;
+    left: 24px;
+    font-size: 32px;
+  }
+
+  .cert-detail-card {
+    padding: 32px 24px;
+  }
+
+  .cert-detail-title {
+    font-size: 28px !important;
+  }
+
+  .cert-detail-name {
+    font-size: 36px !important;
+  }
+
+  .flex-between {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .flex-gap-small,
+  .flex-gap-medium {
+    flex-direction: column;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .action-buttons button {
+    width: 100%;
+    justify-content: center;
+  }
+}
