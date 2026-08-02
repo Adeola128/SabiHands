@@ -54,7 +54,7 @@ const VolunteerProfile: React.FC = () => {
       {/* ── PROFILE COMPLETENESS PROMPT ── */}
       <ProfileCompletenessPrompt 
         score={completeness.score} 
-        nextStep={completeness.nextStep} 
+        nextStep={completeness.nextStep || null} 
         editLink="/dashboard/volunteer/settings" 
       />
 

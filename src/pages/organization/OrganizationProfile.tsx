@@ -62,7 +62,7 @@ const OrganizationProfile: React.FC = () => {
       {/* ── PROFILE COMPLETENESS PROMPT ── */}
       <ProfileCompletenessPrompt 
         score={completeness.score} 
-        nextStep={completeness.nextStep} 
+        nextStep={completeness.nextStep || null} 
         editLink="/dashboard/org/settings" 
       />
 
