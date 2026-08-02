@@ -117,57 +117,57 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ role = 'volunteer' })
         <div className="dashboard-secondary-nav-inner">
           {isVolunteer ? (
             <>
-              <Link to="/dashboard/volunteer" className={`secondary-nav-item ${location.pathname === '/dashboard/volunteer' ? 'active' : ''}`}>
+              <Link to="/dashboard/volunteer" onClick={() => setIsMobileMenuOpen(false)} className={`secondary-nav-item ${location.pathname === '/dashboard/volunteer' ? 'active' : ''}`}>
                 Home
               </Link>
-              <Link to="/dashboard/volunteer/gigs" className={`secondary-nav-item ${location.pathname === '/dashboard/volunteer/gigs' ? 'active' : ''}`}>
+              <Link to="/dashboard/volunteer/gigs" onClick={() => setIsMobileMenuOpen(false)} className={`secondary-nav-item ${location.pathname === '/dashboard/volunteer/gigs' ? 'active' : ''}`}>
                 Browse Gigs
               </Link>
-              <Link to="/dashboard/volunteer/applications" className={`secondary-nav-item ${location.pathname === '/dashboard/volunteer/applications' ? 'active' : ''}`}>
+              <Link to="/dashboard/volunteer/applications" onClick={() => setIsMobileMenuOpen(false)} className={`secondary-nav-item ${location.pathname === '/dashboard/volunteer/applications' ? 'active' : ''}`}>
                 Applications
               </Link>
-              <Link to="/dashboard/volunteer/my-gigs" className={`secondary-nav-item ${location.pathname === '/dashboard/volunteer/my-gigs' ? 'active' : ''}`}>
+              <Link to="/dashboard/volunteer/my-gigs" onClick={() => setIsMobileMenuOpen(false)} className={`secondary-nav-item ${location.pathname === '/dashboard/volunteer/my-gigs' ? 'active' : ''}`}>
                 My Gigs
               </Link>
-              <Link to="/dashboard/volunteer/certificates" className={`secondary-nav-item ${location.pathname === '/dashboard/volunteer/certificates' ? 'active' : ''}`}>
+              <Link to="/dashboard/volunteer/certificates" onClick={() => setIsMobileMenuOpen(false)} className={`secondary-nav-item ${location.pathname === '/dashboard/volunteer/certificates' ? 'active' : ''}`}>
                 Certificates
               </Link>
             </>
           ) : (
             <>
-              <Link to="/dashboard/org" className={`secondary-nav-item ${location.pathname === '/dashboard/org' ? 'active' : ''}`}>
+              <Link to="/dashboard/org" onClick={() => setIsMobileMenuOpen(false)} className={`secondary-nav-item ${location.pathname === '/dashboard/org' ? 'active' : ''}`}>
                 Overview
               </Link>
-              <Link to="/dashboard/org/gigs" className={`secondary-nav-item ${location.pathname.includes('/dashboard/org/gigs') ? 'active' : ''}`}>
+              <Link to="/dashboard/org/gigs" onClick={() => setIsMobileMenuOpen(false)} className={`secondary-nav-item ${location.pathname.includes('/dashboard/org/gigs') ? 'active' : ''}`}>
                 Manage Gigs
               </Link>
-              <Link to="/dashboard/org/impact" className={`secondary-nav-item ${location.pathname === '/dashboard/org/impact' ? 'active' : ''}`}>
+              <Link to="/dashboard/org/impact" onClick={() => setIsMobileMenuOpen(false)} className={`secondary-nav-item ${location.pathname === '/dashboard/org/impact' ? 'active' : ''}`}>
                 Impact
               </Link>
-              <Link to="/dashboard/org/team" className={`secondary-nav-item ${location.pathname === '/dashboard/org/team' ? 'active' : ''}`}>
+              <Link to="/dashboard/org/team" onClick={() => setIsMobileMenuOpen(false)} className={`secondary-nav-item ${location.pathname === '/dashboard/org/team' ? 'active' : ''}`}>
                 Team
               </Link>
-              <Link to="/dashboard/org/settings" className={`secondary-nav-item ${location.pathname === '/dashboard/org/settings' ? 'active' : ''}`}>
+              <Link to="/dashboard/org/settings" onClick={() => setIsMobileMenuOpen(false)} className={`secondary-nav-item ${location.pathname === '/dashboard/org/settings' ? 'active' : ''}`}>
                 Settings
               </Link>
-              <Link to="/dashboard/org/billing" className={`secondary-nav-item ${location.pathname === '/dashboard/org/billing' ? 'active' : ''}`}>
+              <Link to="/dashboard/org/billing" onClick={() => setIsMobileMenuOpen(false)} className={`secondary-nav-item ${location.pathname === '/dashboard/org/billing' ? 'active' : ''}`}>
                 Billing
               </Link>
             </>
           )}
-          <Link to="/dashboard/messages" className={`secondary-nav-item ${location.pathname === '/dashboard/messages' ? 'active' : ''}`}>
+          <Link to="/dashboard/messages" onClick={() => setIsMobileMenuOpen(false)} className={`secondary-nav-item ${location.pathname === '/dashboard/messages' ? 'active' : ''}`}>
             Messages
           </Link>
-          <Link to="/dashboard/community" className={`secondary-nav-item ${location.pathname === '/dashboard/community' ? 'active' : ''}`}>
+          <Link to="/dashboard/community" onClick={() => setIsMobileMenuOpen(false)} className={`secondary-nav-item ${location.pathname === '/dashboard/community' ? 'active' : ''}`}>
             Community
           </Link>
           
           {/* Mobile Only: Profile and Notifications */}
           <div className="mobile-only-nav-items" style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #E4E1F5', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <Link to="/dashboard/notifications" className={`secondary-nav-item ${location.pathname === '/dashboard/notifications' ? 'active' : ''}`}>
+            <Link to="/dashboard/notifications" onClick={() => setIsMobileMenuOpen(false)} className={`secondary-nav-item ${location.pathname === '/dashboard/notifications' ? 'active' : ''}`}>
               Notifications
             </Link>
-            <Link to="/dashboard/volunteer/profile" className={`secondary-nav-item ${location.pathname === '/dashboard/volunteer/profile' ? 'active' : ''}`}>
+            <Link to="/dashboard/volunteer/profile" onClick={() => setIsMobileMenuOpen(false)} className={`secondary-nav-item ${location.pathname === '/dashboard/volunteer/profile' ? 'active' : ''}`}>
               Profile
             </Link>
           </div>

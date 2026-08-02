@@ -411,7 +411,8 @@
   border: none;
   color: var(--ink);
   cursor: pointer;
-  padding: 8px;
+  padding: 12px;
+  border-radius: 8px;
 }
 
 .mobile-only-nav-items {
@@ -462,13 +463,16 @@
   }
 
   .secondary-nav-item {
-    padding: 12px 0;
+    display: block;
+    padding: 14px 16px;
     width: 100%;
-    border-bottom: 1px solid #FAFAFC;
+    border-bottom: 1px solid #F0EEF9;
+    border-radius: 8px;
   }
 
   .secondary-nav-item.active {
-    border-bottom-color: var(--purple-600);
+    background-color: var(--purple-50);
+    border-bottom-color: transparent;
   }
 
   .settings-layout {
