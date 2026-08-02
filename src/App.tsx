@@ -37,7 +37,6 @@ import MyCertificates from './pages/volunteer/MyCertificates';
 import CertificateDetail from './pages/volunteer/CertificateDetail';
 import VolunteerProfile from './pages/volunteer/VolunteerProfile';
 import EditProfile from './pages/volunteer/EditProfile';
-import Referral from './pages/volunteer/Referral';
 import OrgDashboard from './pages/organization/OrgDashboard';
 import ManageGigs from './pages/organization/ManageGigs';
 import PostGig from './pages/organization/PostGig';
@@ -111,7 +110,6 @@ const App: React.FC = () => {
           <Route path="certificates/:id" element={<CertificateDetail />} />
           <Route path="profile" element={<VolunteerProfile />} />
           <Route path="settings" element={<EditProfile />} />
-          <Route path="referral" element={<Referral />} />
         </Route>
 
         {/* Global Dashboard Routes */}

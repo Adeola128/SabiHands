@@ -149,6 +149,38 @@
   }
 }
 
+@media (max-width: 768px) {
+  .org-hero-content {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0 24px 32px;
+  }
+  
+  .org-avatar-container {
+    margin-top: -48px;
+  }
+
+  .org-avatar {
+    width: 96px;
+    height: 96px;
+    font-size: 24px !important;
+  }
+  
+  .org-hero-actions {
+    margin-top: 24px;
+    width: 100%;
+  }
+
+  .org-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .org-cover-image {
+    height: 160px;
+  }
+}
+
 .org-section-title {
   font-size: 20px;
   font-weight: 600;

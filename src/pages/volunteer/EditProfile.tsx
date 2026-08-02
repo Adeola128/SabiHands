@@ -1,17 +1,117 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
+import { supabase } from '../../lib/supabase';
+import LoadingScreen from '../../components/LoadingScreen';
 import './VolunteerPages.css';
 
 const EditProfile: React.FC = () => {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'profile' | 'preferences' | 'security'>('profile');
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState('');
+
+  // Form State
+  const [profile, setProfile] = useState({
+    full_name: '',
+    headline: '',
+    location: '',
+    phone: '',
+    bio: '',
+    skills: '', // We'll keep this as a comma-separated string for editing
+    interests: '', // We'll keep this as a comma-separated string for editing
+    linkedin_url: '',
+    portfolio_url: '',
+    avatar_url: ''
+  });
+
+  useEffect(() => {
+    if (!user) return;
+    
+    const fetchProfile = async () => {
+      const { data } = await supabase
+        .from('volunteer_profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+        
+      if (data) {
+        setProfile({
+          full_name: data.full_name || '',
+          headline: data.headline || '',
+          location: data.location || '',
+          phone: data.phone || '',
+          bio: data.bio || '',
+          skills: data.skills ? data.skills.join(', ') : '',
+          interests: data.interests ? data.interests.join(', ') : '',
+          linkedin_url: data.linkedin_url || '',
+          portfolio_url: data.portfolio_url || '',
+          avatar_url: data.avatar_url || ''
+        });
+      } else {
+        // If no profile exists, create one from user metadata (onboarding data)
+        const metadata = user.user_metadata || {};
+        const newProfile = {
+          user_id: user.id,
+          full_name: metadata.full_name || '',
+          phone: metadata.phone || '',
+          location: metadata.location || '',
+        };
+        await supabase.from('volunteer_profiles').insert(newProfile);
+        setProfile(prev => ({ ...prev, ...newProfile }));
+      }
+      setLoading(false);
+    };
+
+    fetchProfile();
+  }, [user]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setProfile(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+    setSaving(true);
+    setMessage('');
+
+    const formattedData = {
+      full_name: profile.full_name,
+      headline: profile.headline,
+      location: profile.location,
+      phone: profile.phone,
+      bio: profile.bio,
+      skills: profile.skills.split(',').map(s => s.trim()).filter(Boolean),
+      interests: profile.interests.split(',').map(s => s.trim()).filter(Boolean),
+      linkedin_url: profile.linkedin_url,
+      portfolio_url: profile.portfolio_url,
+      avatar_url: profile.avatar_url,
+    };
+
+    const { error } = await supabase
+      .from('volunteer_profiles')
+      .update(formattedData)
+      .eq('user_id', user.id);
+
+    if (error) {
+      setMessage(`Error: ${error.message}`);
+    } else {
+      setMessage('Profile updated successfully!');
+    }
+    setSaving(false);
+  };
+
+  if (loading) return <LoadingScreen message="Loading profile settings..." fullScreen={false} />;
 
   return (
-    <div className="volunteer-page-container narrow">
+    <div className="volunteer-page-container">
       <div style={{ marginBottom: '40px' }}>
         <h1 style={{ fontSize: '32px', fontFamily: 'var(--display)', color: 'var(--ink)', marginBottom: '8px' }}>Account Settings</h1>
         <p style={{ color: 'var(--body)' }}>Manage your personal details, preferences, and security settings.</p>
       </div>
       
-      <div style={{ display: 'flex', gap: '32px', alignItems: 'flex-start' }} className="settings-layout">
+      <div className="settings-layout">
         
         {/* Sidebar Nav */}
         <div className="vol-card" style={{ flex: '0 0 250px', padding: '16px 8px' }}>
@@ -87,52 +187,65 @@ const EditProfile: React.FC = () => {
               <h2 style={{ fontSize: '20px', color: 'var(--ink)', marginBottom: '8px', fontFamily: 'var(--display)' }}>Public Profile</h2>
               <p style={{ color: 'var(--body)', marginBottom: '32px', fontSize: '15px' }}>This is how you will appear to organizations on the platform.</p>
               
-              <div style={{ display: 'flex', gap: '24px', alignItems: 'center', marginBottom: '40px', paddingBottom: '32px', borderBottom: '1px solid #E4E1F5' }}>
-                <div style={{ width: '88px', height: '88px', borderRadius: '50%', backgroundColor: 'var(--purple-100)', overflow: 'hidden', border: '4px solid var(--white)', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}>
-                  <img src="https://i.pravatar.cc/150?img=47" alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              {message && (
+                <div style={{ padding: '12px', backgroundColor: message.includes('Error') ? 'var(--pink-50)' : 'var(--teal-50)', color: message.includes('Error') ? 'var(--pink-700)' : 'var(--teal-700)', borderRadius: '8px', marginBottom: '24px', fontSize: '14px', fontWeight: 600 }}>
+                  {message}
                 </div>
-                <div>
-                  <div style={{ display: 'flex', gap: '12px', marginBottom: '8px' }}>
-                    <button type="button" className="btn-primary" style={{ padding: '10px 20px', fontSize: '14px' }}>Change Photo</button>
-                    <button type="button" style={{ padding: '10px 20px', backgroundColor: 'transparent', border: '1px solid #E4E1F5', borderRadius: '12px', color: 'var(--ink)', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>Remove</button>
-                  </div>
-                  <p style={{ fontSize: '13px', color: 'var(--muted)' }}>JPG, GIF or PNG. 1MB max.</p>
-                </div>
-              </div>
+              )}
 
-              <form style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                <div className="responsive-grid grid-2col">
-                  <div className="field">
-                    <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ink)', display: 'block', marginBottom: '8px' }}>First Name</label>
-                    <input type="text" defaultValue="Adeola" style={{ width: '100%', padding: '12px 16px', borderRadius: '10px', border: '1.5px solid #E4E1F5', outline: 'none' }} />
+              <form onSubmit={handleSubmit}>
+                <div className="grid-2col" style={{ gap: '24px', marginBottom: '24px' }}>
+                  <div className="premium-form-group">
+                    <label className="premium-label">Full Name</label>
+                    <input type="text" name="full_name" className="premium-input" value={profile.full_name} onChange={handleChange} required />
                   </div>
-                  <div className="field">
-                    <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ink)', display: 'block', marginBottom: '8px' }}>Last Name</label>
-                    <input type="text" defaultValue="Okonkwo" style={{ width: '100%', padding: '12px 16px', borderRadius: '10px', border: '1.5px solid #E4E1F5', outline: 'none' }} />
+                  <div className="premium-form-group">
+                    <label className="premium-label">Headline (e.g. Digital Marketer)</label>
+                    <input type="text" name="headline" className="premium-input" value={profile.headline} onChange={handleChange} placeholder="What do you do best?" />
                   </div>
                 </div>
-                
-                <div className="field">
-                  <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ink)', display: 'block', marginBottom: '8px' }}>Professional Title</label>
-                  <input type="text" defaultValue="Digital Marketer & Community Builder" style={{ width: '100%', padding: '12px 16px', borderRadius: '10px', border: '1.5px solid #E4E1F5', outline: 'none' }} />
+
+                <div className="grid-2col" style={{ gap: '24px', marginBottom: '24px' }}>
+                  <div className="premium-form-group">
+                    <label className="premium-label">Phone Number</label>
+                    <input type="tel" name="phone" className="premium-input" value={profile.phone} onChange={handleChange} placeholder="+234..." />
+                  </div>
+                  <div className="premium-form-group">
+                    <label className="premium-label">Location (City, State)</label>
+                    <input type="text" name="location" className="premium-input" value={profile.location} onChange={handleChange} placeholder="e.g. Yaba, Lagos" />
+                  </div>
                 </div>
 
-                <div className="field">
-                  <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ink)', display: 'block', marginBottom: '8px' }}>Location</label>
-                  <input type="text" defaultValue="Lagos, Nigeria" style={{ width: '100%', padding: '12px 16px', borderRadius: '10px', border: '1.5px solid #E4E1F5', outline: 'none' }} />
+                <div className="premium-form-group" style={{ marginBottom: '24px' }}>
+                  <label className="premium-label">About Me (Bio)</label>
+                  <textarea name="bio" className="premium-input" value={profile.bio} onChange={handleChange} rows={5} placeholder="Tell organizations a bit about yourself and what you are passionate about..."></textarea>
                 </div>
 
-                <div className="field">
-                  <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ink)', display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                    <span>Short Bio</span>
-                    <span style={{ color: 'var(--muted)', fontWeight: 400 }}>0/300</span>
-                  </label>
-                  <textarea defaultValue="Passionate about leveraging digital tools to foster community growth. I've spent the last 3 years helping local NGOs expand their reach through targeted social media campaigns." style={{ width: '100%', padding: '12px 16px', borderRadius: '10px', border: '1.5px solid #E4E1F5', minHeight: '120px', resize: 'vertical', outline: 'none', lineHeight: 1.5, fontFamily: 'var(--sans)' }} />
+                <div className="grid-2col" style={{ gap: '24px', marginBottom: '24px' }}>
+                  <div className="premium-form-group">
+                    <label className="premium-label">Skills (comma separated)</label>
+                    <input type="text" name="skills" className="premium-input" value={profile.skills} onChange={handleChange} placeholder="e.g. Photography, Logistics, Web Design" />
+                  </div>
+                  <div className="premium-form-group">
+                    <label className="premium-label">Causes I Care About (comma separated)</label>
+                    <input type="text" name="interests" className="premium-input" value={profile.interests} onChange={handleChange} placeholder="e.g. Education, Environment, Health" />
+                  </div>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
-                  <button type="button" className="btn-primary" style={{ padding: '14px 32px' }}>
-                    Save Profile
+                <div className="grid-2col" style={{ gap: '24px', marginBottom: '40px' }}>
+                  <div className="premium-form-group">
+                    <label className="premium-label">LinkedIn URL</label>
+                    <input type="url" name="linkedin_url" className="premium-input" value={profile.linkedin_url} onChange={handleChange} placeholder="https://linkedin.com/in/yourprofile" />
+                  </div>
+                  <div className="premium-form-group">
+                    <label className="premium-label">Portfolio / Website URL</label>
+                    <input type="url" name="portfolio_url" className="premium-input" value={profile.portfolio_url} onChange={handleChange} placeholder="https://yourwebsite.com" />
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <button type="submit" className="btn-primary" disabled={saving}>
+                    {saving ? 'Saving...' : 'Save Profile'}
                   </button>
                 </div>
               </form>
@@ -141,93 +254,18 @@ const EditProfile: React.FC = () => {
 
           {activeTab === 'preferences' && (
             <div className="vol-card">
-              <h2 style={{ fontSize: '20px', color: 'var(--ink)', marginBottom: '8px', fontFamily: 'var(--display)' }}>Preferences</h2>
-              <p style={{ color: 'var(--body)', marginBottom: '32px', fontSize: '15px' }}>Manage how SabiHands communicates with you and what gigs you see.</p>
-              
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-                <div>
-                  <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--ink)', marginBottom: '16px' }}>Email Notifications</h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    <label style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', cursor: 'pointer' }}>
-                      <input type="checkbox" defaultChecked style={{ marginTop: '4px', width: '18px', height: '18px', accentColor: 'var(--purple-500)' }} />
-                      <div>
-                        <div style={{ fontWeight: 600, color: 'var(--ink)', fontSize: '15px', marginBottom: '2px' }}>Gig Updates</div>
-                        <div style={{ fontSize: '14px', color: 'var(--body)' }}>Receive emails when your application status changes.</div>
-                      </div>
-                    </label>
-                    <label style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', cursor: 'pointer' }}>
-                      <input type="checkbox" defaultChecked style={{ marginTop: '4px', width: '18px', height: '18px', accentColor: 'var(--purple-500)' }} />
-                      <div>
-                        <div style={{ fontWeight: 600, color: 'var(--ink)', fontSize: '15px', marginBottom: '2px' }}>New Gig Alerts</div>
-                        <div style={{ fontSize: '14px', color: 'var(--body)' }}>Weekly digest of new gigs matching your skills.</div>
-                      </div>
-                    </label>
-                    <label style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', cursor: 'pointer' }}>
-                      <input type="checkbox" style={{ marginTop: '4px', width: '18px', height: '18px', accentColor: 'var(--purple-500)' }} />
-                      <div>
-                        <div style={{ fontWeight: 600, color: 'var(--ink)', fontSize: '15px', marginBottom: '2px' }}>Marketing & Promo</div>
-                        <div style={{ fontSize: '14px', color: 'var(--body)' }}>Receive occasional news and updates from SabiHands.</div>
-                      </div>
-                    </label>
-                  </div>
-                </div>
-
-                <div style={{ borderTop: '1px solid #E4E1F5', paddingTop: '32px' }}>
-                  <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--ink)', marginBottom: '16px' }}>Gig Availability</h3>
-                  <div style={{ display: 'flex', gap: '16px' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', padding: '12px 16px', border: '1.5px solid var(--purple-500)', borderRadius: '10px', backgroundColor: 'var(--purple-50)', color: 'var(--purple-700)', fontWeight: 600, fontSize: '14px' }}>
-                      <input type="radio" name="availability" defaultChecked style={{ accentColor: 'var(--purple-500)' }} /> Actively looking
-                    </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', padding: '12px 16px', border: '1.5px solid #E4E1F5', borderRadius: '10px', color: 'var(--body)', fontWeight: 600, fontSize: '14px' }}>
-                      <input type="radio" name="availability" style={{ accentColor: 'var(--purple-500)' }} /> Not looking
-                    </label>
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
-                  <button type="button" className="btn-primary" style={{ padding: '14px 32px' }}>
-                    Save Preferences
-                  </button>
-                </div>
-              </div>
+              <h2 style={{ fontSize: '20px', color: 'var(--ink)', marginBottom: '32px', fontFamily: 'var(--display)' }}>Preferences</h2>
+              <p style={{ color: 'var(--body)' }}>Notification and matching preferences coming soon.</p>
             </div>
           )}
 
           {activeTab === 'security' && (
             <div className="vol-card">
-              <h2 style={{ fontSize: '20px', color: 'var(--ink)', marginBottom: '8px', fontFamily: 'var(--display)' }}>Security</h2>
-              <p style={{ color: 'var(--body)', marginBottom: '32px', fontSize: '15px' }}>Keep your account secure by updating your login methods.</p>
-              
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                <div className="field">
-                  <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ink)', display: 'block', marginBottom: '8px' }}>Email Address</label>
-                  <div style={{ display: 'flex', gap: '12px' }}>
-                    <input type="email" defaultValue="adeola@example.com" disabled style={{ flex: 1, padding: '12px 16px', borderRadius: '10px', border: '1.5px solid #E4E1F5', backgroundColor: 'var(--paper)', color: 'var(--muted)' }} />
-                    <button style={{ padding: '12px 20px', backgroundColor: 'transparent', border: '1px solid #E4E1F5', borderRadius: '10px', color: 'var(--ink)', fontWeight: 600, cursor: 'pointer' }}>Change</button>
-                  </div>
-                </div>
-
-                <div style={{ borderTop: '1px solid #E4E1F5', paddingTop: '24px' }}>
-                  <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--ink)', marginBottom: '16px' }}>Change Password</h3>
-                  <div className="field" style={{ marginBottom: '16px' }}>
-                    <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ink)', display: 'block', marginBottom: '8px' }}>Current Password</label>
-                    <input type="password" placeholder="••••••••" style={{ width: '100%', padding: '12px 16px', borderRadius: '10px', border: '1.5px solid #E4E1F5', outline: 'none' }} />
-                  </div>
-                  <div className="field" style={{ marginBottom: '16px' }}>
-                    <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ink)', display: 'block', marginBottom: '8px' }}>New Password</label>
-                    <input type="password" style={{ width: '100%', padding: '12px 16px', borderRadius: '10px', border: '1.5px solid #E4E1F5', outline: 'none' }} />
-                  </div>
-                  <div className="field" style={{ marginBottom: '24px' }}>
-                    <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ink)', display: 'block', marginBottom: '8px' }}>Confirm New Password</label>
-                    <input type="password" style={{ width: '100%', padding: '12px 16px', borderRadius: '10px', border: '1.5px solid #E4E1F5', outline: 'none' }} />
-                  </div>
-                  <button type="button" className="btn-primary" style={{ padding: '12px 24px', backgroundColor: 'var(--ink)' }}>
-                    Update Password
-                  </button>
-                </div>
-              </div>
+              <h2 style={{ fontSize: '20px', color: 'var(--ink)', marginBottom: '32px', fontFamily: 'var(--display)' }}>Security</h2>
+              <p style={{ color: 'var(--body)' }}>Password and security settings coming soon.</p>
             </div>
           )}
+
         </div>
       </div>
     </div>

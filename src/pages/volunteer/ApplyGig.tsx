@@ -12,6 +12,7 @@ const ApplyGig: React.FC = () => {
   const { user } = useAuth();
   
   const [gig, setGig] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -21,19 +22,18 @@ const ApplyGig: React.FC = () => {
   const [pitch, setPitch] = useState('');
 
   useEffect(() => {
-    const fetchGig = async () => {
-      if (!id) return;
-      const { data } = await supabase
-        .from('gigs')
-        .select('*, organizations(name)')
-        .eq('id', id)
-        .single();
-      
-      if (data) setGig(data);
+    const fetchData = async () => {
+      if (!id || !user) return;
+      const [gigResult, profileResult] = await Promise.all([
+        supabase.from('gigs').select('*, organizations(name)').eq('id', id).single(),
+        supabase.from('volunteer_profiles').select('full_name').eq('user_id', user.id).single(),
+      ]);
+      if (gigResult.data) setGig(gigResult.data);
+      if (profileResult.data) setProfile(profileResult.data);
       setLoading(false);
     };
-    fetchGig();
-  }, [id]);
+    fetchData();
+  }, [id, user]);
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -155,17 +155,12 @@ const ApplyGig: React.FC = () => {
               
               <div className="apply-input-group">
                 <label className="apply-label">Full Name</label>
-                <input type="text" className="apply-input" value="John Doe" disabled />
+                <input type="text" className="apply-input" value={profile?.full_name || user?.user_metadata?.full_name || ''} disabled />
               </div>
               
               <div className="apply-input-group">
                 <label className="apply-label">Email Address</label>
-                <input type="email" className="apply-input" value="john.doe@example.com" disabled />
-              </div>
-
-              <div className="apply-input-group">
-                <label className="apply-label">Phone Number</label>
-                <input type="tel" className="apply-input" value="+234 800 123 4567" disabled />
+                <input type="email" className="apply-input" value={user?.email || ''} disabled />
               </div>
             </div>
 

@@ -164,6 +164,16 @@
     gap: 24px;
   }
 
+  .settings-layout {
+    flex-direction: column;
+    gap: 24px !important;
+  }
+  
+  .settings-layout .vol-card:first-child {
+    width: 100% !important;
+    flex: none !important;
+  }
+
   .certs-grid {
     grid-template-columns: 1fr;
   }

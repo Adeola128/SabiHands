@@ -170,16 +170,13 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ role = 'volunteer' })
             <Link to="/dashboard/volunteer/profile" className={`secondary-nav-item ${location.pathname === '/dashboard/volunteer/profile' ? 'active' : ''}`}>
               Profile
             </Link>
-            <Link to="/dashboard/volunteer/referral" className={`secondary-nav-item ${location.pathname === '/dashboard/volunteer/referral' ? 'active' : ''}`}>
-              Refer a Friend
-            </Link>
           </div>
         </div>
       </nav>
 
       <main className={`dashboard-main ${location.pathname.includes('/dashboard/messages') ? 'messages-main' : ''}`}>
-        {location.pathname.includes('/dashboard/messages') || location.pathname.includes('/dashboard/organization/profile') || location.pathname.includes('/dashboard/volunteer/apply') || location.pathname.includes('/dashboard/org/gigs/new') || location.pathname.includes('/dashboard/notifications') || location.pathname.includes('/dashboard/volunteer/profile') ? (
-          <div style={{ width: '100%', maxWidth: (location.pathname.includes('/dashboard/organization/profile') || location.pathname.includes('/dashboard/volunteer/apply') || location.pathname.includes('/dashboard/org/gigs/new') || location.pathname.includes('/dashboard/volunteer/profile')) ? '1440px' : 'none', display: 'flex', justifyContent: 'center' }}>
+        {location.pathname.includes('/dashboard/messages') || location.pathname.includes('/dashboard/organization/profile') || location.pathname.includes('/dashboard/volunteer/apply') || location.pathname.includes('/dashboard/org/gigs/new') || location.pathname.includes('/dashboard/notifications') || location.pathname.includes('/dashboard/volunteer/profile') || location.pathname.includes('/dashboard/volunteer/settings') ? (
+          <div style={{ width: '100%', maxWidth: (location.pathname.includes('/dashboard/organization/profile') || location.pathname.includes('/dashboard/volunteer/apply') || location.pathname.includes('/dashboard/org/gigs/new') || location.pathname.includes('/dashboard/volunteer/profile') || location.pathname.includes('/dashboard/volunteer/settings')) ? '1440px' : 'none', display: 'flex', justifyContent: 'center' }}>
             <Outlet />
           </div>
         ) : (
