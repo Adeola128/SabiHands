@@ -26,6 +26,7 @@ import OrganizationOnboarding from './pages/auth/OrganizationOnboarding';
 import OrgVerificationPending from './pages/auth/OrgVerificationPending';
 
 import DashboardLayout from './layouts/DashboardLayout';
+import DashboardRedirect from './components/DashboardRedirect';
 import VolunteerDashboard from './pages/volunteer/VolunteerDashboard';
 import BrowseGigs from './pages/volunteer/BrowseGigs';
 import MyApplications from './pages/volunteer/MyApplications';
@@ -114,6 +115,7 @@ const App: React.FC = () => {
 
         {/* Global Dashboard Routes */}
         <Route path="/dashboard" element={<DashboardLayout />}>
+          <Route index element={<DashboardRedirect />} />
           <Route path="notifications" element={<Notifications />} />
           <Route path="messages" element={<Messages />} />
           <Route path="community" element={<Community />} />

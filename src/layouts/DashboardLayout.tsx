@@ -16,7 +16,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ role = 'volunteer' })
 
   const { user, loading, signOut } = useAuth();
 
-  const isVolunteer = role === 'volunteer';
+  const actualRole = user?.user_metadata?.role || role;
+  const isVolunteer = actualRole === 'volunteer';
 
   useEffect(() => {
     if (!user) {
@@ -26,7 +27,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ role = 'volunteer' })
 
     const checkProfile = async () => {
       try {
-        if (role === 'volunteer') {
+        if (actualRole === 'volunteer') {
           const { data } = await supabase
             .from('volunteer_profiles')
             .select('bio, interests')
@@ -38,7 +39,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ role = 'volunteer' })
             navigate('/onboarding/volunteer', { replace: true });
             return;
           }
-        } else if (role === 'organization') {
+        } else if (actualRole === 'organization') {
           const { data } = await supabase
             .from('organizations')
             .select('org_type')
