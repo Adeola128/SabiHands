@@ -1,10 +1,20 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import './Signup.css';
 
 const Signup: React.FC = () => {
-  const [role, setRole] = useState<'volunteer' | 'org'>('volunteer');
+  const [searchParams] = useSearchParams();
+  const initialRole = (searchParams.get('role') as 'volunteer' | 'org') || 'volunteer';
+  const [role, setRole] = useState<'volunteer' | 'org'>(initialRole);
+
+  useEffect(() => {
+    const urlRole = searchParams.get('role') as 'volunteer' | 'org';
+    if (urlRole === 'volunteer' || urlRole === 'org') {
+      setRole(urlRole);
+    }
+  }, [searchParams]);
+
   const [showPassword, setShowPassword] = useState(false);
   const [selectedChips, setSelectedChips] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);

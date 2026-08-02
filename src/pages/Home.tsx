@@ -41,8 +41,8 @@ const Home: React.FC = () => {
             <h1>You're not just volunteering.<br /><em>You're a Sabi Hand.</em></h1>
             <p className="hero-sub">Post a gig in minutes, or apply in a few taps. Show up, and walk away with a certificate that proves it — verified and automatic, every time.</p>
             <div className="hero-ctas">
-              <Link className="btn btn-solid-purple" to="/#audiences">Find a gig</Link>
-              <Link className="btn btn-outline-teal" to="/#audiences">Post a gig</Link>
+              <Link className="btn btn-solid-purple" to="/signup?role=volunteer">Find a gig</Link>
+              <Link className="btn btn-outline-teal" to="/signup?role=org">Post a gig</Link>
             </div>
             <div className="trust-bar">
               <div className="trust-item"><b>1.7M</b>grads enter the job market yearly</div>
