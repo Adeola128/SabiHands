@@ -10,6 +10,7 @@ import ConfirmModal from '../../components/ConfirmModal';
 const MyApplications: React.FC = () => {
   const { user } = useAuth();
   const [applications, setApplications] = useState<any[]>([]);
+  const [filter, setFilter] = useState<string>('all');
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [withdrawModalOpen, setWithdrawModalOpen] = useState(false);
@@ -70,16 +71,16 @@ const MyApplications: React.FC = () => {
             
             <div>
               <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', marginBottom: '12px', cursor: 'pointer' }}>
-                <input type="checkbox" checked readOnly style={{ width: '16px', height: '16px', accentColor: 'var(--purple-600)' }} /> All Applications
+                <input type="radio" name="status" checked={filter === 'all'} onChange={() => setFilter('all')} style={{ width: '16px', height: '16px', accentColor: 'var(--purple-600)' }} /> All Applications
               </label>
               <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', marginBottom: '12px', cursor: 'pointer' }}>
-                <input type="checkbox" style={{ width: '16px', height: '16px', accentColor: 'var(--purple-600)' }} /> Pending Review
+                <input type="radio" name="status" checked={filter === 'pending'} onChange={() => setFilter('pending')} style={{ width: '16px', height: '16px', accentColor: 'var(--purple-600)' }} /> Pending Review
               </label>
               <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', marginBottom: '12px', cursor: 'pointer' }}>
-                <input type="checkbox" style={{ width: '16px', height: '16px', accentColor: 'var(--purple-600)' }} /> Accepted
+                <input type="radio" name="status" checked={filter === 'accepted'} onChange={() => setFilter('accepted')} style={{ width: '16px', height: '16px', accentColor: 'var(--purple-600)' }} /> Accepted
               </label>
               <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', cursor: 'pointer' }}>
-                <input type="checkbox" style={{ width: '16px', height: '16px', accentColor: 'var(--purple-600)' }} /> Declined
+                <input type="radio" name="status" checked={filter === 'declined'} onChange={() => setFilter('declined')} style={{ width: '16px', height: '16px', accentColor: 'var(--purple-600)' }} /> Declined
               </label>
             </div>
           </div>
@@ -93,23 +94,23 @@ const MyApplications: React.FC = () => {
           </div>
           {loading ? (
             <LoadingScreen message="Loading applications..." fullScreen={false} />
-          ) : applications.length === 0 ? (
+          ) : applications.filter(app => filter === 'all' || app.status === filter).length === 0 ? (
             <EmptyState 
               icon={<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>}
-              title="No Applications Yet"
-              description="You haven't applied to any gigs yet. Start browsing to find opportunities to help out in your community."
+              title="No Applications Found"
+              description="You have no applications matching this filter."
               actionButton={<Link to="/dashboard/volunteer/gigs" style={{ display: 'inline-block', padding: '12px 24px', backgroundColor: 'var(--purple-600)', color: 'white', textDecoration: 'none', borderRadius: '10px', fontWeight: 700, boxShadow: '0 4px 12px rgba(83,74,183,0.3)' }}>Browse Gigs</Link>}
             />
           ) : (
-            applications.map(app => (
+            applications.filter(app => filter === 'all' || app.status === filter).map(app => (
               <div key={app.id} className="gig-media-card">
-                <div className="gig-media-cover" style={{ backgroundImage: 'url(/images/hero_illustration.png)', height: '120px' }}></div>
+                <div className="gig-media-cover" style={{ backgroundImage: `url(https://source.unsplash.com/random/800x600/?volunteer,${app.gigs?.title.replace(' ', ',')})`, height: '120px' }}></div>
                 <div className="gig-media-body">
                   <div className="gig-media-header">
                     <div>
                       <h3 className="gig-media-title">{app.gigs?.title}</h3>
-                      <Link to="/dashboard/organization/profile" className="gig-media-org" style={{ textDecoration: 'none' }}>
-                        <img src="/images/diverse_gigs.png" alt={app.gigs?.organizations?.name} />
+                      <Link to={`/dashboard/organization/profile/${app.gigs?.organizations?.id}`} className="gig-media-org" style={{ textDecoration: 'none' }}>
+                        <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(app.gigs?.organizations?.name || 'Org')}&background=random`} alt={app.gigs?.organizations?.name} />
                         <strong>{app.gigs?.organizations?.name || 'Organization'}</strong>
                       </Link>
                     </div>

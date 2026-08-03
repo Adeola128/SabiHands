@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
+import { uploadImage } from '../../lib/uploadImage';
 import { toast } from 'react-hot-toast';
 import LoadingScreen from '../../components/LoadingScreen';
 import './ApplyGig.css';
@@ -20,12 +21,14 @@ const ApplyGig: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [pitch, setPitch] = useState('');
+  const [linkedin, setLinkedin] = useState('');
+  const [portfolio, setPortfolio] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
       if (!id || !user) return;
       const [gigResult, profileResult] = await Promise.all([
-        supabase.from('gigs').select('*, organizations(name)').eq('id', id).single(),
+        supabase.from('gigs').select('*, organizations(user_id, name)').eq('id', id).single(),
         supabase.from('volunteer_profiles').select('full_name').eq('user_id', user.id).single(),
       ]);
       if (gigResult.data) setGig(gigResult.data);
@@ -71,15 +74,34 @@ const ApplyGig: React.FC = () => {
     setError(null);
     
     try {
+      let cv_url = null;
+      if (selectedFile) {
+        cv_url = await uploadImage(selectedFile, 'resumes');
+      }
+
       const { error: insertError } = await supabase
         .from('applications')
         .insert({
           gig_id: id,
           volunteer_id: user.id,
-          status: 'pending'
+          status: 'pending',
+          pitch,
+          cv_url,
+          linkedin_url: linkedin,
+          portfolio_url: portfolio
         });
         
       if (insertError) throw insertError;
+      
+      // Send notification to organization
+      if (gig?.organizations?.user_id) {
+        await supabase.from('notifications').insert({
+          user_id: gig.organizations.user_id,
+          type: 'new_application',
+          channel: 'in_app',
+          payload: { gig_title: gig.title, applicant_name: profile?.full_name || user.user_metadata?.full_name || 'A volunteer' }
+        });
+      }
       
       toast.success("Application submitted successfully!");
       navigate('/dashboard/volunteer/applications');
@@ -181,63 +203,71 @@ const ApplyGig: React.FC = () => {
               </div>
             </div>
 
-            <div className="apply-form-section">
-              <h2 className="form-section-title">
-                <span>3</span> Resume & Links
-              </h2>
-              
-              <div className="apply-input-group">
-                <label className="apply-label">Upload Resume/CV <span>(Optional)</span></label>
+            {(gig?.require_resume || gig?.require_linkedin || gig?.require_portfolio) && (
+              <div className="apply-form-section">
+                <h2 className="form-section-title">
+                  <span>3</span> Resume & Links
+                </h2>
                 
-                {!selectedFile ? (
-                  <div 
-                    className={`file-upload-zone ${isDragging ? 'dragging' : ''}`}
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onDrop={handleDrop}
-                    onClick={() => document.getElementById('resume-upload')?.click()}
-                  >
-                    <input 
-                      type="file" 
-                      id="resume-upload" 
-                      style={{ display: 'none' }} 
-                      accept=".pdf,.doc,.docx"
-                      onChange={handleFileChange}
-                    />
-                    <div className="file-upload-icon">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                    </div>
-                    <div>
-                      <p className="file-upload-text"><strong>Click to upload</strong> or drag and drop</p>
-                      <p className="file-upload-subtext">PDF, DOCX up to 5MB</p>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="file-selected">
-                    <div className="file-info">
-                      <svg className="file-info-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                      <div>
-                        <p className="file-name">{selectedFile.name}</p>
-                        <p className="file-size">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                {gig?.require_resume && (
+                  <div className="apply-input-group">
+                    <label className="apply-label">Upload Resume/CV <span>(Required)</span></label>
+                    
+                    {!selectedFile ? (
+                      <div 
+                        className={`file-upload-zone ${isDragging ? 'dragging' : ''}`}
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
+                        onDrop={handleDrop}
+                        onClick={() => document.getElementById('resume-upload')?.click()}
+                      >
+                        <input 
+                          type="file" 
+                          id="resume-upload" 
+                          style={{ display: 'none' }} 
+                          accept=".pdf,.doc,.docx"
+                          onChange={handleFileChange}
+                        />
+                        <div className="file-upload-icon">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        </div>
+                        <div>
+                          <p className="file-upload-text"><strong>Click to upload</strong> or drag and drop</p>
+                          <p className="file-upload-subtext">PDF, DOCX up to 5MB</p>
+                        </div>
                       </div>
-                    </div>
-                    <button className="file-remove-btn" onClick={removeFile} title="Remove file">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                    </button>
+                    ) : (
+                      <div className="file-selected">
+                        <div className="file-info">
+                          <svg className="file-info-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                          <div>
+                            <p className="file-name">{selectedFile.name}</p>
+                            <p className="file-size">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                          </div>
+                        </div>
+                        <button className="file-remove-btn" onClick={removeFile} title="Remove file">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {gig?.require_linkedin && (
+                  <div className="apply-input-group">
+                    <label className="apply-label">LinkedIn Profile <span>(Required)</span></label>
+                    <input type="url" className="apply-input" placeholder="https://linkedin.com/in/yourprofile" value={linkedin} onChange={e => setLinkedin(e.target.value)} required />
+                  </div>
+                )}
+                
+                {gig?.require_portfolio && (
+                  <div className="apply-input-group">
+                    <label className="apply-label">Portfolio / Website <span>(Required)</span></label>
+                    <input type="url" className="apply-input" placeholder="https://yourwebsite.com" value={portfolio} onChange={e => setPortfolio(e.target.value)} required />
                   </div>
                 )}
               </div>
-
-              <div className="apply-input-group">
-                <label className="apply-label">LinkedIn Profile <span>(Optional)</span></label>
-                <input type="url" className="apply-input" placeholder="https://linkedin.com/in/yourprofile" />
-              </div>
-              
-              <div className="apply-input-group">
-                <label className="apply-label">Portfolio / Website <span>(Optional)</span></label>
-                <input type="url" className="apply-input" placeholder="https://yourwebsite.com" />
-              </div>
-            </div>
+            )}
 
             <div className="apply-actions">
               <Link to="/dashboard/volunteer/gigs" className="apply-cancel-btn">Cancel</Link>

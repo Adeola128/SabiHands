@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
+import { uploadImage } from '../../lib/uploadImage';
 import { toast } from 'react-hot-toast';
 import './PostGig.css';
 
@@ -14,11 +15,13 @@ const PostGig: React.FC = () => {
   
   const [step, setStep] = useState<Step>(1);
   const [isPublishing, setIsPublishing] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({
     title: '', type: 'skilled', category: '', description: '',
     location: '', date: '', time: '', duration: '', volunteers: '', skills: '', remote: false,
     coverImage: '/images/hero_illustration.png',
+    requireResume: false, requireLinkedin: false, requirePortfolio: false,
   });
 
   const update = (field: string, value: string | boolean) => setForm(prev => ({ ...prev, [field]: value }));
@@ -61,7 +64,10 @@ const PostGig: React.FC = () => {
           location: form.remote ? 'Remote' : form.location,
           date_start: dateStart,
           date_end: dateEnd,
-          status: 'published'
+          status: 'published',
+          require_resume: form.requireResume,
+          require_linkedin: form.requireLinkedin,
+          require_portfolio: form.requirePortfolio
         });
 
       if (insertError) throw insertError;
@@ -186,14 +192,38 @@ const PostGig: React.FC = () => {
                   <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: 'var(--ink)', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Cover Image</label>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '12px' }}>
                     {['/images/hero_illustration.png', '/images/diverse_gigs.png', '/images/automated_certificates.png', '/images/trust_safety.png'].map(img => (
-                      <button key={img} onClick={() => update('coverImage', img)} style={{ height: '80px', borderRadius: '10px', backgroundImage: `url(${img})`, backgroundSize: 'cover', backgroundPosition: 'center', border: `3px solid ${form.coverImage === img ? 'var(--purple-600)' : 'transparent'}`, boxShadow: form.coverImage === img ? '0 4px 12px rgba(83,74,183,0.2)' : '0 0 0 1px #E4E1F5', cursor: 'pointer', transition: 'all 0.2s', position: 'relative' }}>
+                      <button type="button" key={img} onClick={() => update('coverImage', img)} style={{ height: '80px', borderRadius: '10px', backgroundImage: `url(${img})`, backgroundSize: 'cover', backgroundPosition: 'center', border: `3px solid ${form.coverImage === img ? 'var(--purple-600)' : 'transparent'}`, boxShadow: form.coverImage === img ? '0 4px 12px rgba(83,74,183,0.2)' : '0 0 0 1px #E4E1F5', cursor: 'pointer', transition: 'all 0.2s', position: 'relative' }}>
                         {form.coverImage === img && <div style={{ position: 'absolute', top: '4px', right: '4px', width: '20px', height: '20px', backgroundColor: 'var(--purple-600)', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg></div>}
                       </button>
                     ))}
-                    <button style={{ height: '80px', borderRadius: '10px', backgroundColor: '#FAFAFC', border: '1.5px dashed #D1CEDF', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--purple-600)', transition: 'all 0.2s' }} onMouseOver={e => e.currentTarget.style.backgroundColor = 'var(--purple-50)'} onMouseOut={e => e.currentTarget.style.backgroundColor = '#FAFAFC'}>
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                      <span style={{ fontSize: '11px', fontWeight: 600, marginTop: '4px' }}>Upload</span>
-                    </button>
+                    {!['/images/hero_illustration.png', '/images/diverse_gigs.png', '/images/automated_certificates.png', '/images/trust_safety.png'].includes(form.coverImage) && (
+                      <button type="button" onClick={() => update('coverImage', form.coverImage)} style={{ height: '80px', borderRadius: '10px', backgroundImage: `url(${form.coverImage})`, backgroundSize: 'cover', backgroundPosition: 'center', border: `3px solid var(--purple-600)`, boxShadow: '0 4px 12px rgba(83,74,183,0.2)', cursor: 'pointer', transition: 'all 0.2s', position: 'relative' }}>
+                        <div style={{ position: 'absolute', top: '4px', right: '4px', width: '20px', height: '20px', backgroundColor: 'var(--purple-600)', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                      </button>
+                    )}
+                    <label style={{ height: '80px', borderRadius: '10px', backgroundColor: '#FAFAFC', border: '1.5px dashed #D1CEDF', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--purple-600)', transition: 'all 0.2s', position: 'relative' }}>
+                      {uploadingCover ? (
+                        <span style={{ fontSize: '11px', fontWeight: 600, marginTop: '4px' }}>Uploading...</span>
+                      ) : (
+                        <>
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                          <span style={{ fontSize: '11px', fontWeight: 600, marginTop: '4px' }}>Upload</span>
+                        </>
+                      )}
+                      <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async (e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          setUploadingCover(true);
+                          try {
+                            const url = await uploadImage(e.target.files[0], 'gig-covers');
+                            update('coverImage', url);
+                          } catch (err: any) {
+                            toast.error(err.message);
+                          } finally {
+                            setUploadingCover(false);
+                          }
+                        }
+                      }} disabled={uploadingCover} />
+                    </label>
                   </div>
                 </div>
 
@@ -281,6 +311,33 @@ const PostGig: React.FC = () => {
                       ))}
                     </div>
                   )}
+                </div>
+
+                <div style={{ padding: '24px', backgroundColor: 'var(--white)', borderRadius: '16px', boxShadow: '0 0 0 1px #E4E1F5', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--ink)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--purple-600)" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    Application Requirements
+                  </h3>
+                  <p style={{ fontSize: '14px', color: 'var(--body)', margin: '-12px 0 0 0', paddingBottom: '12px', borderBottom: '1px solid #E4E1F5' }}>Toggle the fields you want volunteers to include in their application.</p>
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    {[
+                      { id: 'requireResume', label: 'Require Resume/CV', desc: 'Ask applicants to upload a PDF or document.' },
+                      { id: 'requireLinkedin', label: 'Require LinkedIn', desc: 'Ask applicants for their LinkedIn profile URL.' },
+                      { id: 'requirePortfolio', label: 'Require Portfolio', desc: 'Ask applicants for a link to their work or website.' }
+                    ].map(req => (
+                      <label key={req.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}>
+                        <div>
+                          <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--ink)' }}>{req.label}</div>
+                          <div style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '2px' }}>{req.desc}</div>
+                        </div>
+                        <div style={{ width: '40px', height: '24px', borderRadius: '99px', backgroundColor: (form as any)[req.id] ? 'var(--purple-600)' : '#E4E1F5', position: 'relative', transition: 'background-color 0.3s' }}>
+                          <div style={{ width: '20px', height: '20px', borderRadius: '50%', backgroundColor: 'white', position: 'absolute', top: '2px', left: (form as any)[req.id] ? '18px' : '2px', transition: 'left 0.3s', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }} />
+                        </div>
+                        <input type="checkbox" checked={(form as any)[req.id]} onChange={e => update(req.id, e.target.checked)} style={{ display: 'none' }} />
+                      </label>
+                    ))}
+                  </div>
                 </div>
 
                 <div style={{ marginTop: '16px', borderTop: '1px solid #E4E1F5', paddingTop: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

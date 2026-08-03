@@ -53,7 +53,8 @@ CREATE TABLE IF NOT EXISTS public.gigs (
   location TEXT,
   date_start TIMESTAMP WITH TIME ZONE,
   date_end TIMESTAMP WITH TIME ZONE,
-  status TEXT DEFAULT 'draft'
+  status TEXT DEFAULT 'draft',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- 5. Applications
@@ -225,9 +226,9 @@ CREATE POLICY "Organizations can update their own profile" ON public.organizatio
 CREATE POLICY "Organizations can insert their own profile" ON public.organizations
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
--- Anyone can read active gigs
+-- Anyone can read published gigs
 CREATE POLICY "Anyone can read gigs" ON public.gigs
-  FOR SELECT USING (status = 'active');
+  FOR SELECT USING (status = 'published');
 
 -- Organizations can manage their own gigs
 CREATE POLICY "Organizations can manage own gigs" ON public.gigs

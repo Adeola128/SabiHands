@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
+import { uploadImage } from '../../lib/uploadImage';
 import LoadingScreen from '../../components/LoadingScreen';
 import './VolunteerPages.css';
 
@@ -9,6 +10,8 @@ const EditProfile: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'profile' | 'preferences' | 'security'>('profile');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
   const [message, setMessage] = useState('');
 
   // Form State
@@ -22,7 +25,8 @@ const EditProfile: React.FC = () => {
     interests: '', // We'll keep this as a comma-separated string for editing
     linkedin_url: '',
     portfolio_url: '',
-    avatar_url: ''
+    avatar_url: '',
+    cover_url: ''
   });
 
   useEffect(() => {
@@ -46,7 +50,8 @@ const EditProfile: React.FC = () => {
           interests: data.interests ? data.interests.join(', ') : '',
           linkedin_url: data.linkedin_url || '',
           portfolio_url: data.portfolio_url || '',
-          avatar_url: data.avatar_url || ''
+          avatar_url: data.avatar_url || '',
+          cover_url: data.cover_url || ''
         });
       } else {
         // If no profile exists, create one from user metadata (onboarding data)
@@ -87,6 +92,7 @@ const EditProfile: React.FC = () => {
       linkedin_url: profile.linkedin_url,
       portfolio_url: profile.portfolio_url,
       avatar_url: profile.avatar_url,
+      cover_url: profile.cover_url,
     };
 
     const { error } = await supabase
@@ -194,6 +200,61 @@ const EditProfile: React.FC = () => {
               )}
 
               <form onSubmit={handleSubmit}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '20px', paddingBottom: '24px', borderBottom: '1px solid #E4E1F5', marginBottom: '24px' }}>
+                  <div style={{ width: '80px', height: '80px', borderRadius: '50%', backgroundColor: 'var(--purple-100)', color: 'var(--purple-700)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '24px', fontFamily: 'var(--display)', overflow: 'hidden' }}>
+                    {profile.avatar_url ? (
+                      <img src={profile.avatar_url} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      profile.full_name ? profile.full_name.substring(0, 2).toUpperCase() : 'ME'
+                    )}
+                  </div>
+                  <div>
+                    <label style={{ display: 'inline-block', padding: '8px 16px', backgroundColor: 'var(--white)', border: '1.5px solid #E4E1F5', borderRadius: '8px', fontWeight: 600, fontSize: '13px', cursor: 'pointer', color: 'var(--ink)' }}>
+                      {uploadingAvatar ? 'Uploading...' : 'Upload Avatar'}
+                      <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async (e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          setUploadingAvatar(true);
+                          try {
+                            const url = await uploadImage(e.target.files[0], 'volunteer-avatars');
+                            setProfile(prev => ({ ...prev, avatar_url: url }));
+                          } catch (err: any) {
+                            setMessage(err.message);
+                          } finally {
+                            setUploadingAvatar(false);
+                          }
+                        }
+                      }} disabled={uploadingAvatar} />
+                    </label>
+                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '8px' }}>JPG, PNG or GIF. Max size 2MB.</div>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '20px', paddingBottom: '24px', borderBottom: '1px solid #E4E1F5', marginBottom: '24px' }}>
+                  <div style={{ flex: 1 }}>
+                    <label className="premium-label" style={{ marginBottom: '8px', display: 'block' }}>Cover Image</label>
+                    {profile.cover_url ? (
+                      <div style={{ width: '100%', height: '120px', borderRadius: '12px', backgroundImage: `url(${profile.cover_url})`, backgroundSize: 'cover', backgroundPosition: 'center', marginBottom: '12px' }} />
+                    ) : (
+                      <div style={{ width: '100%', height: '120px', borderRadius: '12px', backgroundColor: '#FAFAFC', border: '1.5px dashed #D1CEDF', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px', color: 'var(--muted)', fontSize: '13px' }}>No cover image uploaded</div>
+                    )}
+                    <label style={{ display: 'inline-block', padding: '8px 16px', backgroundColor: 'var(--white)', border: '1.5px solid #E4E1F5', borderRadius: '8px', fontWeight: 600, fontSize: '13px', cursor: 'pointer', color: 'var(--ink)' }}>
+                      {uploadingCover ? 'Uploading...' : 'Upload Cover Image'}
+                      <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async (e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          setUploadingCover(true);
+                          try {
+                            const url = await uploadImage(e.target.files[0], 'volunteer-covers');
+                            setProfile(prev => ({ ...prev, cover_url: url }));
+                          } catch (err: any) {
+                            setMessage(err.message);
+                          } finally {
+                            setUploadingCover(false);
+                          }
+                        }
+                      }} disabled={uploadingCover} />
+                    </label>
+                  </div>
+                </div>
                 <div className="grid-2col" style={{ gap: '24px', marginBottom: '24px' }}>
                   <div className="premium-form-group">
                     <label className="premium-label">Full Name</label>
