@@ -64,7 +64,8 @@ CREATE TABLE IF NOT EXISTS public.applications (
   volunteer_id UUID REFERENCES public.users(id) NOT NULL,
   status application_status DEFAULT 'pending',
   applied_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  decided_at TIMESTAMP WITH TIME ZONE
+  decided_at TIMESTAMP WITH TIME ZONE,
+  CONSTRAINT fk_applications_volunteer_profiles FOREIGN KEY (volunteer_id) REFERENCES public.volunteer_profiles(user_id)
 );
 
 -- 6. Attendance
