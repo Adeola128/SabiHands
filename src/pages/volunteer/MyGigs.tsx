@@ -61,8 +61,8 @@ const MyGigs: React.FC = () => {
             date: app.gigs.date_start ? gigDate.toLocaleDateString() : 'TBD',
             time: app.gigs.date_start ? gigDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '',
             status: (isPast || hasCert) ? 'completed' : (app.status === 'accepted' ? 'active' : 'upcoming'),
-            coverImg: '/images/hero_illustration.png',
-            orgImg: '/images/diverse_gigs.png',
+            coverImg: `https://ui-avatars.com/api/?name=${encodeURIComponent(app.gigs.title)}&background=random&size=400`,
+            orgImg: `https://ui-avatars.com/api/?name=${encodeURIComponent(app.gigs.organizations?.name || 'Org')}&background=random`,
             description: app.gigs.description,
             certId: hasCert ? app.certificates[0].id : null
           };

@@ -256,13 +256,13 @@ const BrowseGigs: React.FC = () => {
           ) : (
             sorted.map(gig => (
               <div key={gig.id} className="gig-media-card">
-                <div className="gig-media-cover" style={{ backgroundImage: 'url(/images/hero_illustration.png)' }} />
+                <div className="gig-media-cover" style={{ backgroundImage: `url(https://ui-avatars.com/api/?name=${encodeURIComponent(gig.title)}&background=random&size=400)` }} />
                 <div className="gig-media-body">
                   <div className="gig-media-header">
                     <div>
                       <h3 className="gig-media-title">{gig.title}</h3>
                       <Link to="/dashboard/organization/profile" className="gig-media-org" style={{ textDecoration: 'none' }}>
-                        <img src="/images/diverse_gigs.png" alt={gig.organizations?.name} />
+                        <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(gig.organizations?.name || 'Org')}&background=random`} alt={gig.organizations?.name} />
                         <strong>{gig.organizations?.name || 'Organization'}</strong>
                         <span style={{ color: '#D1CEDF', margin: '0 4px' }}>•</span>
                         <span style={{ color: 'var(--body)' }}>

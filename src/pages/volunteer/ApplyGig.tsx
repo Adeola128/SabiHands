@@ -128,12 +128,12 @@ const ApplyGig: React.FC = () => {
         {/* Left Column: Gig Context */}
         <div className="apply-context-col">
           <div className="gig-summary-card">
-            <div className="gig-summary-cover" style={{ backgroundImage: 'url(/images/hero_illustration.png)' }}></div>
+            <div className="gig-summary-cover" style={{ backgroundImage: `url(https://ui-avatars.com/api/?name=${encodeURIComponent(gig?.title || 'Gig')}&background=random&size=400)` }}></div>
             <div className="gig-summary-body">
               <h3 className="gig-summary-title">{gig?.title}</h3>
               
               <div className="gig-summary-org">
-                <img src="/images/diverse_gigs.png" alt={gig?.organizations?.name} />
+                <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(gig?.organizations?.name || 'Org')}&background=random`} alt={gig?.organizations?.name} />
                 <strong>{gig?.organizations?.name || 'Organization'}</strong>
               </div>
               

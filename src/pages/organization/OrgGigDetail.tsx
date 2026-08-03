@@ -93,7 +93,7 @@ const OrgGigDetail: React.FC = () => {
       <div className="main-content">
         {/* Cover hero */}
         <div className="dash-card" style={{ marginBottom: '24px', overflow: 'hidden' }}>
-          <div style={{ height: '220px', backgroundImage: 'url(/images/hero_illustration.png)', backgroundSize: 'cover', backgroundPosition: 'center', position: 'relative' }}>
+          <div style={{ height: '220px', backgroundImage: `url(https://ui-avatars.com/api/?name=${encodeURIComponent(gig.title)}&background=random&size=800)`, backgroundSize: 'cover', backgroundPosition: 'center', position: 'relative' }}>
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 30%, rgba(15,12,41,0.7) 100%)' }} />
             <div style={{ position: 'absolute', bottom: '24px', left: '24px', right: '24px' }}>
               <div style={{ display: 'flex', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
