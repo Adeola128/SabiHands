@@ -31,7 +31,7 @@ const ReviewApplicants: React.FC = () => {
         
       if (gigData) setGig(gigData);
 
-      const { data: appsData, error } = await supabase
+      const { data: appsData } = await supabase
         .from('applications')
         .select('*, volunteer_profiles(full_name, avatar_url, skills)')
         .eq('gig_id', id)
