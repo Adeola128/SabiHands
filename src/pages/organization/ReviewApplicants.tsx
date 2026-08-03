@@ -33,7 +33,7 @@ const ReviewApplicants: React.FC = () => {
 
       const { data: appsData } = await supabase
         .from('applications')
-        .select('*, volunteer_profiles(full_name, avatar_url, skills)')
+        .select('*, volunteer_profiles(full_name, interests)')
         .eq('gig_id', id)
         .order('applied_at', { ascending: false });
 
@@ -204,9 +204,9 @@ const ReviewApplicants: React.FC = () => {
                       </div>
                     )}
                     
-                    {profile.skills && profile.skills.length > 0 && (
+                    {profile.interests && profile.interests.length > 0 && (
                       <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '20px' }}>
-                        {profile.skills.map((sk: string) => <span key={sk} className="tag skilled">{sk}</span>)}
+                        {profile.interests.map((sk: string) => <span key={sk} className="tag skilled">{sk}</span>)}
                       </div>
                     )}
 
