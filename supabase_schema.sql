@@ -211,16 +211,16 @@ CREATE POLICY "Users can read own data" ON public.users
   FOR SELECT USING (auth.uid() = id);
 
 -- Volunteer profiles
-CREATE POLICY "Volunteers can view their own profile" ON public.volunteer_profiles
-  FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Anyone can view volunteer profiles" ON public.volunteer_profiles
+  FOR SELECT USING (true);
 CREATE POLICY "Volunteers can update their own profile" ON public.volunteer_profiles
   FOR UPDATE USING (auth.uid() = user_id);
 CREATE POLICY "Volunteers can insert their own profile" ON public.volunteer_profiles
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- Organizations
-CREATE POLICY "Organizations can view their own profile" ON public.organizations
-  FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Anyone can view organizations" ON public.organizations
+  FOR SELECT USING (true);
 CREATE POLICY "Organizations can update their own profile" ON public.organizations
   FOR UPDATE USING (auth.uid() = user_id);
 CREATE POLICY "Organizations can insert their own profile" ON public.organizations
