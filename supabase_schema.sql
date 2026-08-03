@@ -249,6 +249,14 @@ CREATE POLICY "Organizations view applications for their gigs" ON public.applica
     )
   ));
 
+-- Organizations can update applications for their gigs
+CREATE POLICY "Organizations update applications for their gigs" ON public.applications
+  FOR UPDATE USING (gig_id IN (
+    SELECT id FROM public.gigs WHERE organization_id IN (
+      SELECT id FROM public.organizations WHERE user_id = auth.uid()
+    )
+  ));
+
 -- Community features are public to all logged in users
 CREATE POLICY "Anyone can read community posts" ON public.community_posts
   FOR SELECT USING (true);
