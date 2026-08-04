@@ -80,7 +80,7 @@ const MyGigs: React.FC = () => {
         if (fallback.error) {
           setErrorMsg(fallback.error.message || JSON.stringify(fallback.error));
         }
-        data = fallback.data;
+        data = fallback.data as any;
       }
 
       if (data) {
@@ -90,7 +90,6 @@ const MyGigs: React.FC = () => {
         data.forEach((app: any) => {
           if (!app.gigs) return;
           const gigDate = app.gigs.date_start ? new Date(app.gigs.date_start) : new Date();
-          const isPast = app.gigs.date_start ? gigDate < new Date() : false;
           
           // Check if there is a certificate via attendance
           let hasCert = false;

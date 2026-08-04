@@ -191,7 +191,7 @@ const SubmitWork: React.FC = () => {
                       {fileUrls.map((url, i) => (
                         <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', backgroundColor: '#FAFAFC', border: '1px solid #E4E1F5', borderRadius: '8px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden' }}>
-                            <FileText size={16} color="var(--purple-600)" flexShrink={0} />
+                            <FileText size={16} color="var(--purple-600)" style={{ flexShrink: 0 }} />
                             <a href={url} target="_blank" rel="noreferrer" style={{ fontSize: '14px', color: 'var(--purple-600)', textDecoration: 'none', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                               File {i + 1}
                             </a>
@@ -213,7 +213,7 @@ const SubmitWork: React.FC = () => {
                             if (!e.target.files || e.target.files.length === 0) return;
                             setUploadingFiles(true);
                             try {
-                              const newUrls = [];
+                              const newUrls: string[] = [];
                               for (let i = 0; i < e.target.files.length; i++) {
                                 const url = await uploadImage(e.target.files[i], 'submissions');
                                 newUrls.push(url);
