@@ -78,7 +78,20 @@ const OrgGigDetail: React.FC = () => {
         <div className="dash-card">
           <div className="dash-card-padding" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <Link to={`/dashboard/org/gigs/${gig.id}/applicants`} className="gig-action" style={{ textDecoration: 'none', textAlign: 'center', display: 'block' }}>Review Applicants</Link>
-            <Link to="/dashboard/org/gigs/new" className="gig-action" style={{ textDecoration: 'none', textAlign: 'center', display: 'block', background: 'none', border: '1.5px solid #E4E1F5', color: 'var(--body)' }}>Edit Gig</Link>
+            
+            {gig.type === 'skilled' ? (
+              <Link to={`/dashboard/org/gigs/${gig.id}/submissions`} className="gig-action" style={{ textDecoration: 'none', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: 'var(--teal-600)', color: 'white', border: 'none' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                Review Submissions
+              </Link>
+            ) : (
+              <Link to={`/dashboard/org/gigs/${gig.id}/attendance`} className="gig-action" style={{ textDecoration: 'none', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: 'var(--teal-600)', color: 'white', border: 'none' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Mark Attendance
+              </Link>
+            )}
+
+            <Link to={`/dashboard/org/gigs/${gig.id}/edit`} className="gig-action" style={{ textDecoration: 'none', textAlign: 'center', display: 'block', background: 'none', border: '1.5px solid #E4E1F5', color: 'var(--body)' }}>Edit Gig</Link>
             <button className="gig-action" style={{ background: 'none', border: '1.5px solid #fecaca', color: '#dc2626', width: '100%' }}>Close Gig</button>
           </div>
         </div>
@@ -93,7 +106,7 @@ const OrgGigDetail: React.FC = () => {
       <div className="main-content">
         {/* Cover hero */}
         <div className="dash-card" style={{ marginBottom: '24px', overflow: 'hidden' }}>
-          <div style={{ height: '220px', backgroundImage: `url(https://ui-avatars.com/api/?name=${encodeURIComponent(gig.title)}&background=random&size=800)`, backgroundSize: 'cover', backgroundPosition: 'center', position: 'relative' }}>
+          <div style={{ height: '220px', backgroundImage: `url(${gig.image_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(gig.title)}&background=random&size=800`})`, backgroundSize: 'cover', backgroundPosition: 'center', position: 'relative' }}>
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 30%, rgba(15,12,41,0.7) 100%)' }} />
             <div style={{ position: 'absolute', bottom: '24px', left: '24px', right: '24px' }}>
               <div style={{ display: 'flex', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>

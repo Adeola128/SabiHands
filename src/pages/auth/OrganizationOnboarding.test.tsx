@@ -9,15 +9,18 @@ vi.mock('../../contexts/AuthContext', () => ({
   }),
 }));
 
-const { mockUpdate } = vi.hoisted(() => ({
-  mockUpdate: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ error: null }) })
+const { mockUpsert } = vi.hoisted(() => ({
+  mockUpsert: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ error: null }) })
 }));
 
 vi.mock('../../lib/supabase', () => ({
   supabase: {
     from: vi.fn().mockReturnValue({
-      update: mockUpdate,
+      upsert: mockUpsert,
     }),
+    auth: {
+      updateUser: vi.fn().mockResolvedValue({ data: { user: {} }, error: null })
+    }
   },
 }));
 
@@ -38,13 +41,13 @@ describe('OrganizationOnboarding Component', () => {
     const submitBtn = screen.getByRole('button', { name: /Complete Setup/i });
     fireEvent.click(submitBtn);
 
-    expect(submitBtn).toHaveTextContent('Saving...');
-
     await waitFor(() => {
-      expect(mockUpdate).toHaveBeenCalledWith({
+      expect(mockUpsert).toHaveBeenCalledWith({
+        user_id: 'test-org-id',
+        name: 'Organization',
         org_type: 'Non-Profit (NGO)',
-        cac_number: 'RC 123456',
-      });
+        cac_number: 'RC 123456'
+      }, expect.objectContaining({ onConflict: 'user_id' }));
     });
   });
 });

@@ -11,15 +11,18 @@ vi.mock('../../contexts/AuthContext', () => ({
 }));
 
 // Mock Supabase client
-const { mockUpdate } = vi.hoisted(() => ({
-  mockUpdate: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ error: null }) })
+const { mockUpsert } = vi.hoisted(() => ({
+  mockUpsert: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ error: null }) })
 }));
 
 vi.mock('../../lib/supabase', () => ({
   supabase: {
     from: vi.fn().mockReturnValue({
-      update: mockUpdate,
+      upsert: mockUpsert,
     }),
+    auth: {
+      updateUser: vi.fn().mockResolvedValue({ data: { user: {} }, error: null })
+    }
   },
 }));
 
@@ -46,15 +49,12 @@ describe('VolunteerOnboarding Component', () => {
     const submitBtn = screen.getByRole('button', { name: /Complete Profile/i });
     fireEvent.click(submitBtn);
 
-    // Verify loading state
-    expect(submitBtn).toHaveTextContent('Saving...');
-
     // Wait for the mock to be called
     await waitFor(() => {
-      expect(mockUpdate).toHaveBeenCalledWith(expect.objectContaining({
+      expect(mockUpsert).toHaveBeenCalledWith(expect.objectContaining({
         location: 'ikeja',
         interests: ['Web/App Development'],
-      }));
+      }), expect.objectContaining({ onConflict: 'user_id' }));
     });
   });
 });

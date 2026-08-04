@@ -1,13 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../contexts/AuthContext';
+import { toast } from 'react-hot-toast';
 import LoadingScreen from '../../components/LoadingScreen';
 import EmptyState from '../../components/EmptyState';
 
 const VolunteerDetailOrg: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isMessaging, setIsMessaging] = useState(false);
+  
+  // Invite states
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [activeGigs, setActiveGigs] = useState<any[]>([]);
+  const [isInviting, setIsInviting] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -25,6 +35,93 @@ const VolunteerDetailOrg: React.FC = () => {
 
     fetchProfile();
   }, [id]);
+
+  // Fetch org's active gigs when invite modal opens
+  const handleOpenInvite = async () => {
+    if (!user || !id) return;
+    setShowInviteModal(true);
+    if (activeGigs.length > 0) return; // already fetched
+    
+    try {
+      const { data: orgData } = await supabase
+        .from('organizations')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+        
+      if (orgData) {
+        const { data: gigs } = await supabase
+          .from('gigs')
+          .select('id, title, date_start')
+          .eq('organization_id', orgData.id)
+          .gte('date_start', new Date().toISOString())
+          .order('date_start', { ascending: true });
+          
+        if (gigs) setActiveGigs(gigs);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleSendInvite = async (gigId: string) => {
+    if (!user || !id) return;
+    setIsInviting(true);
+    try {
+      const { error } = await supabase
+        .from('invitations')
+        .insert({
+          gig_id: gigId,
+          volunteer_id: id,
+          status: 'pending'
+        });
+        
+      if (error) {
+        if (error.code === '23505') throw new Error("Already invited to this gig");
+        throw error;
+      }
+      toast.success("Invitation sent successfully!");
+      setShowInviteModal(false);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to send invitation");
+    } finally {
+      setIsInviting(false);
+    }
+  };
+
+  const handleMessageVolunteer = async () => {
+    if (!user || !id) return;
+    setIsMessaging(true);
+    try {
+      // Check if conversation already exists
+      const { data: existing } = await supabase
+        .from('conversations')
+        .select('id')
+        .or(`and(user1_id.eq.${user.id},user2_id.eq.${id}),and(user1_id.eq.${id},user2_id.eq.${user.id})`)
+        .limit(1);
+
+      if (existing && existing.length > 0) {
+        navigate('/dashboard/messages');
+      } else {
+        const { error } = await supabase
+          .from('conversations')
+          .insert({
+            user1_id: user.id,
+            user2_id: id
+          });
+        if (error) throw error;
+        navigate('/dashboard/messages');
+      }
+    } catch (err: any) {
+      if (err.message && err.message.includes('Rate limit')) {
+        toast.error("You have reached your daily limit for new conversations.");
+      } else {
+        toast.error("Failed to start conversation.");
+      }
+    } finally {
+      setIsMessaging(false);
+    }
+  };
 
   if (loading) return <LoadingScreen message="Loading volunteer profile..." />;
   if (!profile) return (
@@ -50,10 +147,17 @@ const VolunteerDetailOrg: React.FC = () => {
           <div className="dash-card-padding">
             <h2 className="dash-card-title" style={{ fontSize: '15px', marginBottom: '16px' }}>Volunteer Actions</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <button style={{ width: '100%', padding: '10px 16px', backgroundColor: 'var(--purple-600)', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
-                Message Volunteer
+              <button 
+                onClick={handleMessageVolunteer}
+                disabled={isMessaging}
+                style={{ width: '100%', padding: '10px 16px', backgroundColor: 'var(--purple-600)', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: 'pointer', opacity: isMessaging ? 0.7 : 1 }}
+              >
+                {isMessaging ? 'Starting...' : 'Message Volunteer'}
               </button>
-              <button style={{ width: '100%', padding: '10px 16px', backgroundColor: 'var(--paper)', color: 'var(--ink)', border: '1.5px solid #E4E1F5', borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
+              <button 
+                onClick={handleOpenInvite}
+                style={{ width: '100%', padding: '10px 16px', backgroundColor: 'var(--paper)', color: 'var(--ink)', border: '1.5px solid #E4E1F5', borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}
+              >
                 Invite to Gig
               </button>
             </div>
@@ -147,6 +251,52 @@ const VolunteerDetailOrg: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Invite Modal */}
+      {showInviteModal && (
+        <div className="modal-overlay" style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="modal-content" style={{ background: 'white', padding: '32px', borderRadius: '16px', width: '90%', maxWidth: '500px', maxHeight: '80vh', overflowY: 'auto' }}>
+            <h3 style={{ marginTop: 0, marginBottom: '8px', fontSize: '20px', fontWeight: 700, color: 'var(--ink)' }}>Invite to Gig</h3>
+            <p style={{ color: 'var(--body)', fontSize: '14px', marginBottom: '24px' }}>Select an active gig to invite {profile.full_name} to.</p>
+            
+            {activeGigs.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '24px', backgroundColor: 'var(--paper)', borderRadius: '8px' }}>
+                <p style={{ color: 'var(--muted)' }}>You don't have any upcoming active gigs.</p>
+                <Link to="/dashboard/org/gigs/new" style={{ color: 'var(--purple-600)', fontWeight: 600, textDecoration: 'none', marginTop: '8px', display: 'inline-block' }}>Create a Gig</Link>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {activeGigs.map(gig => (
+                  <div key={gig.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', border: '1px solid var(--border)', borderRadius: '8px' }}>
+                    <div>
+                      <h4 style={{ margin: '0 0 4px', fontSize: '15px' }}>{gig.title}</h4>
+                      <span style={{ fontSize: '12px', color: 'var(--muted)' }}>
+                        {gig.date_start ? new Date(gig.date_start).toLocaleDateString() : 'TBD'}
+                      </span>
+                    </div>
+                    <button 
+                      onClick={() => handleSendInvite(gig.id)}
+                      disabled={isInviting}
+                      style={{ padding: '8px 16px', backgroundColor: 'var(--teal-600)', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 600, fontSize: '13px', cursor: 'pointer', opacity: isInviting ? 0.7 : 1 }}
+                    >
+                      Invite
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            <div style={{ marginTop: '24px', textAlign: 'right' }}>
+              <button 
+                onClick={() => setShowInviteModal(false)}
+                style={{ padding: '10px 20px', border: '1px solid var(--border)', background: 'transparent', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

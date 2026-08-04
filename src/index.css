@@ -1,9 +1,14 @@
 :root {
   /* Purple - Primary */
   --purple-900: #26215C;
+  --purple-800: #393185;
+  --purple-700: #463DA6;
   --purple-600: #534AB7;
+  --purple-500: #6960C9;
   --purple-400: #7F77DD;
+  --purple-300: #9791E5;
   --purple-200: #AFA9EC;
+  --purple-100: #D8D5F6;
   --purple-50: #EEEDFE;
   
   /* Teal - Accent/Success */

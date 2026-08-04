@@ -34,10 +34,10 @@ const CertificateDetail: React.FC = () => {
       
       if (data) {
         setCert({
-          name: data.users?.volunteer_profiles[0]?.full_name || 'Volunteer',
+          name: data.recipient_name || (data.users?.volunteer_profiles && data.users.volunteer_profiles.length > 0 ? data.users.volunteer_profiles[0].full_name : 'Volunteer'),
           gig: data.gigs?.title,
           org: data.gigs?.organizations?.name,
-          date: new Date(data.issued_at).toLocaleDateString(),
+          date: new Date(data.issued_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
           type: data.gigs?.type,
           hours: data.attendance?.hours || 0,
         });
@@ -127,80 +127,82 @@ const CertificateDetail: React.FC = () => {
           transition={{ type: 'spring', stiffness: 50 }}
         >
           {/* Outer certificate frame */}
-          <div style={{ backgroundColor: 'var(--white)', borderRadius: '24px', border: '1px solid #E4E1F5', boxShadow: '0 24px 64px -24px rgba(38,33,92,0.15)', overflow: 'hidden' }}>
-
-            {/* Top gradient bar */}
-            <div style={{ height: '10px', background: 'linear-gradient(90deg, var(--teal-400) 0%, var(--purple-400) 50%, var(--teal-400) 100%)', backgroundSize: '200% 100%' }} />
-
-            {/* Inner padding */}
-            <div style={{ padding: '56px 64px' }}>
-
-              {/* Watermark decoration */}
-              <div style={{ position: 'relative' }}>
-                <div style={{ position: 'absolute', top: '-24px', right: '-24px', width: '200px', height: '200px', borderRadius: '50%', background: 'radial-gradient(circle, var(--purple-50) 0%, transparent 70%)', pointerEvents: 'none' }} />
-                <div style={{ position: 'absolute', bottom: '-80px', left: '-40px', width: '160px', height: '160px', borderRadius: '50%', background: 'radial-gradient(circle, var(--teal-50) 0%, transparent 70%)', pointerEvents: 'none' }} />
-
-                {/* Header row */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '48px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <svg viewBox="0 0 100 100" style={{ width: '36px', height: '36px' }}>
-                      <path d="M60 15 A35 35 0 1 0 60 85" fill="none" stroke="#AFA9EC" strokeWidth="16" strokeLinecap="round" />
-                      <path d="M40 15 A35 35 0 1 1 40 85" fill="none" stroke="#5DCAA5" strokeWidth="16" strokeLinecap="round" />
-                    </svg>
-                    <span style={{ fontFamily: 'var(--display)', fontWeight: 700, fontSize: '18px', color: 'var(--ink)', letterSpacing: '-0.02em' }}>SabiHands</span>
-                  </div>
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#E6FAF4', color: 'var(--teal-700)', padding: '6px 14px', borderRadius: '99px', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg>
-                    Verified Certificate
-                  </div>
-                </div>
-
-                {/* Title */}
-                <div style={{ textAlign: 'center', marginBottom: '48px' }}>
-                  <div style={{ fontSize: '13px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2em', color: 'var(--muted)', marginBottom: '12px' }}>Certificate of Volunteering</div>
-                  <div style={{ width: '60px', height: '3px', background: 'linear-gradient(90deg, var(--teal-400), var(--purple-400))', margin: '0 auto 32px', borderRadius: '2px' }} />
-                  <div style={{ fontSize: '16px', color: 'var(--body)', marginBottom: '12px' }}>This is to certify that</div>
-                  <div style={{ fontFamily: 'var(--display)', fontSize: '52px', fontStyle: 'italic', fontWeight: 700, color: 'var(--purple-600)', lineHeight: 1.1, marginBottom: '8px', letterSpacing: '-0.02em' }}>{cert.name}</div>
-                </div>
-
-                {/* Body text */}
-                <div style={{ textAlign: 'center', fontSize: '17px', color: 'var(--body)', lineHeight: 1.7, marginBottom: '48px' }}>
-                  has successfully volunteered for<br/>
-                  <span style={{ fontWeight: 700, color: 'var(--ink)', fontSize: '19px' }}>{cert.gig}</span><br/>
-                  organized by <span style={{ fontWeight: 700, color: 'var(--ink)' }}>{cert.org}</span><br/>
-                  on <span style={{ fontWeight: 600, color: 'var(--ink)' }}>{cert.date}</span>, contributing <span style={{ fontWeight: 700, color: 'var(--teal-600)' }}>{cert.hours} hours</span> of service.
-                </div>
-
-                {/* Stats row */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginBottom: '48px' }}>
-                  {[
-                    { label: 'Type', value: cert.type },
-                    { label: 'Hours', value: `${cert.hours}h` },
-                    { label: 'Status', value: 'Verified ✓' },
-                  ].map(s => (
-                    <div key={s.label} style={{ textAlign: 'center', padding: '20px 16px', backgroundColor: 'var(--paper)', borderRadius: '14px' }}>
-                      <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--muted)', marginBottom: '8px' }}>{s.label}</div>
-                      <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--ink)', fontFamily: 'var(--display)' }}>{s.value}</div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Footer */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: '32px', borderTop: '1px dashed #D1CEDF' }}>
-                  <div>
-                    <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--muted)', marginBottom: '4px' }}>Certificate ID</div>
-                    <div style={{ fontSize: '15px', fontFamily: 'monospace', color: 'var(--ink)', fontWeight: 500 }}>{certIdDisplay}</div>
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--muted)', marginBottom: '4px' }}>Verify at</div>
-                    <div style={{ fontSize: '13px', color: 'var(--purple-600)', fontWeight: 600 }}>sabihands.com/verify/{id}</div>
-                  </div>
-                </div>
-              </div>
+          <div style={{ backgroundColor: '#F8F9FB', position: 'relative', border: '1px solid #E4E1F5', boxShadow: '0 24px 64px -24px rgba(38,33,92,0.15)', overflow: 'hidden', aspectRatio: '1.414 / 1', display: 'flex' }}>
+            
+            {/* Top Left Big Blue Block */}
+            <div style={{ position: 'absolute', top: 0, left: 0, width: '60%', height: '35%', backgroundColor: '#2E358A', zIndex: 1, padding: '40px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+               <div style={{ color: 'white', fontSize: 'clamp(24px, 4vw, 56px)', fontWeight: 800, fontFamily: 'var(--display)', lineHeight: 1.1, letterSpacing: '-0.02em' }}>
+                 Certificate of <br/><span style={{ color: '#4CC5DE' }}>Completion</span>
+               </div>
             </div>
 
-            {/* Bottom bar */}
-            <div style={{ height: '4px', background: 'linear-gradient(90deg, var(--purple-400) 0%, var(--teal-400) 100%)' }} />
+            {/* Top Left Abstract Circles inside the Blue Block */}
+            <div style={{ position: 'absolute', top: '-15%', left: '10%', width: '40%', height: '40%', borderRadius: '50%', border: '25px solid #4CC5DE', zIndex: 2, opacity: 0.9 }}></div>
+            <div style={{ position: 'absolute', top: '-5%', left: '20%', width: '20%', height: '20%', borderRadius: '50%', border: '15px solid rgba(255,255,255,0.2)', zIndex: 2 }}></div>
+
+            {/* Top Right Date */}
+            <div style={{ position: 'absolute', top: '40px', right: '40px', zIndex: 3, fontSize: '14px', fontWeight: 600, color: 'var(--ink)' }}>
+              Issued on : {cert.date}
+            </div>
+
+            {/* Top Right Lines */}
+            <div style={{ position: 'absolute', top: '25%', right: '-20px', zIndex: 1, display: 'flex', flexDirection: 'column', gap: '8px', transform: 'rotate(-45deg)' }}>
+               {[...Array(6)].map((_, i) => (
+                 <div key={i} style={{ width: '80px', height: '3px', backgroundColor: '#4CC5DE' }}></div>
+               ))}
+            </div>
+
+            {/* Bottom Left Lines */}
+            <div style={{ position: 'absolute', bottom: '15%', left: '-30px', zIndex: 1, display: 'flex', flexDirection: 'column', gap: '8px', transform: 'rotate(-45deg)' }}>
+               {[...Array(6)].map((_, i) => (
+                 <div key={i} style={{ width: '80px', height: '3px', backgroundColor: '#4CC5DE' }}></div>
+               ))}
+            </div>
+
+            {/* Bottom Right Abstract Shape ('t' looking object) */}
+            <div style={{ position: 'absolute', bottom: '-5%', right: '5%', zIndex: 2, color: '#2E358A', fontSize: '300px', fontWeight: 900, fontFamily: 'var(--display)', lineHeight: 0.8 }}>
+              t
+            </div>
+
+            {/* Inner Content Wrapper */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 10%', zIndex: 5, marginTop: '15%' }}>
+              
+              <div style={{ fontSize: '14px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--ink)', marginBottom: '16px' }}>
+                THIS CERTIFICATE IS PRESENTED TO
+              </div>
+
+              <div style={{ fontFamily: 'var(--display)', fontSize: 'clamp(32px, 5vw, 64px)', fontWeight: 800, color: 'var(--ink)', letterSpacing: '-0.02em', borderBottom: '4px solid #4CC5DE', paddingBottom: '16px', display: 'inline-block', width: 'fit-content', paddingRight: '20px' }}>
+                {cert.name}
+              </div>
+
+              <div style={{ marginTop: '24px', fontSize: '16px', fontWeight: 600, color: 'var(--ink)', maxWidth: '60%', lineHeight: 1.5 }}>
+                For Completing The {cert.gig} in {cert.org}
+              </div>
+
+              {/* Signatures */}
+              <div style={{ display: 'flex', gap: '64px', marginTop: '48px' }}>
+                <div>
+                   <div style={{ width: '120px', borderBottom: '1.5px solid var(--ink)', paddingBottom: '8px', marginBottom: '8px' }}>
+                     <svg viewBox="0 0 100 40" style={{ width: '100%', height: '40px' }}>
+                       <path d="M10 30 Q25 10 40 30 T70 20 T90 35" fill="none" stroke="var(--ink)" strokeWidth="2" strokeLinecap="round" />
+                     </svg>
+                   </div>
+                   <div style={{ fontSize: '14px', fontWeight: 800, color: 'var(--ink)' }}>Pablo Walker</div>
+                   <div style={{ fontSize: '12px', color: 'var(--ink)', fontWeight: 500 }}>Master of Content Writing</div>
+                </div>
+
+                <div>
+                   <div style={{ width: '120px', borderBottom: '1.5px solid var(--ink)', paddingBottom: '8px', marginBottom: '8px' }}>
+                     <svg viewBox="0 0 100 40" style={{ width: '100%', height: '40px' }}>
+                       <path d="M20 30 Q30 5 40 30 T60 15 Q75 10 70 35" fill="none" stroke="var(--ink)" strokeWidth="2" strokeLinecap="round" />
+                     </svg>
+                   </div>
+                   <div style={{ fontSize: '14px', fontWeight: 800, color: 'var(--ink)' }}>Leira Swan</div>
+                   <div style={{ fontSize: '12px', color: 'var(--ink)', fontWeight: 500 }}>Senior of Content Writing</div>
+                </div>
+              </div>
+
+            </div>
           </div>
         </motion.div>
       </div>

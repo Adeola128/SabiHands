@@ -71,6 +71,22 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ role = 'volunteer' })
     return <Navigate to="/login" replace />;
   }
 
+  const isFullWidthRoute = location.pathname.includes('/dashboard/messages') || 
+    location.pathname.includes('/dashboard/organization/profile') || 
+    location.pathname.endsWith('/apply') || 
+    location.pathname.includes('/dashboard/org/gigs/new') || 
+    location.pathname.endsWith('/edit') || 
+    location.pathname.includes('/dashboard/notifications') || 
+    location.pathname.includes('/dashboard/volunteer/profile') || 
+    location.pathname.includes('/dashboard/volunteer/settings');
+
+  const needsMaxWidth = location.pathname.includes('/dashboard/organization/profile') || 
+    location.pathname.endsWith('/apply') || 
+    location.pathname.includes('/dashboard/org/gigs/new') || 
+    location.pathname.endsWith('/edit') || 
+    location.pathname.includes('/dashboard/volunteer/profile') || 
+    location.pathname.includes('/dashboard/volunteer/settings');
+
   return (
     <div className="dashboard-container">
       <header className="dashboard-header">
@@ -176,8 +192,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ role = 'volunteer' })
       </nav>
 
       <main className={`dashboard-main ${location.pathname.includes('/dashboard/messages') ? 'messages-main' : ''}`}>
-        {location.pathname.includes('/dashboard/messages') || location.pathname.includes('/dashboard/organization/profile') || location.pathname.includes('/dashboard/volunteer/apply') || location.pathname.includes('/dashboard/org/gigs/new') || location.pathname.includes('/dashboard/notifications') || location.pathname.includes('/dashboard/volunteer/profile') || location.pathname.includes('/dashboard/volunteer/settings') ? (
-          <div style={{ width: '100%', maxWidth: (location.pathname.includes('/dashboard/organization/profile') || location.pathname.includes('/dashboard/volunteer/apply') || location.pathname.includes('/dashboard/org/gigs/new') || location.pathname.includes('/dashboard/volunteer/profile') || location.pathname.includes('/dashboard/volunteer/settings')) ? '1440px' : 'none', display: 'flex', justifyContent: 'center' }}>
+        {isFullWidthRoute ? (
+          <div style={{ width: '100%', maxWidth: needsMaxWidth ? '1440px' : 'none', display: 'flex', justifyContent: 'center' }}>
             <Outlet />
           </div>
         ) : (

@@ -1,158 +1,4 @@
--- SabiHands Supabase Schema (Phase B1)
 
--- Enable UUID extension
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
--- ENUMS
-DO $$ BEGIN CREATE TYPE public.user_role AS ENUM ('volunteer', 'organization', 'admin'); EXCEPTION WHEN duplicate_object THEN null; END $$;
-DO $$ BEGIN CREATE TYPE public.verification_status AS ENUM ('pending', 'verified', 'rejected'); EXCEPTION WHEN duplicate_object THEN null; END $$;
-DO $$ BEGIN CREATE TYPE public.gig_type AS ENUM ('skilled', 'physical'); EXCEPTION WHEN duplicate_object THEN null; END $$;
-DO $$ BEGIN CREATE TYPE public.application_status AS ENUM ('pending', 'accepted', 'declined', 'withdrawn'); EXCEPTION WHEN duplicate_object THEN null; END $$;
-DO $$ BEGIN CREATE TYPE public.membership_status AS ENUM ('active', 'past_due', 'canceled'); EXCEPTION WHEN duplicate_object THEN null; END $$;
-DO $$ BEGIN CREATE TYPE public.channel_type AS ENUM ('email', 'sms', 'in_app'); EXCEPTION WHEN duplicate_object THEN null; END $$;
-
--- TABLES
-
--- 1. Users (Extends auth.users)
-CREATE TABLE IF NOT EXISTS public.users (
-  id UUID REFERENCES auth.users(id) PRIMARY KEY,
-  email TEXT NOT NULL,
-  role user_role NOT NULL DEFAULT 'volunteer',
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- 2. Volunteer Profiles
-CREATE TABLE IF NOT EXISTS public.volunteer_profiles (
-  user_id UUID REFERENCES public.users(id) PRIMARY KEY,
-  full_name TEXT NOT NULL,
-  phone TEXT,
-  location TEXT,
-  interests TEXT[], -- Array of strings
-  bio TEXT
-);
-
--- 3. Organizations
-CREATE TABLE IF NOT EXISTS public.organizations (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  user_id UUID REFERENCES public.users(id) NOT NULL,
-  name TEXT NOT NULL,
-  org_type TEXT,
-  cac_number TEXT,
-  verification_status verification_status DEFAULT 'pending',
-  verified_at TIMESTAMP WITH TIME ZONE
-);
-
--- 4. Gigs
-CREATE TABLE IF NOT EXISTS public.gigs (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  organization_id UUID REFERENCES public.organizations(id) NOT NULL,
-  title TEXT NOT NULL,
-  description TEXT NOT NULL,
-  type gig_type NOT NULL,
-  schedule_type TEXT,
-  location TEXT,
-  date_start TIMESTAMP WITH TIME ZONE,
-  date_end TIMESTAMP WITH TIME ZONE,
-  status TEXT DEFAULT 'draft',
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- 5. Applications
-CREATE TABLE IF NOT EXISTS public.applications (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  gig_id UUID REFERENCES public.gigs(id) NOT NULL,
-  volunteer_id UUID REFERENCES public.users(id) NOT NULL,
-  status application_status DEFAULT 'pending',
-  applied_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  decided_at TIMESTAMP WITH TIME ZONE,
-  CONSTRAINT fk_applications_volunteer_profiles FOREIGN KEY (volunteer_id) REFERENCES public.volunteer_profiles(user_id)
-);
-
--- 6. Attendance
-CREATE TABLE IF NOT EXISTS public.attendance (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  application_id UUID REFERENCES public.applications(id) NOT NULL,
-  confirmed_by UUID REFERENCES public.users(id) NOT NULL,
-  attended BOOLEAN NOT NULL DEFAULT FALSE,
-  hours INTEGER DEFAULT 0,
-  confirmed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- 7. Certificates
-CREATE TABLE IF NOT EXISTS public.certificates (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  attendance_id UUID REFERENCES public.attendance(id) NOT NULL,
-  volunteer_id UUID REFERENCES public.users(id) NOT NULL,
-  gig_id UUID REFERENCES public.gigs(id) NOT NULL,
-  verification_code TEXT UNIQUE NOT NULL,
-  issued_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  revoked_at TIMESTAMP WITH TIME ZONE
-);
-
--- 8. Memberships
-CREATE TABLE IF NOT EXISTS public.memberships (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  organization_id UUID REFERENCES public.organizations(id) NOT NULL,
-  plan TEXT NOT NULL,
-  status membership_status DEFAULT 'active',
-  provider_customer_id TEXT,
-  current_period_end TIMESTAMP WITH TIME ZONE
-);
-
--- 9. Payments
-CREATE TABLE IF NOT EXISTS public.payments (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  membership_id UUID REFERENCES public.memberships(id) NOT NULL,
-  amount NUMERIC NOT NULL,
-  currency TEXT DEFAULT 'NGN',
-  provider_reference TEXT UNIQUE,
-  status TEXT DEFAULT 'pending',
-  paid_at TIMESTAMP WITH TIME ZONE
-);
-
--- 10. Notifications
-CREATE TABLE IF NOT EXISTS public.notifications (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  user_id UUID REFERENCES public.users(id) NOT NULL,
-  type TEXT NOT NULL,
-  channel channel_type NOT NULL,
-  payload JSONB NOT NULL,
-  sent_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  read_at TIMESTAMP WITH TIME ZONE
-);
-
--- 11. Audit Log
-CREATE TABLE IF NOT EXISTS public.audit_log (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  actor_id UUID REFERENCES public.users(id), -- Nullable for system actions
-  action TEXT NOT NULL,
-  target_type TEXT NOT NULL,
-  target_id UUID NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- 12. Community Posts
-CREATE TABLE IF NOT EXISTS public.community_posts (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  author_id UUID REFERENCES public.users(id) NOT NULL,
-  content TEXT NOT NULL,
-  image_url TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- 13. Community Comments
-CREATE TABLE IF NOT EXISTS public.community_comments (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  post_id UUID REFERENCES public.community_posts(id) ON DELETE CASCADE NOT NULL,
-  author_id UUID REFERENCES public.users(id) NOT NULL,
-  content TEXT NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- 14. Community Likes
-CREATE TABLE IF NOT EXISTS public.community_likes (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  post_id UUID REFERENCES public.community_posts(id) ON DELETE CASCADE NOT NULL,
   user_id UUID REFERENCES public.users(id) NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   UNIQUE(post_id, user_id)
@@ -174,8 +20,50 @@ CREATE TABLE IF NOT EXISTS public.messages (
   conversation_id UUID REFERENCES public.conversations(id) ON DELETE CASCADE NOT NULL,
   sender_id UUID REFERENCES public.users(id) NOT NULL,
   content TEXT NOT NULL,
+  image_url TEXT,
   is_read BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 17. User Blocks
+CREATE TABLE IF NOT EXISTS public.user_blocks (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  blocker_id UUID REFERENCES public.users(id) NOT NULL,
+  blocked_id UUID REFERENCES public.users(id) NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(blocker_id, blocked_id)
+);
+
+-- 18. Message Reports
+CREATE TABLE IF NOT EXISTS public.message_reports (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  message_id UUID REFERENCES public.messages(id) NOT NULL,
+  reporter_id UUID REFERENCES public.users(id) NOT NULL,
+  reason TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 19. Invitations
+CREATE TABLE IF NOT EXISTS public.invitations (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  gig_id UUID REFERENCES public.gigs(id) NOT NULL,
+  organization_id UUID REFERENCES public.organizations(id) NOT NULL,
+  volunteer_id UUID REFERENCES public.users(id) NOT NULL,
+  status TEXT DEFAULT 'pending',
+  sent_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  responded_at TIMESTAMP WITH TIME ZONE
+);
+
+-- 20. Ratings
+CREATE TABLE IF NOT EXISTS public.ratings (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  application_id UUID REFERENCES public.applications(id) NOT NULL,
+  organization_id UUID REFERENCES public.organizations(id) NOT NULL,
+  volunteer_id UUID REFERENCES public.users(id) NOT NULL,
+  score INTEGER NOT NULL CHECK (score >= 1 AND score <= 5),
+  comment TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(application_id)
 );
 
 -- ROW LEVEL SECURITY (RLS) POLICIES
@@ -196,6 +84,10 @@ ALTER TABLE public.community_comments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.community_likes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.conversations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.messages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_blocks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.message_reports ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.invitations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.ratings ENABLE ROW LEVEL SECURITY;
 
 -- Enable Realtime for messages
 DO $$ BEGIN
@@ -212,8 +104,21 @@ CREATE POLICY "Users can read own data" ON public.users
   FOR SELECT USING (auth.uid() = id);
 
 -- Volunteer profiles
-CREATE POLICY "Anyone can view volunteer profiles" ON public.volunteer_profiles
-  FOR SELECT USING (true);
+CREATE POLICY "Volunteers can view own profile" ON public.volunteer_profiles
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Organizations can view applied volunteer profiles" ON public.volunteer_profiles
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM public.applications a
+      JOIN public.gigs g ON a.gig_id = g.id
+      WHERE a.volunteer_id = public.volunteer_profiles.user_id
+      AND g.organization_id IN (
+        SELECT id FROM public.organizations WHERE user_id = auth.uid()
+      )
+    )
+  );
+
 CREATE POLICY "Volunteers can update their own profile" ON public.volunteer_profiles
   FOR UPDATE USING (auth.uid() = user_id);
 CREATE POLICY "Volunteers can insert their own profile" ON public.volunteer_profiles
@@ -226,6 +131,25 @@ CREATE POLICY "Organizations can update their own profile" ON public.organizatio
   FOR UPDATE USING (auth.uid() = user_id);
 CREATE POLICY "Organizations can insert their own profile" ON public.organizations
   FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- Storage for Organization Verification Documents
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('verification_documents', 'verification_documents', false) 
+ON CONFLICT DO NOTHING;
+
+CREATE POLICY "Orgs can view their own verification documents"
+  ON storage.objects FOR SELECT
+  USING (
+    bucket_id = 'verification_documents' AND 
+    (auth.uid())::text = (string_to_array(name, '/'))[1]
+  );
+
+CREATE POLICY "Orgs can upload their own verification documents"
+  ON storage.objects FOR INSERT
+  WITH CHECK (
+    bucket_id = 'verification_documents' AND 
+    (auth.uid())::text = (string_to_array(name, '/'))[1]
+  );
 
 -- Anyone can read published gigs
 CREATE POLICY "Anyone can read gigs" ON public.gigs
@@ -307,6 +231,41 @@ CREATE POLICY "Users can update messages (read status)" ON public.messages
     conversation_id IN (
       SELECT id FROM public.conversations WHERE user1_id = auth.uid() OR user2_id = auth.uid()
     )
+  );
+
+-- User Blocks RLS
+CREATE POLICY "Users can view their own blocks" ON public.user_blocks
+  FOR SELECT USING (auth.uid() = blocker_id);
+CREATE POLICY "Users can create blocks" ON public.user_blocks
+  FOR INSERT WITH CHECK (auth.uid() = blocker_id);
+CREATE POLICY "Users can delete own blocks" ON public.user_blocks
+  FOR DELETE USING (auth.uid() = blocker_id);
+
+-- Message Reports RLS
+CREATE POLICY "Users can view own reports" ON public.message_reports
+  FOR SELECT USING (auth.uid() = reporter_id);
+CREATE POLICY "Users can create reports" ON public.message_reports
+  FOR INSERT WITH CHECK (auth.uid() = reporter_id);
+
+-- Invitations RLS
+CREATE POLICY "Users can view invitations they sent or received" ON public.invitations
+  FOR SELECT USING (
+    volunteer_id = auth.uid() OR
+    organization_id IN (SELECT id FROM public.organizations WHERE user_id = auth.uid())
+  );
+CREATE POLICY "Orgs can create invitations" ON public.invitations
+  FOR INSERT WITH CHECK (
+    organization_id IN (SELECT id FROM public.organizations WHERE user_id = auth.uid())
+  );
+CREATE POLICY "Volunteers can update invitations" ON public.invitations
+  FOR UPDATE USING (auth.uid() = volunteer_id);
+
+-- Ratings RLS
+CREATE POLICY "Anyone can view ratings" ON public.ratings
+  FOR SELECT USING (true);
+CREATE POLICY "Orgs can create ratings" ON public.ratings
+  FOR INSERT WITH CHECK (
+    organization_id IN (SELECT id FROM public.organizations WHERE user_id = auth.uid())
   );
 
 -- Helper function to bypass RLS for role checks (prevents infinite recursion)
@@ -487,3 +446,147 @@ SELECT cron.schedule('daily_email_recommendations', '0 10 * * *', $$
     headers := '{"Content-Type": "application/json", "Authorization": "Bearer sb_publishable_GiBXJ8nKj3Zw5p8fFK3-wA_rIbjr95h"}'::jsonb
   );
 $$);
+
+-- Application State Machine Triggers
+CREATE OR REPLACE FUNCTION public.handle_application_status_change()
+RETURNS trigger AS $$
+DECLARE
+  v_org_id UUID;
+BEGIN
+  SELECT o.user_id INTO v_org_id 
+  FROM public.gigs g
+  JOIN public.organizations o ON g.organization_id = o.id
+  WHERE g.id = NEW.gig_id;
+
+  IF TG_OP = 'INSERT' THEN
+    IF NEW.status = 'pending' THEN
+      INSERT INTO public.notifications (user_id, type, channel, payload)
+      VALUES (v_org_id, 'application_new', 'in_app', jsonb_build_object('application_id', NEW.id, 'volunteer_id', NEW.volunteer_id));
+      INSERT INTO public.notifications (user_id, type, channel, payload)
+      VALUES (v_org_id, 'application_new', 'email', jsonb_build_object('application_id', NEW.id, 'volunteer_id', NEW.volunteer_id));
+    END IF;
+  ELSIF TG_OP = 'UPDATE' THEN
+    IF OLD.status = 'pending' AND NEW.status = 'accepted' THEN
+      NEW.decided_at := NOW();
+      INSERT INTO public.notifications (user_id, type, channel, payload)
+      VALUES (NEW.volunteer_id, 'application_accepted', 'in_app', jsonb_build_object('application_id', NEW.id, 'gig_id', NEW.gig_id));
+      INSERT INTO public.notifications (user_id, type, channel, payload)
+      VALUES (NEW.volunteer_id, 'application_accepted', 'email', jsonb_build_object('application_id', NEW.id, 'gig_id', NEW.gig_id));
+      INSERT INTO public.notifications (user_id, type, channel, payload)
+      VALUES (NEW.volunteer_id, 'application_accepted', 'sms', jsonb_build_object('application_id', NEW.id, 'gig_id', NEW.gig_id));
+      
+    ELSIF OLD.status = 'pending' AND NEW.status = 'declined' THEN
+      NEW.decided_at := NOW();
+      INSERT INTO public.notifications (user_id, type, channel, payload)
+      VALUES (NEW.volunteer_id, 'application_declined', 'email', jsonb_build_object('application_id', NEW.id, 'gig_id', NEW.gig_id));
+      
+    ELSIF OLD.status IN ('pending', 'accepted') AND NEW.status = 'withdrawn' THEN
+      NEW.withdrawn_at := NOW();
+      INSERT INTO public.notifications (user_id, type, channel, payload)
+      VALUES (v_org_id, 'application_withdrawn', 'in_app', jsonb_build_object('application_id', NEW.id, 'volunteer_id', NEW.volunteer_id));
+      INSERT INTO public.notifications (user_id, type, channel, payload)
+      VALUES (v_org_id, 'application_withdrawn', 'email', jsonb_build_object('application_id', NEW.id, 'volunteer_id', NEW.volunteer_id));
+    END IF;
+  END IF;
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS on_application_status_change ON public.applications;
+CREATE TRIGGER on_application_status_change
+  BEFORE INSERT OR UPDATE ON public.applications
+  FOR EACH ROW EXECUTE PROCEDURE public.handle_application_status_change();
+
+-- Messaging Triggers (Rate limiting + Block Check + First Message Email)
+CREATE OR REPLACE FUNCTION public.handle_new_conversation()
+RETURNS trigger AS $$
+DECLARE
+  v_count INT;
+BEGIN
+  SELECT COUNT(*) INTO v_count
+  FROM public.conversations
+  WHERE user1_id = NEW.user1_id AND created_at > NOW() - INTERVAL '24 hours';
+
+  IF v_count >= 10 THEN
+    RAISE EXCEPTION 'Rate limit exceeded: too many new conversations in 24 hours';
+  END IF;
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS on_new_conversation ON public.conversations;
+CREATE TRIGGER on_new_conversation
+  BEFORE INSERT ON public.conversations
+  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_conversation();
+
+CREATE OR REPLACE FUNCTION public.handle_new_message()
+RETURNS trigger AS $$
+DECLARE
+  v_recipient_id UUID;
+  v_message_count INT;
+BEGIN
+  SELECT CASE 
+    WHEN user1_id = NEW.sender_id THEN user2_id 
+    ELSE user1_id 
+  END INTO v_recipient_id
+  FROM public.conversations WHERE id = NEW.conversation_id;
+
+  IF EXISTS (SELECT 1 FROM public.user_blocks WHERE blocker_id = v_recipient_id AND blocked_id = NEW.sender_id) THEN
+    RAISE EXCEPTION 'User is blocked';
+  END IF;
+
+  INSERT INTO public.notifications (user_id, type, channel, payload)
+  VALUES (v_recipient_id, 'new_message', 'in_app', jsonb_build_object('message_id', NEW.id, 'conversation_id', NEW.conversation_id));
+
+  SELECT COUNT(*) INTO v_message_count FROM public.messages WHERE conversation_id = NEW.conversation_id;
+  
+  IF v_message_count = 0 THEN
+    INSERT INTO public.notifications (user_id, type, channel, payload)
+    VALUES (v_recipient_id, 'new_message', 'email', jsonb_build_object('message_id', NEW.id, 'conversation_id', NEW.conversation_id));
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS on_new_message ON public.messages;
+CREATE TRIGGER on_new_message
+  BEFORE INSERT ON public.messages
+  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_message();
+
+-- 24-hr reminder Cron Job
+SELECT cron.schedule('daily_email_24hr_reminder', '0 * * * *', $$
+  SELECT net.http_post(
+    url := 'https://menijtrnjpdwevmpkvjx.supabase.co/functions/v1/email-gig-reminder',
+    headers := '{"Content-Type": "application/json", "Authorization": "Bearer sb_publishable_GiBXJ8nKj3Zw5p8fFK3-wA_rIbjr95h"}'::jsonb
+  );
+$$);
+- -   1 .   A d d   n e w   c o l u m n s   t o   g i g s   t a b l e   t o   s t o r e   s u b m i s s i o n   p r e f e r e n c e s  
+ A L T E R   T A B L E   p u b l i c . g i g s   A D D   C O L U M N   I F   N O T   E X I S T S   s u b m i s s i o n _ f o r m a t s   T E X T [ ]   D E F A U L T   A R R A Y [ ' t e x t ' ] ;  
+ A L T E R   T A B L E   p u b l i c . g i g s   A D D   C O L U M N   I F   N O T   E X I S T S   s u b m i s s i o n _ n o t e s   T E X T ;  
+  
+ - -   2 .   A d d   n e w   c o l u m n s   t o   s u b m i s s i o n s   t a b l e   t o   s t o r e   u p l o a d e d   f i l e s   a n d   l i n k s  
+ A L T E R   T A B L E   p u b l i c . s u b m i s s i o n s   A D D   C O L U M N   I F   N O T   E X I S T S   f i l e _ u r l s   T E X T [ ] ;  
+ A L T E R   T A B L E   p u b l i c . s u b m i s s i o n s   A D D   C O L U M N   I F   N O T   E X I S T S   d r i v e _ l i n k   T E X T ;  
+  
+ - -   3 .   E n s u r e   a   s t o r a g e   b u c k e t   e x i s t s   f o r   s u b m i s s i o n   f i l e s  
+ I N S E R T   I N T O   s t o r a g e . b u c k e t s   ( i d ,   n a m e ,   p u b l i c )    
+ V A L U E S   ( ' s u b m i s s i o n _ f i l e s ' ,   ' s u b m i s s i o n _ f i l e s ' ,   t r u e )    
+ O N   C O N F L I C T   D O   N O T H I N G ;  
+  
+ - -   P o l i c i e s   f o r   s u b m i s s i o n _ f i l e s   b u c k e t  
+ D R O P   P O L I C Y   I F   E X I S T S   " A n y o n e   c a n   r e a d   s u b m i s s i o n   f i l e s "   O N   s t o r a g e . o b j e c t s ;  
+ C R E A T E   P O L I C Y   " A n y o n e   c a n   r e a d   s u b m i s s i o n   f i l e s "  
+     O N   s t o r a g e . o b j e c t s   F O R   S E L E C T  
+     U S I N G   ( b u c k e t _ i d   =   ' s u b m i s s i o n _ f i l e s ' ) ;  
+  
+ D R O P   P O L I C Y   I F   E X I S T S   " A u t h e n t i c a t e d   u s e r s   c a n   u p l o a d   s u b m i s s i o n   f i l e s "   O N   s t o r a g e . o b j e c t s ;  
+ C R E A T E   P O L I C Y   " A u t h e n t i c a t e d   u s e r s   c a n   u p l o a d   s u b m i s s i o n   f i l e s "  
+     O N   s t o r a g e . o b j e c t s   F O R   I N S E R T  
+     W I T H   C H E C K   (  
+         b u c k e t _ i d   =   ' s u b m i s s i o n _ f i l e s '   A N D    
+         a u t h . r o l e ( )   =   ' a u t h e n t i c a t e d '  
+     ) ;  
+ 

@@ -172,7 +172,7 @@ const Home: React.FC = () => {
                   <li>Walk away with a verified certificate</li>
                   <li>Build a track record employers can trust</li>
                 </ul>
-                <Link className="btn btn-solid-purple" to="/signup/volunteer">Find a gig</Link>
+                <Link className="btn btn-solid-purple" to="/signup?role=volunteer">Find a gig</Link>
               </div>
             </motion.div>
 
@@ -189,7 +189,7 @@ const Home: React.FC = () => {
                   <li>Issue certificates automatically on completion</li>
                   <li>Skip the WhatsApp-group recruiting grind</li>
                 </ul>
-                <Link className="btn btn-solid-teal" to="/signup/organization">Post a gig</Link>
+                <Link className="btn btn-solid-teal" to="/signup?role=org">Post a gig</Link>
               </div>
             </motion.div>
           </motion.div>
@@ -294,8 +294,8 @@ const Home: React.FC = () => {
           </motion.h2>
           <motion.p variants={fadeUpVariant}>Let's build the home for showing up in South West & North Central Nigeria.</motion.p>
           <motion.div className="final-ctas" variants={fadeUpVariant}>
-            <Link className="btn btn-solid-teal hover-scale" to="/signup/volunteer">Find a gig</Link>
-            <Link className="btn btn-outline-white hover-scale" to="/signup/organization">Post a gig</Link>
+            <Link className="btn btn-solid-teal hover-scale" to="/signup?role=volunteer">Find a gig</Link>
+            <Link className="btn btn-outline-white hover-scale" to="/signup?role=org">Post a gig</Link>
           </motion.div>
         </motion.div>
       </section>

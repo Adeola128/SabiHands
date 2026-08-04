@@ -30,6 +30,7 @@ import DashboardRedirect from './components/DashboardRedirect';
 import VolunteerDashboard from './pages/volunteer/VolunteerDashboard';
 import BrowseGigs from './pages/volunteer/BrowseGigs';
 import MyApplications from './pages/volunteer/MyApplications';
+import VolunteerInvitations from './pages/volunteer/VolunteerInvitations';
 import ApplyGig from './pages/volunteer/ApplyGig';
 import GigDetail from './pages/volunteer/GigDetail';
 import MyGigs from './pages/volunteer/MyGigs';
@@ -38,9 +39,12 @@ import MyCertificates from './pages/volunteer/MyCertificates';
 import CertificateDetail from './pages/volunteer/CertificateDetail';
 import VolunteerProfile from './pages/volunteer/VolunteerProfile';
 import EditProfile from './pages/volunteer/EditProfile';
+import SubmitWork from './pages/volunteer/SubmitWork';
 import OrgDashboard from './pages/organization/OrgDashboard';
 import ManageGigs from './pages/organization/ManageGigs';
 import PostGig from './pages/organization/PostGig';
+import EditGig from './pages/organization/EditGig';
+import ReviewSubmissions from './pages/organization/ReviewSubmissions';
 import OrgGigDetail from './pages/organization/OrgGigDetail';
 import ReviewApplicants from './pages/organization/ReviewApplicants';
 import VolunteerDetailOrg from './pages/organization/VolunteerDetailOrg';
@@ -105,7 +109,9 @@ const App: React.FC = () => {
           <Route path="gigs/:id" element={<GigDetail />} />
           <Route path="gigs/:id/apply" element={<ApplyGig />} />
           <Route path="applications" element={<MyApplications />} />
+          <Route path="invitations" element={<VolunteerInvitations />} />
           <Route path="my-gigs" element={<MyGigs />} />
+          <Route path="gigs/:applicationId/submit" element={<SubmitWork />} />
           <Route path="check-in" element={<GigCheckIn />} />
           <Route path="certificates" element={<MyCertificates />} />
           <Route path="certificates/:id" element={<CertificateDetail />} />
@@ -128,6 +134,8 @@ const App: React.FC = () => {
           <Route path="gigs" element={<ManageGigs />} />
           <Route path="gigs/new" element={<PostGig />} />
           <Route path="gigs/:id" element={<OrgGigDetail />} />
+          <Route path="gigs/:id/edit" element={<EditGig />} />
+          <Route path="gigs/:id/submissions" element={<ReviewSubmissions />} />
           <Route path="gigs/:id/applicants" element={<ReviewApplicants />} />
           <Route path="gigs/:id/attendance" element={<MarkAttendance />} />
           <Route path="gigs/:id/certificates" element={<IssueCertificates />} />

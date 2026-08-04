@@ -56,6 +56,8 @@ const VolunteerOnboarding: React.FC = () => {
 
       if (updateError) throw updateError;
 
+      await supabase.auth.updateUser({ data: { onboarding_complete: true } });
+
       navigate('/dashboard/volunteer', { replace: true });
     } catch (err: any) {
       console.error("Onboarding error:", err);

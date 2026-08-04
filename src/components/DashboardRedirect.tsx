@@ -18,7 +18,22 @@ const DashboardRedirect: React.FC = () => {
       try {
         // 1. Check user metadata first
         const metadataRole = user.user_metadata?.role;
+        const onboardingComplete = user.user_metadata?.onboarding_complete;
         
+        if (!onboardingComplete) {
+          // If onboarding is not complete, route them to onboarding based on role (default to volunteer)
+          if (metadataRole === 'organization') {
+            navigate('/onboarding/organization', { replace: true });
+          } else {
+            // Default to volunteer if totally new (Google OAuth first time without pending data)
+            if (!metadataRole) {
+              await supabase.auth.updateUser({ data: { role: 'volunteer' } });
+            }
+            navigate('/onboarding/volunteer', { replace: true });
+          }
+          return;
+        }
+
         if (metadataRole === 'organization') {
           navigate('/dashboard/org', { replace: true });
           return;
@@ -57,11 +72,11 @@ const DashboardRedirect: React.FC = () => {
 
         // 3. Default to volunteer if totally new (Google OAuth first time)
         await supabase.auth.updateUser({ data: { role: 'volunteer' } });
-        navigate('/dashboard/volunteer', { replace: true });
+        navigate('/onboarding/volunteer', { replace: true });
         
       } catch (err) {
         console.error('Error checking role in redirect:', err);
-        navigate('/dashboard/volunteer', { replace: true });
+        navigate('/onboarding/volunteer', { replace: true });
       } finally {
         setChecking(false);
       }

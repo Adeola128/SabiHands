@@ -197,7 +197,7 @@ const OrgDashboard: React.FC = () => {
               <div style={{ padding: '24px', textAlign: 'center', color: 'var(--muted)' }}>No active gigs.</div>
             ) : activeGigs.map((g, i) => (
               <Link key={i} to={`/dashboard/org/gigs/${g.id}`} className="gig-media-card-horizontal" style={{ textDecoration: 'none' }}>
-                <div className="gig-media-cover-horizontal" style={{ backgroundImage: `url(https://ui-avatars.com/api/?name=${encodeURIComponent(g.title)}&background=random&size=400)` }} />
+                <div className="gig-media-cover-horizontal" style={{ backgroundImage: `url(${g.image_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(g.title)}&background=random&size=400`})` }} />
                 <div className="gig-media-body-horizontal">
                   <h3 className="gig-media-title" style={{ fontSize: '16px' }}>{g.title}</h3>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', flexWrap: 'wrap', gap: '8px' }}>

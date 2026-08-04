@@ -26,12 +26,14 @@ const MyApplications: React.FC = () => {
           gigs (
             id,
             title,
+            date_start,
             organizations (
               name
             )
           )
         `)
         .eq('volunteer_id', user.id)
+        .neq('status', 'accepted')
         .order('applied_at', { ascending: false });
         
       if (data) setApplications(data);
@@ -77,7 +79,7 @@ const MyApplications: React.FC = () => {
                 <input type="radio" name="status" checked={filter === 'pending'} onChange={() => setFilter('pending')} style={{ width: '16px', height: '16px', accentColor: 'var(--purple-600)' }} /> Pending Review
               </label>
               <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', marginBottom: '12px', cursor: 'pointer' }}>
-                <input type="radio" name="status" checked={filter === 'accepted'} onChange={() => setFilter('accepted')} style={{ width: '16px', height: '16px', accentColor: 'var(--purple-600)' }} /> Accepted
+                <input type="radio" name="status" checked={filter === 'withdrawn'} onChange={() => setFilter('withdrawn')} style={{ width: '16px', height: '16px', accentColor: 'var(--purple-600)' }} /> Withdrawn
               </label>
               <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', cursor: 'pointer' }}>
                 <input type="radio" name="status" checked={filter === 'declined'} onChange={() => setFilter('declined')} style={{ width: '16px', height: '16px', accentColor: 'var(--purple-600)' }} /> Declined
@@ -104,7 +106,7 @@ const MyApplications: React.FC = () => {
           ) : (
             applications.filter(app => filter === 'all' || app.status === filter).map(app => (
               <div key={app.id} className="gig-media-card">
-                <div className="gig-media-cover" style={{ backgroundImage: `url(https://source.unsplash.com/random/800x600/?volunteer,${app.gigs?.title.replace(' ', ',')})`, height: '120px' }}></div>
+                <div className="gig-media-cover" style={{ backgroundImage: `url(${app.gigs?.image_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(app.gigs?.title || 'Gig')}&background=random&size=800`})`, height: '120px' }}></div>
                 <div className="gig-media-body">
                   <div className="gig-media-header">
                     <div>
@@ -131,8 +133,21 @@ const MyApplications: React.FC = () => {
                   </p>
                   <div style={{ display: 'flex', gap: '12px' }}>
                     <Link to={`/dashboard/volunteer/gigs/${app.gigs?.id}`} className="gig-action" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>View Gig Details</Link>
-                    {app.status === 'pending' && (
-                      <button onClick={() => { setWithdrawAppId(app.id); setWithdrawModalOpen(true); }} className="gig-action" style={{ background: 'none', border: '1.5px solid #E4E1F5', color: 'var(--body)' }}>Withdraw</button>
+                    {(app.status === 'pending' || app.status === 'accepted') && (
+                      <button 
+                        onClick={() => { setWithdrawAppId(app.id); setWithdrawModalOpen(true); }} 
+                        className="gig-action" 
+                        disabled={app.gigs?.date_start && new Date(app.gigs.date_start) < new Date()}
+                        style={{ 
+                          background: 'none', 
+                          border: '1.5px solid #E4E1F5', 
+                          color: (app.gigs?.date_start && new Date(app.gigs.date_start) < new Date()) ? 'var(--muted)' : 'var(--body)',
+                          opacity: (app.gigs?.date_start && new Date(app.gigs.date_start) < new Date()) ? 0.5 : 1,
+                          cursor: (app.gigs?.date_start && new Date(app.gigs.date_start) < new Date()) ? 'not-allowed' : 'pointer'
+                        }}
+                      >
+                        Withdraw
+                      </button>
                     )}
                   </div>
                 </div>

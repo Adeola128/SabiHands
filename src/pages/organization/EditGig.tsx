@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { uploadImage } from '../../lib/uploadImage';
 import { toast } from 'react-hot-toast';
+import LoadingScreen from '../../components/LoadingScreen';
 import './PostGig.css';
 
-type Step = 1 | 2 | 3 | 4;
+type Step = 1 | 2 | 3;
 
-const PostGig: React.FC = () => {
+const EditGig: React.FC = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
   
@@ -22,12 +24,68 @@ const PostGig: React.FC = () => {
     location: '', date: '', time: '', duration: '', volunteers: '', skills: '', remote: false,
     coverImage: '/images/hero_illustration.png',
     requireResume: 'optional', requireLinkedin: 'optional', requirePortfolio: 'optional', requirePitch: 'optional',
-    submissionFormats: ['text'], submissionNotes: ''
   });
   
   const [customQuestions, setCustomQuestions] = useState<{ id: string, text: string, required: boolean }[]>([]);
+  const [loadingGig, setLoadingGig] = useState(true);
 
-  const update = (field: string, value: string | boolean | string[]) => setForm(prev => ({ ...prev, [field]: value }));
+  useEffect(() => {
+    const fetchGig = async () => {
+      if (!id) return;
+      try {
+        const { data: gigData, error: gigError } = await supabase.from('gigs').select('*').eq('id', id).single();
+        if (gigError) throw gigError;
+
+        let dateStr = '';
+        let timeStr = '';
+        if (gigData.date_start) {
+          const d = new Date(gigData.date_start);
+          dateStr = d.toISOString().split('T')[0];
+          timeStr = d.toTimeString().substring(0, 5);
+        }
+        
+        let durationStr = '';
+        if (gigData.date_start && gigData.date_end) {
+          durationStr = Math.round((new Date(gigData.date_end).getTime() - new Date(gigData.date_start).getTime()) / (1000 * 60 * 60)).toString();
+        }
+
+        setForm({
+          title: gigData.title || '',
+          type: gigData.type || 'skilled',
+          category: gigData.category || '',
+          description: gigData.description || '',
+          location: gigData.location === 'Remote' ? '' : gigData.location || '',
+          remote: gigData.location === 'Remote',
+          date: dateStr,
+          time: timeStr,
+          duration: durationStr,
+          volunteers: gigData.volunteers_needed ? gigData.volunteers_needed.toString() : '',
+          skills: gigData.skills_required ? gigData.skills_required.join(', ') : '',
+          coverImage: gigData.image_url || '/images/hero_illustration.png',
+          requireResume: gigData.resume_requirement || 'optional',
+          requireLinkedin: gigData.linkedin_requirement || 'optional',
+          requirePortfolio: gigData.portfolio_requirement || 'optional',
+          requirePitch: gigData.pitch_requirement || 'optional',
+        });
+
+        const { data: questionsData, error: qError } = await supabase.from('gig_questions').select('*').eq('gig_id', id);
+        if (questionsData && !qError) {
+          setCustomQuestions(questionsData.map(q => ({
+            id: q.id,
+            text: q.question_text,
+            required: q.is_required
+          })));
+        }
+      } catch (err: any) {
+        toast.error("Failed to load gig details.");
+      } finally {
+        setLoadingGig(false);
+      }
+    };
+    fetchGig();
+  }, [id]);
+
+  const update = (field: string, value: string | boolean) => setForm(prev => ({ ...prev, [field]: value }));
 
   const handlePublish = async () => {
     if (!user) return;
@@ -36,7 +94,7 @@ const PostGig: React.FC = () => {
 
     try {
       // 1. Get the organization ID for the current user
-      const { data: orgData, error: orgError } = await supabase
+      const { error: orgError } = await supabase
         .from('organizations')
         .select('id')
         .eq('user_id', user.id)
@@ -56,58 +114,63 @@ const PostGig: React.FC = () => {
         }
       }
 
-      // 3. Insert the gig
-      const { data: gigData, error: insertError } = await supabase
+      // 3. Update the gig
+      const { error: updateError } = await supabase
         .from('gigs')
-        .insert({
-          organization_id: orgData.id,
+        .update({
           title: form.title,
           description: form.description,
           type: form.type,
           location: form.remote ? 'Remote' : form.location,
           date_start: dateStart,
           date_end: dateEnd,
-          status: 'published',
           resume_requirement: form.requireResume,
           linkedin_requirement: form.requireLinkedin,
           portfolio_requirement: form.requirePortfolio,
           pitch_requirement: form.requirePitch,
-          image_url: form.coverImage,
-          submission_formats: form.submissionFormats,
-          submission_notes: form.submissionNotes
+          image_url: form.coverImage
         })
+        .eq('id', id)
         .select()
         .single();
 
-      if (insertError) throw insertError;
+      if (updateError) throw updateError;
 
-      // 4. Insert custom questions if any
+      // 4. Upsert custom questions
       if (customQuestions.length > 0) {
-        const questionsToInsert = customQuestions.map(q => ({
-          gig_id: gigData.id,
+        const questionsToUpsert = customQuestions.map(q => ({
+          id: q.id,
+          gig_id: id,
           question_text: q.text,
           is_required: q.required
         }));
-        const { error: questionsError } = await supabase.from('gig_questions').insert(questionsToInsert);
+        const { error: questionsError } = await supabase.from('gig_questions').upsert(questionsToUpsert);
         if (questionsError) throw questionsError;
+        
+        // Delete removed questions
+        const currentIds = customQuestions.map(q => q.id);
+        await supabase.from('gig_questions').delete().eq('gig_id', id).not('id', 'in', `(${currentIds.join(',')})`);
+      } else {
+        await supabase.from('gig_questions').delete().eq('gig_id', id);
       }
 
-      // 5. Success, navigate to gigs list
-      toast.success("Gig published successfully!");
-      navigate('/dashboard/org/gigs');
+      // 5. Success, navigate to gig details
+      toast.success("Gig updated successfully!");
+      navigate(`/dashboard/org/gigs/${id}`);
     } catch (err: any) {
-      toast.error(err.message || "Failed to publish gig");
-      setError(err.message || "Failed to publish gig");
+      toast.error(err.message || "Failed to update gig");
+      setError(err.message || "Failed to update gig");
       setIsPublishing(false);
     }
   };
 
   const steps = [
     { n: 1, label: 'Basic Info', desc: 'Title, type, and description' },
-    { n: 2, label: 'Requirements', desc: 'Who and what is needed' },
-    ...(form.type === 'skilled' ? [{ n: 3, label: 'Submission', desc: 'How work is delivered' }] : []),
-    { n: 4, label: 'Review & Publish', desc: 'Preview your gig' },
+    { n: 2, label: 'Logistics', desc: 'When, where, and who' },
+    { n: 3, label: 'Review & Save', desc: 'Preview your changes' },
   ];
+
+  if (loadingGig) return <LoadingScreen message="Loading gig..." />;
 
   return (
     <div className="post-gig-container">
@@ -123,8 +186,8 @@ const PostGig: React.FC = () => {
             Cancel & Back
           </Link>
 
-          <h1 style={{ fontSize: '28px', fontFamily: 'var(--display)', color: 'white', marginBottom: '8px', lineHeight: 1.2 }}>Create a New Gig</h1>
-          <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.8)', marginBottom: '48px', lineHeight: 1.6 }}>Find the perfect volunteers to help your organization scale its impact.</p>
+          <h1 style={{ fontSize: '28px', fontFamily: 'var(--display)', color: 'white', marginBottom: '8px', lineHeight: 1.2 }}>Edit Gig</h1>
+          <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.8)', marginBottom: '48px', lineHeight: 1.6 }}>Update the details of your gig and manage application requirements.</p>
 
           {/* Vertical Stepper */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
@@ -155,8 +218,7 @@ const PostGig: React.FC = () => {
             <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.85)', margin: 0, lineHeight: 1.5 }}>
               {step === 1 && "A clear, exciting title and detailed description can increase your applications by up to 300%."}
               {step === 2 && "If the work doesn't require physical presence, marking it as 'Remote' opens it up to a nationwide talent pool."}
-              {step === 3 && "Determine how volunteers will deliver their completed work so it meets your needs."}
-              {step === 4 && "Preview your gig card exactly as it will appear to volunteers in the marketplace before hitting publish."}
+              {step === 3 && "Preview your gig card exactly as it will appear to volunteers in the marketplace before hitting publish."}
             </p>
           </div>
         </div>
@@ -390,7 +452,7 @@ const PostGig: React.FC = () => {
                         <h4 style={{ fontSize: '13px', fontWeight: 700, color: 'var(--ink)', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0 }}>Custom Questions</h4>
                         <button 
                           type="button"
-                          onClick={() => setCustomQuestions(prev => [...prev, { id: Math.random().toString(36).substring(7), text: '', required: false }])}
+                          onClick={() => setCustomQuestions(prev => [...prev, { id: crypto.randomUUID(), text: '', required: false }])}
                           style={{ fontSize: '12px', fontWeight: 600, color: 'var(--purple-600)', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                           Add Question
@@ -451,73 +513,7 @@ const PostGig: React.FC = () => {
                   <button onClick={() => setStep(1)} style={{ padding: '14px 24px', backgroundColor: 'var(--white)', color: 'var(--body)', border: '1px solid #E4E1F5', borderRadius: '12px', fontSize: '15px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }} onMouseOver={e => e.currentTarget.style.backgroundColor = '#FAFAFC'} onMouseOut={e => e.currentTarget.style.backgroundColor = 'var(--white)'}>
                     ← Back
                   </button>
-                  <button onClick={() => setStep(form.type === 'skilled' ? 3 : 4)} style={{ padding: '14px 40px', backgroundColor: 'var(--purple-600)', color: '#ffffff', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 6px 20px rgba(83,74,183,0.3)', transition: 'transform 0.2s, box-shadow 0.2s' }} onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(83,74,183,0.4)'; }} onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(83,74,183,0.3)'; }}>
-                    Next →
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {/* STEP 3: Submission Requirements (Only for Skilled) */}
-          {step === 3 && form.type === 'skilled' && (
-            <motion.div key="step3" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} style={{ maxWidth: '640px' }}>
-              <h2 style={{ fontSize: '24px', fontFamily: 'var(--display)', color: 'var(--ink)', marginBottom: '8px' }}>Work Submission Requirements</h2>
-              <p style={{ fontSize: '14px', color: 'var(--body)', marginBottom: '32px' }}>How should volunteers submit their completed work for this gig?</p>
-              
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-                <div style={{ backgroundColor: 'var(--white)', border: '1px solid #E4E1F5', borderRadius: '16px', padding: '24px' }}>
-                  <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: 'var(--ink)', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Allowed Submission Formats <span style={{color: 'var(--purple-600)'}}>*</span></label>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
-                    {[
-                      { id: 'text', label: 'Text Description', desc: 'Volunteer writes their submission directly in a text box.' },
-                      { id: 'file', label: 'File Uploads', desc: 'Volunteer can upload documents, images, PDFs, or SVGs.' },
-                      { id: 'link', label: 'External Link', desc: 'Volunteer provides a URL (Google Drive, Figma, GitHub, etc).' }
-                    ].map(format => (
-                      <label key={format.id} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', cursor: 'pointer', padding: '12px', borderRadius: '8px', backgroundColor: form.submissionFormats.includes(format.id) ? 'var(--purple-50)' : 'transparent', border: `1px solid ${form.submissionFormats.includes(format.id) ? 'var(--purple-200)' : 'transparent'}`, transition: 'all 0.2s' }}>
-                        <div style={{ paddingTop: '2px' }}>
-                          <input 
-                            type="checkbox" 
-                            checked={form.submissionFormats.includes(format.id)} 
-                            onChange={e => {
-                              if (e.target.checked) {
-                                update('submissionFormats', [...form.submissionFormats, format.id]);
-                              } else {
-                                if (form.submissionFormats.length > 1) {
-                                  update('submissionFormats', form.submissionFormats.filter(f => f !== format.id));
-                                } else {
-                                  toast.error("At least one submission format is required.");
-                                }
-                              }
-                            }} 
-                            style={{ width: '18px', height: '18px', accentColor: 'var(--purple-600)', cursor: 'pointer' }}
-                          />
-                        </div>
-                        <div>
-                          <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--ink)' }}>{format.label}</div>
-                          <div style={{ fontSize: '13px', color: 'var(--muted)', marginTop: '2px' }}>{format.desc}</div>
-                        </div>
-                      </label>
-                    ))}
-                  </div>
-
-                  <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: 'var(--ink)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Submission Instructions (Optional)</label>
-                  <textarea 
-                    value={form.submissionNotes} 
-                    onChange={e => update('submissionNotes', e.target.value)} 
-                    placeholder="e.g. Please upload your final logo as both PNG and SVG. Share the source files via Google Drive link." 
-                    rows={4} 
-                    style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid #E4E1F5', fontSize: '14px', color: 'var(--ink)', outline: 'none', fontFamily: 'var(--sans)', resize: 'vertical', lineHeight: 1.6, backgroundColor: '#FAFAFC', transition: 'all 0.2s' }} 
-                    onFocus={e => e.currentTarget.style.borderColor = 'var(--purple-400)'} 
-                    onBlur={e => e.currentTarget.style.borderColor = '#E4E1F5'} 
-                  />
-                </div>
-
-                <div style={{ marginTop: '32px', borderTop: '1px solid #E4E1F5', paddingTop: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <button onClick={() => setStep(form.type === 'skilled' ? 3 : 2)} style={{ padding: '14px 24px', backgroundColor: 'var(--white)', color: 'var(--body)', border: '1px solid #E4E1F5', borderRadius: '12px', fontSize: '15px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }} onMouseOver={e => e.currentTarget.style.backgroundColor = '#FAFAFC'} onMouseOut={e => e.currentTarget.style.backgroundColor = 'var(--white)'}>
-                    ← Back to Edit
-                  </button>
-                  <button onClick={() => setStep(4)} style={{ padding: '14px 40px', backgroundColor: 'var(--purple-600)', color: '#ffffff', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 6px 20px rgba(83,74,183,0.3)', transition: 'transform 0.2s, box-shadow 0.2s' }} onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(83,74,183,0.4)'; }} onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(83,74,183,0.3)'; }}>
+                  <button onClick={() => setStep(3)} style={{ padding: '14px 40px', backgroundColor: 'var(--purple-600)', color: '#ffffff', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 6px 20px rgba(83,74,183,0.3)', transition: 'transform 0.2s, box-shadow 0.2s' }} onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(83,74,183,0.4)'; }} onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(83,74,183,0.3)'; }}>
                     Next: Review →
                   </button>
                 </div>
@@ -525,9 +521,9 @@ const PostGig: React.FC = () => {
             </motion.div>
           )}
 
-          {/* STEP 4: Review */}
-          {step === 4 && (
-            <motion.div key="step4" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} style={{ maxWidth: '800px' }}>
+          {/* STEP 3: Review */}
+          {step === 3 && (
+            <motion.div key="step3" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} style={{ maxWidth: '800px' }}>
               <h2 style={{ fontSize: '24px', fontFamily: 'var(--display)', color: 'var(--ink)', marginBottom: '8px' }}>Review & Publish</h2>
               <p style={{ fontSize: '15px', color: 'var(--body)', marginBottom: '32px' }}>This is exactly how your gig will appear to volunteers in the marketplace.</p>
               
@@ -587,7 +583,7 @@ const PostGig: React.FC = () => {
                     </button>
                     <button disabled={isPublishing} onClick={handlePublish} style={{ padding: '14px 40px', background: 'linear-gradient(135deg, var(--teal-400), var(--teal-600))', color: '#ffffff', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: 700, cursor: isPublishing ? 'default' : 'pointer', boxShadow: '0 8px 24px rgba(29,158,117,0.3)', transition: 'transform 0.2s, box-shadow 0.2s', display: 'flex', alignItems: 'center', gap: '8px', opacity: isPublishing ? 0.7 : 1 }} onMouseOver={e => { if(!isPublishing){ e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 10px 28px rgba(29,158,117,0.4)';} }} onMouseOut={e => { if(!isPublishing){ e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(29,158,117,0.3)';} }}>
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                      {isPublishing ? 'Publishing...' : 'Publish Gig'}
+                      {isPublishing ? 'Saving...' : 'Save Changes'}
                     </button>
                   </div>
                 </div>
@@ -602,4 +598,4 @@ const PostGig: React.FC = () => {
   );
 };
 
-export default PostGig;
+export default EditGig;

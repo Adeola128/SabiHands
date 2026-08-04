@@ -256,7 +256,7 @@ const BrowseGigs: React.FC = () => {
           ) : (
             sorted.map(gig => (
               <div key={gig.id} className="gig-media-card">
-                <div className="gig-media-cover" style={{ backgroundImage: `url(https://ui-avatars.com/api/?name=${encodeURIComponent(gig.title)}&background=random&size=400)` }} />
+                <div className="gig-media-cover" style={{ backgroundImage: `url(${gig.image_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(gig.title)}&background=random&size=400`})` }} />
                 <div className="gig-media-body">
                   <div className="gig-media-header">
                     <div>

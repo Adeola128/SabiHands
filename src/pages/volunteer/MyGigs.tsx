@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import LoadingScreen from '../../components/LoadingScreen';
+import { MapPin, UploadCloud, Clock, AlertCircle, Award } from 'lucide-react';
 
 type Tab = 'upcoming' | 'completed';
 
@@ -17,12 +18,13 @@ const MyGigs: React.FC = () => {
   const [upcomingGigs, setUpcomingGigs] = useState<any[]>([]);
   const [completedGigs, setCompletedGigs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const { user } = useAuth();
 
   useEffect(() => {
     const fetchGigs = async () => {
       if (!user) return;
-      const { data } = await supabase
+      let { data, error } = await supabase
         .from('applications')
         .select(`
           id,
@@ -34,13 +36,52 @@ const MyGigs: React.FC = () => {
             location,
             date_start,
             date_end,
+            type,
+            image_url,
             organizations (
               name
             )
           ),
-          certificates(id)
+          attendance(
+            certificates(id)
+          ),
+          submissions(id, status)
         `)
         .eq('volunteer_id', user.id);
+
+      if (error) {
+        console.warn("Error fetching with submissions (did you run the SQL migration?):", error);
+        
+        // Fallback query without submissions
+        const fallback = await supabase
+          .from('applications')
+          .select(`
+            id,
+            status,
+            gigs (
+              id,
+              title,
+              description,
+              location,
+              date_start,
+              date_end,
+              type,
+              image_url,
+              organizations (
+                name
+              )
+            ),
+            attendance(
+              certificates(id)
+            )
+          `)
+          .eq('volunteer_id', user.id);
+          
+        if (fallback.error) {
+          setErrorMsg(fallback.error.message || JSON.stringify(fallback.error));
+        }
+        data = fallback.data;
+      }
 
       if (data) {
         const upcoming: any[] = [];
@@ -50,7 +91,17 @@ const MyGigs: React.FC = () => {
           if (!app.gigs) return;
           const gigDate = app.gigs.date_start ? new Date(app.gigs.date_start) : new Date();
           const isPast = app.gigs.date_start ? gigDate < new Date() : false;
-          const hasCert = app.certificates && app.certificates.length > 0;
+          
+          // Check if there is a certificate via attendance
+          let hasCert = false;
+          let certId = null;
+          if (app.attendance && app.attendance.length > 0) {
+            const att = app.attendance[0];
+            if (att.certificates && att.certificates.length > 0) {
+              hasCert = true;
+              certId = att.certificates[0].id;
+            }
+          }
           
           const mappedGig = {
             id: app.gigs.id,
@@ -60,17 +111,20 @@ const MyGigs: React.FC = () => {
             location: app.gigs.location,
             date: app.gigs.date_start ? gigDate.toLocaleDateString() : 'TBD',
             time: app.gigs.date_start ? gigDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '',
-            status: (isPast || hasCert) ? 'completed' : (app.status === 'accepted' ? 'active' : 'upcoming'),
-            coverImg: `https://ui-avatars.com/api/?name=${encodeURIComponent(app.gigs.title)}&background=random&size=400`,
+            status: hasCert ? 'completed' : (app.status === 'accepted' ? 'active' : 'upcoming'),
+            coverImg: app.gigs.image_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(app.gigs.title)}&background=random&size=400`,
             orgImg: `https://ui-avatars.com/api/?name=${encodeURIComponent(app.gigs.organizations?.name || 'Org')}&background=random`,
             description: app.gigs.description,
-            certId: hasCert ? app.certificates[0].id : null
+            type: app.gigs.type,
+            submission: app.submissions && app.submissions.length > 0 ? app.submissions[0] : null,
+            certId: certId
           };
 
-          if (isPast || hasCert || app.status === 'completed') {
+          if (hasCert || app.status === 'completed') {
             completed.push(mappedGig);
           } else {
-            if (app.status !== 'declined' && app.status !== 'withdrawn') {
+            // ONLY show accepted in My Gigs (pending goes to My Applications)
+            if (app.status === 'accepted') {
                upcoming.push(mappedGig);
             }
           }
@@ -87,6 +141,10 @@ const MyGigs: React.FC = () => {
 
   if (loading) {
     return <LoadingScreen message="Loading your gigs..." fullScreen={false} />;
+  }
+
+  if (errorMsg) {
+    return <div style={{ padding: '48px', textAlign: 'center', color: 'red' }}>Error loading gigs: {errorMsg}. Please ensure you have run the latest SQL migrations.</div>;
   }
 
   return (
@@ -193,12 +251,29 @@ const MyGigs: React.FC = () => {
                         <div style={{ fontSize: '12px', color: 'var(--body)', marginTop: '6px' }}>{gig.date} • {gig.time}</div>
                       </div>
                     </div>
-                    <p style={{ color: 'var(--body)', fontSize: '14px', margin: '0 0 16px 0', lineHeight: 1.6 }}>{gig.description}</p>
+                    <p style={{ color: 'var(--body)', fontSize: '14px', margin: '0 0 16px 0', lineHeight: 1.6, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}>{gig.description}</p>
                     <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                      {gig.status === 'active' && (
-                        <Link to="/dashboard/volunteer/check-in" className="gig-action" style={{ textDecoration: 'none' }}>Check In Now</Link>
+                      {gig.status === 'active' && gig.type !== 'skilled' && (
+                        <Link to="/dashboard/volunteer/check-in" className="gig-action" style={{ background: 'var(--purple-600)', color: 'white', border: 'none', boxShadow: '0 4px 12px rgba(124,58,237,0.25)', textDecoration: 'none', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <MapPin size={16} /> Check In Now
+                        </Link>
                       )}
-                      <Link to={`/dashboard/volunteer/gigs/${gig.id}`} className="gig-action" style={{ background: 'none', border: '1.5px solid #E4E1F5', color: 'var(--body)', textDecoration: 'none' }}>View Gig Details</Link>
+                      {gig.status === 'active' && gig.type === 'skilled' && !gig.submission && (
+                        <Link to={`/dashboard/volunteer/gigs/${gig.app_id}/submit`} className="gig-action" style={{ background: 'var(--purple-600)', color: 'white', border: 'none', boxShadow: '0 4px 12px rgba(124,58,237,0.25)', textDecoration: 'none', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <UploadCloud size={16} /> Submit Work
+                        </Link>
+                      )}
+                      {gig.status === 'active' && gig.submission?.status === 'pending' && (
+                        <span className="gig-action" style={{ background: '#f8f9fa', color: '#6c757d', border: '1.5px solid #dee2e6', cursor: 'default', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <Clock size={16} /> Review Pending
+                        </span>
+                      )}
+                      {gig.status === 'active' && gig.submission?.status === 'rejected' && (
+                        <Link to={`/dashboard/volunteer/gigs/${gig.app_id}/submit`} className="gig-action" style={{ background: '#F8D7DA', color: '#721C24', border: '1.5px solid #F5C6CB', textDecoration: 'none', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <AlertCircle size={16} /> Fix & Resubmit
+                        </Link>
+                      )}
+                      <Link to={`/dashboard/volunteer/gigs/${gig.id}`} className="gig-action" style={{ background: 'none', border: '1.5px solid #E4E1F5', color: 'var(--purple-600)', textDecoration: 'none', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>View Details</Link>
                     </div>
                   </div>
                 </div>
@@ -227,12 +302,14 @@ const MyGigs: React.FC = () => {
                         <div style={{ fontSize: '12px', color: 'var(--body)', marginTop: '6px' }}>{gig.date}</div>
                       </div>
                     </div>
-                    <p style={{ color: 'var(--body)', fontSize: '14px', margin: '0 0 16px 0', lineHeight: 1.6 }}>{gig.description}</p>
+                    <p style={{ color: 'var(--body)', fontSize: '14px', margin: '0 0 16px 0', lineHeight: 1.6, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}>{gig.description}</p>
                     <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                       {gig.certId && (
-                        <Link to={`/dashboard/volunteer/certificates/${gig.certId}`} className="gig-action" style={{ textDecoration: 'none' }}>View Certificate</Link>
+                        <Link to={`/dashboard/volunteer/certificates/${gig.certId}`} className="gig-action" style={{ background: 'var(--purple-600)', color: 'white', border: 'none', boxShadow: '0 4px 12px rgba(124,58,237,0.25)', textDecoration: 'none', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <Award size={16} /> View Certificate
+                        </Link>
                       )}
-                      <Link to={`/dashboard/volunteer/gigs/${gig.id}`} className="gig-action" style={{ background: 'none', border: '1.5px solid #E4E1F5', color: 'var(--body)', textDecoration: 'none' }}>View Gig</Link>
+                      <Link to={`/dashboard/volunteer/gigs/${gig.id}`} className="gig-action" style={{ background: 'none', border: '1.5px solid #E4E1F5', color: 'var(--purple-600)', textDecoration: 'none', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>View Details</Link>
                     </div>
                   </div>
                 </div>

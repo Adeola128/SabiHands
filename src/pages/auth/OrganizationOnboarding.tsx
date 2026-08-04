@@ -38,6 +38,8 @@ const OrganizationOnboarding: React.FC = () => {
 
       if (updateError) throw updateError;
 
+      await supabase.auth.updateUser({ data: { onboarding_complete: true } });
+
       navigate('/dashboard/org', { replace: true });
     } catch (err: any) {
       console.error("Onboarding error:", err);

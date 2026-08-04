@@ -212,7 +212,7 @@ const OrganizationProfile: React.FC = () => {
           <div className="org-gigs-grid">
             {gigs.map(gig => (
               <Link key={gig.id} to={`/dashboard/org/gigs/${gig.id}`} className="gig-media-card-horizontal">
-                <div className="gig-media-cover-horizontal" style={{ backgroundImage: `url(https://ui-avatars.com/api/?name=${encodeURIComponent(gig.title)}&background=random&size=400)` }}></div>
+                <div className="gig-media-cover-horizontal" style={{ backgroundImage: `url(${gig.image_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(gig.title)}&background=random&size=400`})` }}></div>
                 <div className="gig-media-body-horizontal">
                   <h3 className="gig-media-title">{gig.title}</h3>
                   <div className="gig-tags" style={{ marginTop: '8px', marginBottom: '16px' }}>

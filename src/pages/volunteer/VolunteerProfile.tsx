@@ -12,8 +12,7 @@ const VolunteerProfile: React.FC = () => {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  // Stats (placeholder data for now until we have real tables for this)
-  const stats = { hours: 124, completed: 8, rating: 5.0 };
+  const [stats, setStats] = useState({ hours: 124, completed: 8, rating: 0.0 });
 
   useEffect(() => {
     if (!user) return;
@@ -34,6 +33,19 @@ const VolunteerProfile: React.FC = () => {
           location: user.user_metadata?.location || 'Location Not Set',
         });
       }
+      
+      // Fetch ratings for volunteer
+      const { data: ratingData } = await supabase
+        .from('ratings')
+        .select('score')
+        .eq('ratee_id', user.id);
+        
+      let avgRating = 0;
+      if (ratingData && ratingData.length > 0) {
+        avgRating = ratingData.reduce((acc, curr) => acc + curr.score, 0) / ratingData.length;
+      }
+      setStats(prev => ({ ...prev, rating: Number(avgRating.toFixed(1)) }));
+
       setLoading(false);
     };
 

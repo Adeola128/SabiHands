@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'react-hot-toast';
 import LoadingScreen from '../../components/LoadingScreen';
 
@@ -14,10 +15,14 @@ const statusStyle: Record<string, { bg: string; color: string; label: string }> 
 
 const ReviewApplicants: React.FC = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [activeFilter, setActiveFilter] = useState<Filter>('pending');
   const [gig, setGig] = useState<any>(null);
   const [applicants, setApplicants] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isMessaging, setIsMessaging] = useState<string | null>(null);
+  const [gigQuestions, setGigQuestions] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,9 +36,16 @@ const ReviewApplicants: React.FC = () => {
         
       if (gigData) setGig(gigData);
 
+      const { data: questionsData } = await supabase
+        .from('gig_questions')
+        .select('*')
+        .eq('gig_id', id);
+        
+      if (questionsData) setGigQuestions(questionsData);
+
       const { data: appsData } = await supabase
         .from('applications')
-        .select('*, volunteer_profiles(full_name, interests)')
+        .select('*, volunteer_profiles(full_name, interests), application_answers(question_id, answer_text)')
         .eq('gig_id', id)
         .order('applied_at', { ascending: false });
 
@@ -50,7 +62,7 @@ const ReviewApplicants: React.FC = () => {
     try {
       const { error } = await supabase
         .from('applications')
-        .update({ status: newStatus, decided_at: new Date().toISOString() })
+        .update({ status: newStatus })
         .eq('id', appId);
         
       if (error) throw error;
@@ -59,6 +71,42 @@ const ReviewApplicants: React.FC = () => {
       toast.success(`Applicant ${newStatus}!`);
     } catch (err: any) {
       toast.error(err.message || 'Failed to update status');
+    }
+  };
+
+  const handleMessageVolunteer = async (volunteerId: string) => {
+    if (!user) return;
+    setIsMessaging(volunteerId);
+    try {
+      // Check if conversation already exists
+      const { data: existing } = await supabase
+        .from('conversations')
+        .select('id')
+        .or(`and(user1_id.eq.${user.id},user2_id.eq.${volunteerId}),and(user1_id.eq.${volunteerId},user2_id.eq.${user.id})`)
+        .limit(1);
+
+      if (existing && existing.length > 0) {
+        navigate('/dashboard/messages');
+      } else {
+        // Create new conversation
+        const { error } = await supabase
+          .from('conversations')
+          .insert({
+            user1_id: user.id,
+            user2_id: volunteerId
+          });
+        
+        if (error) throw error;
+        navigate('/dashboard/messages');
+      }
+    } catch (err: any) {
+      if (err.message && err.message.includes('Rate limit')) {
+        toast.error("You have reached your daily limit for new conversations.");
+      } else {
+        toast.error("Failed to start conversation.");
+      }
+    } finally {
+      setIsMessaging(null);
     }
   };
   
@@ -179,14 +227,27 @@ const ReviewApplicants: React.FC = () => {
                         <h4 style={{ fontSize: '12px', fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Their Pitch</h4>
                         <p style={{ fontSize: '14px', color: 'var(--ink)', lineHeight: 1.6, margin: 0, whiteSpace: 'pre-line' }}>{a.pitch}</p>
                       </div>
-                    ) : (
-                      <p style={{ fontSize: '14px', color: 'var(--muted)', fontStyle: 'italic', marginBottom: '16px' }}>No pitch provided.</p>
+                    ) : null}
+
+                    {a.application_answers && a.application_answers.length > 0 && (
+                      <div style={{ padding: '16px', backgroundColor: '#FAFAFC', borderRadius: '12px', marginBottom: '16px', border: '1px solid #E4E1F5', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        {a.application_answers.map((ans: any) => {
+                          const q = gigQuestions.find(q => q.id === ans.question_id);
+                          if (!q) return null;
+                          return (
+                            <div key={ans.question_id}>
+                              <h4 style={{ fontSize: '13px', fontWeight: 700, color: 'var(--ink)', marginBottom: '4px' }}>{q.question_text}</h4>
+                              <p style={{ fontSize: '14px', color: 'var(--body)', margin: 0 }}>{ans.answer_text || <span style={{ color: 'var(--muted)', fontStyle: 'italic' }}>No answer</span>}</p>
+                            </div>
+                          );
+                        })}
+                      </div>
                     )}
 
-                    {(a.cv_url || a.linkedin_url || a.portfolio_url) && (
+                    {(a.cv_url || a.resume_url || a.linkedin_url || a.portfolio_url) && (
                       <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '16px' }}>
-                        {a.cv_url && (
-                          <a href={a.cv_url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 600, color: 'var(--purple-600)', backgroundColor: 'var(--purple-50)', padding: '6px 12px', borderRadius: '8px', textDecoration: 'none' }}>
+                        {(a.cv_url || a.resume_url) && (
+                          <a href={a.cv_url || a.resume_url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 600, color: 'var(--purple-600)', backgroundColor: 'var(--purple-50)', padding: '6px 12px', borderRadius: '8px', textDecoration: 'none' }}>
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                             View Resume/CV
                           </a>
@@ -218,7 +279,14 @@ const ReviewApplicants: React.FC = () => {
                         </>
                       )}
                       {a.status === 'accepted' && (
-                        <button className="gig-action" style={{ background: 'none', border: '1.5px solid #E4E1F5', color: 'var(--body)', padding: '8px 20px', fontSize: '13px', cursor: 'pointer' }}>Message Volunteer</button>
+                        <button 
+                          onClick={() => handleMessageVolunteer(a.volunteer_id)}
+                          disabled={isMessaging === a.volunteer_id}
+                          className="gig-action" 
+                          style={{ background: 'none', border: '1.5px solid #E4E1F5', color: 'var(--body)', padding: '8px 20px', fontSize: '13px', cursor: 'pointer', opacity: isMessaging === a.volunteer_id ? 0.7 : 1 }}
+                        >
+                          {isMessaging === a.volunteer_id ? 'Starting...' : 'Message Volunteer'}
+                        </button>
                       )}
                       <Link to={`/dashboard/org/volunteers/${a.volunteer_id}`} className="gig-action" style={{ background: 'none', border: 'none', color: 'var(--purple-600)', padding: '8px 12px', fontSize: '13px', marginLeft: 'auto', textDecoration: 'none', fontWeight: 600 }}>View Full Profile →</Link>
                     </div>

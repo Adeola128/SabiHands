@@ -193,13 +193,13 @@ const VolunteerDashboard: React.FC = () => {
           <div className="gig-carousel">
             {recommended.length > 0 ? recommended.map(gig => (
               <div key={gig.id} className="gig-media-card-horizontal">
-                <div className="gig-media-cover-horizontal" style={{ backgroundImage: `url(https://ui-avatars.com/api/?name=${encodeURIComponent(gig.title)}&background=random&size=400)` }}></div>
+                <div className="gig-media-cover-horizontal" style={{ backgroundImage: `url(${gig.image_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(gig.title)}&background=random&size=400`})` }}></div>
                 <div className="gig-media-body-horizontal">
                   <Link to={`/dashboard/volunteer/gigs/${gig.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                     <h3 className="gig-media-title">{gig.title}</h3>
                   </Link>
                   <Link to="/dashboard/organization/profile" className="gig-media-org" style={{ textDecoration: 'none' }}>
-                    <img src="/images/diverse_gigs.png" alt={gig.organizations?.name} />
+                    <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(gig.organizations?.name || 'Org')}&background=random`} alt={gig.organizations?.name} />
                     <strong>{gig.organizations?.name || 'Organization'}</strong>
                   </Link>
                   <div className="gig-tags">

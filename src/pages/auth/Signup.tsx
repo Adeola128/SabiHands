@@ -102,6 +102,10 @@ const Signup: React.FC = () => {
   const handleGoogleLogin = async () => {
     try {
       setLoading(true);
+      
+      // Store pending role so AuthContext can apply it after redirect
+      localStorage.setItem('pendingOnboardingData', JSON.stringify({ role: isOrg ? 'organization' : 'volunteer' }));
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -272,7 +276,7 @@ const Signup: React.FC = () => {
 
             <label className="terms">
               <input type="checkbox" required />
-              <span>I agree to SabiHands' <Link to="#">Terms of Service</Link> and <Link to="#">Privacy Policy</Link>.</span>
+              <span>I agree to SabiHands' <Link to="/terms">Terms of Service</Link> and <Link to="/privacy">Privacy Policy</Link>.</span>
             </label>
 
             <button type="submit" disabled={loading} className={`submit-btn ${isOrg ? 'org-btn' : ''}`} style={{ opacity: loading ? 0.7 : 1 }}>
