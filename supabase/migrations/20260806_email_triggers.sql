@@ -3,7 +3,7 @@ CREATE OR REPLACE FUNCTION public.invoke_email_submission_received()
 RETURNS TRIGGER AS $$
 BEGIN
   PERFORM net.http_post(
-    url := 'http://host.docker.internal:54321/functions/v1/email-submission-received',
+    url := 'https://menijtrnjpdwevmpkvjx.supabase.co/functions/v1/email-submission-received',
     headers := '{"Content-Type": "application/json", "Authorization": "Bearer YOUR_SERVICE_ROLE_KEY"}'::jsonb,
     body := json_build_object(
       'type', 'INSERT',
@@ -27,7 +27,7 @@ RETURNS TRIGGER AS $$
 BEGIN
   IF NEW.status != OLD.status THEN
     PERFORM net.http_post(
-      url := 'http://host.docker.internal:54321/functions/v1/email-submission-reviewed',
+      url := 'https://menijtrnjpdwevmpkvjx.supabase.co/functions/v1/email-submission-reviewed',
       headers := '{"Content-Type": "application/json", "Authorization": "Bearer YOUR_SERVICE_ROLE_KEY"}'::jsonb,
       body := json_build_object(
         'type', 'UPDATE',
@@ -52,7 +52,7 @@ CREATE OR REPLACE FUNCTION public.invoke_email_certificate_issued()
 RETURNS TRIGGER AS $$
 BEGIN
   PERFORM net.http_post(
-    url := 'http://host.docker.internal:54321/functions/v1/email-certificate-issued',
+    url := 'https://menijtrnjpdwevmpkvjx.supabase.co/functions/v1/email-certificate-issued',
     headers := '{"Content-Type": "application/json", "Authorization": "Bearer YOUR_SERVICE_ROLE_KEY"}'::jsonb,
     body := json_build_object(
       'type', 'INSERT',
@@ -76,7 +76,7 @@ RETURNS TRIGGER AS $$
 BEGIN
   IF NEW.status = 'approved' AND OLD.status != 'approved' THEN
     PERFORM net.http_post(
-      url := 'http://host.docker.internal:54321/functions/v1/email-org-approved',
+      url := 'https://menijtrnjpdwevmpkvjx.supabase.co/functions/v1/email-org-approved',
       headers := '{"Content-Type": "application/json", "Authorization": "Bearer YOUR_SERVICE_ROLE_KEY"}'::jsonb,
       body := json_build_object(
         'type', 'UPDATE',
