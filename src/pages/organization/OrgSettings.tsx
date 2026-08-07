@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { uploadImage } from '../../lib/uploadImage';
+import { NIGERIA_STATES } from '../../utils/constants';
 import LoadingScreen from '../../components/LoadingScreen';
 
 const OrgSettings: React.FC = () => {
@@ -269,8 +270,13 @@ const OrgSettings: React.FC = () => {
                   </div>
 
                   <div className="premium-form-group">
-                    <label className="premium-label">Physical Location (HQ / City)</label>
-                    <input type="text" name="location" className="premium-input" value={org.location} onChange={handleChange} placeholder="e.g. Yaba, Lagos" />
+                    <label className="premium-label">Physical Location (State)</label>
+                    <select name="location" className="premium-input" value={org.location} onChange={handleChange} required>
+                      <option value="">Select a state...</option>
+                      {NIGERIA_STATES.map(state => (
+                        <option key={state} value={state}>{state}</option>
+                      ))}
+                    </select>
                   </div>
 
                   <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>

@@ -1,101 +1,104 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
-import { useAuth } from '../../contexts/AuthContext';
-import { useProfileCompleteness } from '../../hooks/useProfileCompleteness';
-import ProfileCompletenessPrompt from '../../components/ProfileCompletenessPrompt';
 import LoadingScreen from '../../components/LoadingScreen';
-import './VolunteerProfile.css';
+import '../volunteer/VolunteerProfile.css';
 
-const VolunteerProfile: React.FC = () => {
-  const { user } = useAuth();
+const PublicVolunteerProfile: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [stats, setStats] = useState({ hours: 0, completed: 0, rating: 0.0 });
   const [certificates, setCertificates] = useState<any[]>([]);
 
   useEffect(() => {
-    if (!user) return;
+    if (!id) return;
     
     const fetchProfile = async () => {
-      const { data } = await supabase
-        .from('volunteer_profiles')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
+      try {
+        const { data, error: fetchError } = await supabase
+          .from('volunteer_profiles')
+          .select('*')
+          .eq('user_id', id)
+          .single();
+          
+        if (fetchError || !data) {
+          setError("Volunteer not found or profile is incomplete.");
+          setLoading(false);
+          return;
+        }
         
-      if (data) {
         setProfile(data);
-      } else {
-        // Handle new users
-        setProfile({
-          full_name: user.user_metadata?.full_name || 'New Volunteer',
-          location: user.user_metadata?.location || 'Location Not Set',
+        
+        // Fetch ratings for volunteer
+        const { data: ratingData } = await supabase
+          .from('ratings')
+          .select('score')
+          .eq('ratee_id', id);
+          
+        let avgRating = 0;
+        if (ratingData && ratingData.length > 0) {
+          avgRating = ratingData.reduce((acc, curr) => acc + curr.score, 0) / ratingData.length;
+        }
+
+        // Fetch completed gigs (applications with status 'accepted')
+        const { data: applications } = await supabase
+          .from('applications')
+          .select('id')
+          .eq('volunteer_id', id)
+          .eq('status', 'accepted');
+          
+        const completedCount = applications ? applications.length : 0;
+        const calculatedHours = completedCount * 2; // Fixed estimate per completed gig
+
+        // Fetch certificates
+        const { data: certs } = await supabase
+          .from('certificates')
+          .select('*')
+          .eq('volunteer_id', id)
+          .order('issued_at', { ascending: false });
+          
+        setCertificates(certs || []);
+
+        setStats({ 
+          rating: Number(avgRating.toFixed(1)),
+          completed: completedCount,
+          hours: calculatedHours
         });
+
+      } catch (err: any) {
+        console.error(err);
+        setError("An error occurred while fetching the profile.");
+      } finally {
+        setLoading(false);
       }
-      
-      // Fetch ratings for volunteer
-      const { data: ratingData } = await supabase
-        .from('ratings')
-        .select('score')
-        .eq('ratee_id', user.id);
-        
-      let avgRating = 0;
-      if (ratingData && ratingData.length > 0) {
-        avgRating = ratingData.reduce((acc, curr) => acc + curr.score, 0) / ratingData.length;
-      }
-
-      // Fetch completed gigs (applications with status 'accepted')
-      const { data: applications } = await supabase
-        .from('applications')
-        .select('id')
-        .eq('volunteer_id', user.id)
-        .eq('status', 'accepted');
-        
-      const completedCount = applications ? applications.length : 0;
-      const calculatedHours = completedCount * 2; // Fixed estimate per completed gig
-
-      // Fetch certificates
-      const { data: certs } = await supabase
-        .from('certificates')
-        .select('*')
-        .eq('volunteer_id', user.id)
-        .order('issued_at', { ascending: false });
-        
-      setCertificates(certs || []);
-
-      setStats(prev => ({ 
-        ...prev, 
-        rating: Number(avgRating.toFixed(1)),
-        completed: completedCount,
-        hours: calculatedHours
-      }));
-
-      setLoading(false);
     };
 
     fetchProfile();
-  }, [user]);
+  }, [id]);
 
-  const completeness = useProfileCompleteness(profile, 'volunteer');
+  if (loading) return <LoadingScreen message="Loading volunteer profile..." fullScreen={false} />;
 
-  if (loading) return <LoadingScreen message="Loading profile..." fullScreen={false} />;
+  if (error || !profile) {
+    return (
+      <div className="volunteer-page-container">
+        <div style={{ padding: '40px', textAlign: 'center', backgroundColor: 'var(--paper)', borderRadius: '12px' }}>
+          <h2 style={{ color: 'var(--ink)' }}>{error || 'Profile not found'}</h2>
+          <Link to="/" style={{ color: 'var(--purple-600)', fontWeight: 600, textDecoration: 'none', marginTop: '16px', display: 'inline-block' }}>Return Home</Link>
+        </div>
+      </div>
+    );
+  }
 
   const initials = profile?.full_name?.substring(0, 2).toUpperCase() || 'VO';
   const hasSkills = profile?.skills && profile.skills.length > 0;
   const hasInterests = profile?.interests && profile.interests.length > 0;
 
   return (
-    <div className="vol-profile-container">
+    <div className="vol-profile-container" style={{ maxWidth: '1000px', margin: '0 auto', padding: '40px 24px' }}>
       
-      {/* ── PROFILE COMPLETENESS PROMPT ── */}
-      <ProfileCompletenessPrompt 
-        score={completeness.score} 
-        nextStep={completeness.nextStep || null} 
-        editLink="/dashboard/volunteer/settings" 
-      />
-
       {/* ── HERO SECTION ── */}
       <div className="vol-profile-hero">
         <div className="vol-profile-cover" style={{ backgroundImage: profile?.cover_url ? `url(${profile.cover_url})` : undefined }} />
@@ -161,13 +164,6 @@ const VolunteerProfile: React.FC = () => {
               </div>
             </div>
           </div>
-          
-          <div className="vol-edit-btn" style={{ display: 'flex', gap: '12px' }}>
-            <Link to="/dashboard/volunteer/settings" style={{ padding: '12px 24px', backgroundColor: 'var(--paper)', color: 'var(--ink)', borderRadius: '12px', textDecoration: 'none', fontWeight: 600, fontSize: '14px', border: '1px solid #E4E1F5', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-              Edit Profile
-            </Link>
-          </div>
         </div>
       </div>
 
@@ -207,25 +203,6 @@ const VolunteerProfile: React.FC = () => {
               </div>
             </div>
           )}
-
-          {/* Verifications */}
-          <div className="vol-card">
-            <h2 className="vol-card-title">Verifications</h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'var(--teal-50)', color: 'var(--teal-600)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
-                </div>
-                <span style={{ fontSize: '15px', color: 'var(--ink)', fontWeight: 500 }}>Email Address Verified</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: profile?.phone ? 'var(--teal-50)' : '#F3F2F9', color: profile?.phone ? 'var(--teal-600)' : 'var(--muted)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {profile?.phone ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg> : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>}
-                </div>
-                <span style={{ fontSize: '15px', color: profile?.phone ? 'var(--ink)' : 'var(--muted)', fontWeight: 500 }}>{profile?.phone ? 'Phone Number Verified' : 'Phone Not Verified'}</span>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* ── RIGHT COLUMN ── */}
@@ -234,12 +211,11 @@ const VolunteerProfile: React.FC = () => {
           <div className="vol-card">
             <h2 className="vol-card-title">
               Certificates & Badges
-              <Link to="/dashboard/volunteer/certificates" style={{ marginLeft: 'auto', fontSize: '13px', color: 'var(--purple-600)', textDecoration: 'none', fontWeight: 600 }}>View All</Link>
             </h2>
             
             {certificates.length > 0 ? (
-              certificates.slice(0, 3).map((cert) => (
-                <div key={cert.id} className="vol-cert-mini">
+              certificates.map((cert) => (
+                <div key={cert.id} className="vol-cert-mini" style={{ marginBottom: '12px' }}>
                   <div style={{ width: '48px', height: '48px', borderRadius: '8px', background: 'linear-gradient(135deg, var(--teal-400), var(--purple-400))', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', flexShrink: 0 }}>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 15V3m0 12l-4-4m4 4l4-4M2 17l.621 2.485A2 2 0 0 0 4.561 21h14.878a2 2 0 0 0 1.94-1.515L22 17"/></svg>
                   </div>
@@ -261,4 +237,4 @@ const VolunteerProfile: React.FC = () => {
   );
 };
 
-export default VolunteerProfile;
+export default PublicVolunteerProfile;

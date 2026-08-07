@@ -57,6 +57,9 @@ import ImpactDashboard from './pages/organization/ImpactDashboard';
 import Notifications from './pages/Notifications';
 import Messages from './pages/Messages';
 import OrganizationProfile from './pages/organization/OrganizationProfile';
+import PublicVolunteerProfile from './pages/public/PublicVolunteerProfile';
+import PublicOrganizationProfile from './pages/public/PublicOrganizationProfile';
+import PublicGigDetail from './pages/public/PublicGigDetail';
 
 import AdminLayout from './layouts/AdminLayout';
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -89,6 +92,9 @@ const App: React.FC = () => {
           <Route path="contact" element={<Contact />} />
           <Route path="terms" element={<Legal type="terms" />} />
           <Route path="privacy" element={<Legal type="privacy" />} />
+          <Route path="volunteer/:id" element={<PublicVolunteerProfile />} />
+          <Route path="organization/:id" element={<PublicOrganizationProfile />} />
+          <Route path="gig/:id" element={<PublicGigDetail />} />
           <Route path="*" element={<NotFound />} />
         </Route>
 

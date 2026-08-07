@@ -1,37 +1,19 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import './Login.css';
 
 const VerifyContact: React.FC = () => {
-  const [code, setCode] = useState(['', '', '', '', '', '']);
+  const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const navigate = useNavigate();
   const location = useLocation();
 
   const email = location.state?.email;
   const role = location.state?.role || 'volunteer';
 
-  const handleChange = (index: number, value: string) => {
-    if (value.length <= 1) {
-      const newCode = [...code];
-      newCode[index] = value;
-      setCode(newCode);
-      
-      // Auto-advance
-      if (value !== '' && index < 5) {
-        inputRefs.current[index + 1]?.focus();
-      }
-    }
-  };
 
-  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Backspace' && code[index] === '' && index > 0) {
-      inputRefs.current[index - 1]?.focus();
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,9 +22,8 @@ const VerifyContact: React.FC = () => {
       return;
     }
 
-    const fullCode = code.join('');
-    if (fullCode.length !== 6) {
-      setError("Please enter all 6 digits");
+    if (!code.trim()) {
+      setError("Please enter the verification code");
       return;
     }
 
@@ -51,7 +32,7 @@ const VerifyContact: React.FC = () => {
       setError(null);
       const { error: verifyError } = await supabase.auth.verifyOtp({
         email,
-        token: fullCode,
+        token: code.trim(),
         type: 'signup'
       });
 
@@ -112,20 +93,15 @@ const VerifyContact: React.FC = () => {
               <div className="field-header">
                 <label>Verification Code</label>
               </div>
-              <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
-                {code.map((digit, index) => (
-                  <input 
-                    key={index}
-                    ref={el => { inputRefs.current[index] = el; }}
-                    type="text" 
-                    value={digit}
-                    onChange={(e) => handleChange(index, e.target.value)}
-                    onKeyDown={(e) => handleKeyDown(index, e)}
-                    maxLength={1}
-                    style={{ width: '100%', textAlign: 'center', fontSize: '20px', padding: '14px 0' }}
-                    required 
-                  />
-                ))}
+              <div style={{ marginTop: '4px' }}>
+                <input 
+                  type="text" 
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                  placeholder="Enter code here"
+                  style={{ width: '100%', textAlign: 'center', fontSize: '24px', letterSpacing: '8px', padding: '14px 0', borderRadius: '8px', border: '1px solid #D8D5F3' }}
+                  required 
+                />
               </div>
             </div>
             

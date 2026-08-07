@@ -5,6 +5,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'react-hot-toast';
 import LoadingScreen from '../../components/LoadingScreen';
+import ShareGigButton from '../../components/ShareGigButton';
 
 const GigDetail: React.FC = () => {
   const { id } = useParams();
@@ -104,10 +105,12 @@ const GigDetail: React.FC = () => {
 
             <Link
               to={`/dashboard/volunteer/gigs/${gig.id}/apply`}
-              style={{ display: 'block', width: '100%', padding: '14px', backgroundColor: 'var(--purple-600)', color: 'var(--white)', textAlign: 'center', borderRadius: '10px', fontWeight: 700, textDecoration: 'none', fontSize: '15px', boxShadow: '0 4px 12px rgba(38,33,92,0.2)', transition: 'all 0.2s ease' }}
+              style={{ display: 'block', width: '100%', padding: '14px', backgroundColor: 'var(--purple-600)', color: 'var(--white)', textAlign: 'center', borderRadius: '10px', fontWeight: 700, textDecoration: 'none', fontSize: '15px', boxShadow: '0 4px 12px rgba(38,33,92,0.2)', transition: 'all 0.2s ease', marginBottom: '12px' }}
             >
               Apply for this Gig
             </Link>
+            
+            <ShareGigButton gigId={gig.id} title={gig.title} buttonText="Share with a Friend" />
           </div>
         </div>
 
@@ -138,15 +141,15 @@ const GigDetail: React.FC = () => {
         <div className="dash-card">
           <div className="dash-card-padding">
             <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--ink)', marginBottom: '16px' }}>Organizer</h3>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-              <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: 'var(--teal-50)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--teal-600)" strokeWidth="2"><rect x="3" y="9" width="18" height="13" rx="2"/><path d="M8 9V5a2 2 0 0 1 4 0v4"/></svg>
-              </div>
-              <div>
-                <div style={{ fontWeight: 700, color: 'var(--ink)', fontSize: '15px' }}>{gig.organizations?.name || 'Organization'}</div>
-                <div style={{ fontSize: '13px', color: 'var(--muted)' }}>{gig.organizations?.org_type || 'NGO'}</div>
-              </div>
-            </div>
+              <Link to={`/organization/${gig.organizations?.user_id}`} style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px', textDecoration: 'none' }}>
+                <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: 'var(--teal-50)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--teal-600)" strokeWidth="2"><rect x="3" y="9" width="18" height="13" rx="2"/><path d="M8 9V5a2 2 0 0 1 4 0v4"/></svg>
+                </div>
+                <div>
+                  <div style={{ fontWeight: 700, color: 'var(--ink)', fontSize: '15px' }}>{gig.organizations?.name || 'Organization'}</div>
+                  <div style={{ fontSize: '13px', color: 'var(--muted)' }}>{gig.organizations?.org_type || 'NGO'}</div>
+                </div>
+              </Link>
             <p style={{ fontSize: '13px', color: 'var(--body)', lineHeight: 1.6, marginBottom: '12px' }}>
               An NGO dedicated to environmental sustainability and waste management across Lagos State.
             </p>

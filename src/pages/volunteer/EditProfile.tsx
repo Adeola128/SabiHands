@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { uploadImage } from '../../lib/uploadImage';
+import { NIGERIA_STATES } from '../../utils/constants';
 import LoadingScreen from '../../components/LoadingScreen';
 import './VolunteerPages.css';
 
@@ -46,8 +47,8 @@ const EditProfile: React.FC = () => {
           location: data.location || '',
           phone: data.phone || '',
           bio: data.bio || '',
-          skills: data.skills ? data.skills.join(', ') : '',
-          interests: data.interests ? data.interests.join(', ') : '',
+          skills: Array.isArray(data.skills) ? data.skills.join(', ') : (data.skills || ''),
+          interests: Array.isArray(data.interests) ? data.interests.join(', ') : (data.interests || ''),
           linkedin_url: data.linkedin_url || '',
           portfolio_url: data.portfolio_url || '',
           avatar_url: data.avatar_url || '',
@@ -71,7 +72,7 @@ const EditProfile: React.FC = () => {
     fetchProfile();
   }, [user]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setProfile(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
@@ -87,8 +88,8 @@ const EditProfile: React.FC = () => {
       location: profile.location,
       phone: profile.phone,
       bio: profile.bio,
-      skills: profile.skills.split(',').map(s => s.trim()).filter(Boolean),
-      interests: profile.interests.split(',').map(s => s.trim()).filter(Boolean),
+      skills: typeof profile.skills === 'string' ? profile.skills.split(',').map(s => s.trim()).filter(Boolean) : profile.skills,
+      interests: typeof profile.interests === 'string' ? profile.interests.split(',').map(s => s.trim()).filter(Boolean) : profile.interests,
       linkedin_url: profile.linkedin_url,
       portfolio_url: profile.portfolio_url,
       avatar_url: profile.avatar_url,
@@ -272,8 +273,13 @@ const EditProfile: React.FC = () => {
                     <input type="tel" name="phone" className="premium-input" value={profile.phone} onChange={handleChange} placeholder="+234..." />
                   </div>
                   <div className="premium-form-group">
-                    <label className="premium-label">Location (City, State)</label>
-                    <input type="text" name="location" className="premium-input" value={profile.location} onChange={handleChange} placeholder="e.g. Yaba, Lagos" />
+                    <label className="premium-label">Location (State)</label>
+                    <select name="location" className="premium-input" value={profile.location} onChange={handleChange} required>
+                      <option value="">Select a state...</option>
+                      {NIGERIA_STATES.map(state => (
+                        <option key={state} value={state}>{state}</option>
+                      ))}
+                    </select>
                   </div>
                 </div>
 

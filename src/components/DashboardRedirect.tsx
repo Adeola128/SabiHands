@@ -16,16 +16,41 @@ const DashboardRedirect: React.FC = () => {
 
     const checkUserRole = async () => {
       try {
-        // 1. Check user metadata first
-        const metadataRole = user.user_metadata?.role;
-        const onboardingComplete = user.user_metadata?.onboarding_complete;
+        let metadataRole = user.user_metadata?.role;
+        let onboardingComplete = user.user_metadata?.onboarding_complete;
         
+        // 1. If onboarding is not marked complete, check DB to see if they already have a profile
         if (!onboardingComplete) {
-          // If onboarding is not complete, route them to onboarding based on role (default to volunteer)
+          const { data: orgData } = await supabase
+            .from('organizations')
+            .select('id')
+            .eq('user_id', user.id)
+            .single();
+            
+          if (orgData) {
+            await supabase.auth.updateUser({ data: { role: 'organization', onboarding_complete: true } });
+            metadataRole = 'organization';
+            onboardingComplete = true;
+          } else {
+            const { data: volData } = await supabase
+              .from('volunteer_profiles')
+              .select('id')
+              .eq('user_id', user.id)
+              .single();
+
+            if (volData) {
+              await supabase.auth.updateUser({ data: { role: 'volunteer', onboarding_complete: true } });
+              metadataRole = 'volunteer';
+              onboardingComplete = true;
+            }
+          }
+        }
+
+        // 2. If STILL not complete, route to onboarding
+        if (!onboardingComplete) {
           if (metadataRole === 'organization') {
             navigate('/onboarding/organization', { replace: true });
           } else {
-            // Default to volunteer if totally new (Google OAuth first time without pending data)
             if (!metadataRole) {
               await supabase.auth.updateUser({ data: { role: 'volunteer' } });
             }
@@ -34,45 +59,18 @@ const DashboardRedirect: React.FC = () => {
           return;
         }
 
+        // 3. Route to proper dashboard based on role
         if (metadataRole === 'organization') {
           navigate('/dashboard/org', { replace: true });
-          return;
         } else if (metadataRole === 'admin') {
           navigate('/admin', { replace: true });
-          return;
-        } else if (metadataRole === 'volunteer') {
+        } else {
+          // Default to volunteer if it's somehow missing but onboarding is true
+          if (!metadataRole) {
+              await supabase.auth.updateUser({ data: { role: 'volunteer' } });
+          }
           navigate('/dashboard/volunteer', { replace: true });
-          return;
         }
-
-        // 2. Fallback check DB if metadata is missing (e.g. Google Auth signup)
-        const { data: orgData } = await supabase
-          .from('organizations')
-          .select('id')
-          .eq('user_id', user.id)
-          .single();
-          
-        if (orgData) {
-          await supabase.auth.updateUser({ data: { role: 'organization' } });
-          navigate('/dashboard/org', { replace: true });
-          return;
-        }
-
-        const { data: volData } = await supabase
-          .from('volunteer_profiles')
-          .select('id')
-          .eq('user_id', user.id)
-          .single();
-
-        if (volData) {
-          await supabase.auth.updateUser({ data: { role: 'volunteer' } });
-          navigate('/dashboard/volunteer', { replace: true });
-          return;
-        }
-
-        // 3. Default to volunteer if totally new (Google OAuth first time)
-        await supabase.auth.updateUser({ data: { role: 'volunteer' } });
-        navigate('/onboarding/volunteer', { replace: true });
         
       } catch (err) {
         console.error('Error checking role in redirect:', err);

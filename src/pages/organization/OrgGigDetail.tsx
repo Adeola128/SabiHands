@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import LoadingScreen from '../../components/LoadingScreen';
+import ShareGigButton from '../../components/ShareGigButton';
 
 const statusStyle: Record<string, { bg: string; color: string; label: string }> = {
   accepted: { bg: '#D4EDDA', color: '#155724', label: 'Accepted' },
@@ -92,7 +93,12 @@ const OrgGigDetail: React.FC = () => {
             )}
 
             <Link to={`/dashboard/org/gigs/${gig.id}/edit`} className="gig-action" style={{ textDecoration: 'none', textAlign: 'center', display: 'block', background: 'none', border: '1.5px solid #E4E1F5', color: 'var(--body)' }}>Edit Gig</Link>
-            <button className="gig-action" style={{ background: 'none', border: '1.5px solid #fecaca', color: '#dc2626', width: '100%' }}>Close Gig</button>
+            
+            <div style={{ marginTop: '4px' }}>
+              <ShareGigButton gigId={gig.id} title={gig.title} buttonText="Share Public Link" />
+            </div>
+
+            <button className="gig-action" style={{ background: 'none', border: '1.5px solid #fecaca', color: '#dc2626', width: '100%', marginTop: '4px' }}>Close Gig</button>
           </div>
         </div>
 

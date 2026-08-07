@@ -37,6 +37,7 @@ const ReviewSubmissions: React.FC = () => {
         .select(`
           *,
           applications (
+            volunteer_id,
             volunteer_profiles (full_name, bio)
           )
         `)
@@ -151,7 +152,11 @@ const ReviewSubmissions: React.FC = () => {
                 <div key={sub.id} style={{ padding: '24px', borderBottom: '1px solid var(--border)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
                     <div>
-                      <h3 style={{ fontSize: '16px', fontWeight: 700, margin: '0 0 4px 0' }}>{sub.applications?.volunteer_profiles?.full_name}</h3>
+                      <h3 style={{ fontSize: '16px', fontWeight: 700, margin: '0 0 4px 0' }}>
+                        <Link to={`/volunteer/${sub.applications?.volunteer_id}`} style={{ color: 'var(--ink)', textDecoration: 'none' }}>
+                          {sub.applications?.volunteer_profiles?.full_name}
+                        </Link>
+                      </h3>
                       <p style={{ fontSize: '13px', color: 'var(--muted)', margin: 0 }}>Submitted on {new Date(sub.submitted_at).toLocaleDateString()}</p>
                     </div>
                   </div>
@@ -218,7 +223,11 @@ const ReviewSubmissions: React.FC = () => {
                 <div key={sub.id} style={{ padding: '24px', borderBottom: '1px solid var(--border)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div>
-                      <h3 style={{ fontSize: '16px', fontWeight: 700, margin: '0 0 4px 0' }}>{sub.applications?.volunteer_profiles?.full_name}</h3>
+                      <h3 style={{ fontSize: '16px', fontWeight: 700, margin: '0 0 4px 0' }}>
+                        <Link to={`/volunteer/${sub.applications?.volunteer_id}`} style={{ color: 'var(--ink)', textDecoration: 'none' }}>
+                          {sub.applications?.volunteer_profiles?.full_name}
+                        </Link>
+                      </h3>
                       <p style={{ fontSize: '13px', color: 'var(--muted)', margin: 0 }}>Reviewed on {new Date(sub.reviewed_at).toLocaleDateString()}</p>
                     </div>
                     <span className="tag status" style={{ backgroundColor: sub.status === 'approved' ? '#D4EDDA' : '#F8D7DA', color: sub.status === 'approved' ? '#155724' : '#721C24', textTransform: 'capitalize' }}>
