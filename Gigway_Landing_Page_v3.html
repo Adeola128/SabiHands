@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gigway — Real gigs. Real proof. You're on your way.</title>
+<!--
+  ILLUSTRATIONS
+  Real illustrations are wired in from the "illustrations/" folder next to this file:
+    illustrations/community-illustration.png   — hero: a community already on the path
+    illustrations/volunteers-illustration.png  — "For volunteers"
+    illustrations/orgs-illustration.png        — "For NGOs & companies"
+    illustrations/certificate-illustration.png — the certificate / proof section
+  If a file is ever missing, a borderless placeholder shape shows instead with a label —
+  safe to keep this fallback even after art is final, in case a file gets renamed or moved.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,300;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --purple-900:#26215C; --purple-700:#3C3489; --purple-600:#534AB7; --purple-400:#7F77DD; --purple-200:#AFA9EC; --purple-50:#EEEDFE;
+    --teal-900:#04342C; --teal-600:#0F6E56; --teal-400:#1D9E75; --teal-200:#5DCAA5; --teal-50:#E1F5EE;
+    --ink:#26215C; --body:#4A4770; --muted:#8B87B0; --paper:#FBFAFF; --white:#FFFFFF;
+    --display:'Fraunces',serif; --sans:'Inter',sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; font-family:var(--sans); color:var(--body); background:var(--paper); line-height:1.6; -webkit-font-smoothing:antialiased; overflow-x:hidden;}
+  h1,h2,h3{font-family:var(--display); color:var(--ink); margin:0; font-weight:600;}
+  a{color:inherit;}
+  img,svg{display:block; max-width:100%;}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 40px;}
+  button{font-family:var(--sans); cursor:pointer;}
+
+  /* reveal-on-scroll — progressive enhancement: content is visible by default,
+     only hidden-then-revealed once JS confirms it's actually running */
+  html.js-ready [data-reveal]{opacity:0; transform:translateY(26px); transition:opacity .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1);}
+  html.js-ready [data-reveal].in-view{opacity:1; transform:translateY(0);}
+  @media (prefers-reduced-motion: reduce){
+    [data-reveal]{opacity:1 !important; transform:none !important; transition:none !important;}
+    [data-parallax]{transform:none !important;}
+    *{animation:none !important;}
+  }
+
+  /* nav */
+  .nav{position:fixed; top:0; left:0; right:0; z-index:80; padding:22px 0; transition:background .3s ease, padding .3s ease, backdrop-filter .3s ease;}
+  .nav.scrolled{background:rgba(251,250,255,0.85); backdrop-filter:blur(10px); padding:14px 0; box-shadow:0 1px 0 rgba(38,33,92,0.06);}
+  .nav-inner{max-width:1180px; margin:0 auto; padding:0 40px; display:flex; align-items:center; gap:10px;}
+  .nav-mark{width:26px; height:26px;}
+  .nav-name{font-family:var(--display); font-weight:600; font-size:17px; color:var(--white); transition:color .3s ease;}
+  .nav.scrolled .nav-name{color:var(--ink);}
+  .nav-links{margin-left:44px; display:flex; gap:30px; font-size:14px; font-weight:500;}
+  .nav-links a{text-decoration:none; color:rgba(255,255,255,0.75); transition:color .3s ease;}
+  .nav.scrolled .nav-links a{color:var(--body);}
+  .nav-links a:hover{color:var(--teal-200);}
+  .nav.scrolled .nav-links a:hover{color:var(--purple-600);}
+  .nav-cta{margin-left:auto;}
+  .btn{border:none; border-radius:999px; padding:13px 26px; font-size:14px; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:8px; transition:transform .25s cubic-bezier(.16,1,.3,1), box-shadow .25s ease, background .25s ease;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn-primary{background:var(--purple-600); color:var(--white);}
+  .btn-primary:hover{box-shadow:0 14px 30px -8px rgba(83,74,183,0.55);}
+  .btn-outline-light{background:transparent; color:var(--white); border:1.5px solid rgba(255,255,255,0.5);}
+  .btn-outline-light:hover{background:rgba(255,255,255,0.08);}
+  .btn-ghost-dark{background:rgba(38,33,92,0.06); color:var(--ink);}
+  .btn-ghost-dark:hover{background:rgba(38,33,92,0.1);}
+  .hamburger{display:none; background:none; border:none; padding:6px; margin-left:16px;}
+  .hamburger span{display:block; width:22px; height:2px; background:var(--white); margin:5px 0; border-radius:2px; transition:background .3s ease;}
+  .nav.scrolled .hamburger span{background:var(--ink);}
+
+  /* illustration slot — borderless, no grid/frame; graceful placeholder until real art lands */
+  .illus-slot{position:relative; width:100%; display:flex; align-items:center; justify-content:center;}
+  .illus-slot img{width:100%; height:auto; object-fit:contain;}
+  .illus-fallback{display:none; flex-direction:column; align-items:center; justify-content:center; text-align:center; width:100%; aspect-ratio:1/1; border-radius:60% 40% 55% 45% / 50% 60% 40% 50%; padding:12%;}
+  .illus-fallback small{display:block; margin-top:10px; font-size:11.5px; line-height:1.5; max-width:220px; opacity:.75;}
+  .illus-fallback span{font-size:13px; font-weight:600;}
+  .tone-purple .illus-fallback{background:radial-gradient(circle at 35% 30%, rgba(127,119,221,0.22), rgba(127,119,221,0.06) 70%); color:var(--purple-600);}
+  .tone-teal .illus-fallback{background:radial-gradient(circle at 35% 30%, rgba(29,158,117,0.20), rgba(29,158,117,0.05) 70%); color:var(--teal-600);}
+  .tone-white .illus-fallback{background:radial-gradient(circle at 35% 30%, rgba(255,255,255,0.16), rgba(255,255,255,0.04) 70%); color:var(--white);}
+
+  /* section shells */
+  section{position:relative;}
+  .panel{padding:170px 0 190px;}
+  .panel-dark{background:var(--purple-900); color:var(--purple-200);}
+  .panel-light{background:var(--paper);}
+  .panel-white{background:var(--white);}
+  .kicker{font-size:12.5px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--teal-600);}
+  .panel-dark .kicker{color:var(--teal-200);}
+  .panel h2{font-size:clamp(32px,4vw,46px); line-height:1.12; max-width:760px;}
+  .panel-dark h2{color:var(--white);}
+  .lede{font-size:18px; max-width:600px; margin-top:20px; color:var(--body);}
+  .panel-dark .lede{color:var(--purple-200);}
+
+  /* wave dividers — organic transitions between color panels instead of hard cuts */
+  .wave{position:absolute; left:0; right:0; bottom:-1px; width:100%; line-height:0;}
+  .wave svg{width:100%; height:auto; display:block;}
+
+  /* hero */
+  .hero{background:var(--purple-900); color:var(--white); padding:170px 0 240px; overflow:hidden; position:relative;}
+  .hero-inner{max-width:1180px; margin:0 auto; padding:0 40px; display:grid; grid-template-columns:1fr 0.9fr; gap:40px; align-items:center;}
+  .eyebrow{font-size:12.5px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--teal-200); display:inline-flex; align-items:center; gap:9px;}
+  .eyebrow .dot{width:6px; height:6px; border-radius:50%; background:var(--teal-200); animation:pulse 1.8s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;} 50%{opacity:.35;}}
+  .hero h1{font-size:clamp(40px,5.4vw,68px); line-height:1.05; letter-spacing:-0.01em; margin-top:24px; color:var(--white);}
+  .hero h1 em{font-style:italic; color:var(--teal-200); font-weight:500;}
+  .hero p.sub{font-size:18px; color:var(--purple-200); max-width:460px; margin-top:26px;}
+  .hero-ctas{display:flex; gap:16px; margin-top:38px; flex-wrap:wrap;}
+  .hero-note{margin-top:24px; font-size:13px; color:var(--purple-200); opacity:.75;}
+  .hero-illus{position:relative;}
+  .hero-illus .illus-slot{max-width:420px; margin:0 auto;}
+  .hero-path{position:absolute; inset:-60px -20px auto -20px; z-index:-1; opacity:.55; pointer-events:none;}
+
+  /* stat rows — big typographic numbers, no boxes */
+  .stat-row{display:grid; grid-template-columns:repeat(3,1fr); gap:56px; margin-top:80px;}
+  .stat{border-top:1px solid rgba(38,33,92,0.12); padding-top:24px;}
+  .panel-dark .stat{border-top:1px solid rgba(255,255,255,0.15);}
+  .stat .num{font-family:var(--display); font-weight:600; font-size:clamp(36px,4vw,54px); color:var(--purple-600); line-height:1;}
+  .panel-dark .stat .num{color:var(--teal-200);}
+  .stat p{font-size:14.5px; margin-top:14px; color:var(--body); max-width:260px;}
+  .panel-dark .stat p{color:var(--purple-200);}
+
+  /* alternating illustration + text rows */
+  .story-row{display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; margin-top:120px;}
+  .story-row:first-of-type{margin-top:70px;}
+  .story-row.reverse .story-illus{order:2;}
+  .story-row.reverse .story-text{order:1;}
+  .story-text h3{font-size:clamp(26px,3vw,34px); line-height:1.2;}
+  .story-text p{font-size:16px; margin-top:18px; max-width:440px; color:var(--body);}
+  .story-list{list-style:none; margin:26px 0 0; padding:0;}
+  .story-list li{font-size:15px; padding:11px 0; color:var(--body); position:relative; padding-left:26px;}
+  .story-list li:before{content:""; position:absolute; left:0; top:19px; width:8px; height:8px; border-radius:50%; background:var(--teal-400);}
+  .story-illus .illus-slot{max-width:380px;}
+
+  /* journey / how it works — continuous path, auto-cycling spotlight */
+  .journey-section{padding-top:140px;}
+  .journey-track{position:relative; margin-top:90px; padding-bottom:40px;}
+  .journey-track svg.track-line{position:absolute; top:20px; left:0; width:100%; height:auto; opacity:.5; z-index:0;}
+  .journey-track svg.track-line path.progress{opacity:1; stroke:#5DCAA5; transition:stroke-dashoffset 1.4s cubic-bezier(.65,0,.35,1);}
+  .journey-stops{position:relative; z-index:1; display:flex; gap:32px;}
+  .journey-stop{flex:1; text-align:left; padding:18px 16px; border-radius:18px; transition:background .5s ease, transform .5s ease;}
+  .journey-stop:nth-child(2){margin-top:64px;}
+  .journey-stop:nth-child(4){margin-top:32px;}
+  .journey-stop.active{background:rgba(255,255,255,0.06); transform:translateY(-4px);}
+  .journey-stop .ic-wrap{width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:16px; background:rgba(255,255,255,0.08); color:var(--teal-200); transition:background .5s ease, color .5s ease, transform .5s ease;}
+  .journey-stop.active .ic-wrap{background:var(--teal-400); color:var(--purple-900); transform:scale(1.08);}
+  .journey-stop .ic-wrap svg{width:20px; height:20px;}
+  .journey-stop h4{font-family:var(--sans); font-size:17px; font-weight:600; margin:0 0 8px; color:var(--white);}
+  .journey-stop p{font-size:13.5px; margin:0; color:var(--purple-200);}
+
+  /* pull-quote statement — replaces a boxed illustration for the "why now" moment */
+  .pull-quote{max-width:820px; margin-top:56px;}
+  .pull-quote p{font-family:var(--display); font-style:italic; font-weight:500; font-size:clamp(22px,2.6vw,30px); line-height:1.45; color:var(--white);}
+  .pull-quote cite{display:block; margin-top:22px; font-style:normal; font-size:13px; color:var(--teal-200); font-weight:600;}
+
+  /* certificate showcase */
+  .cert-row{display:grid; grid-template-columns:0.85fr 1.15fr; gap:80px; align-items:center; margin-top:90px;}
+  .cert-card{border-radius:26px; padding:38px; box-shadow:0 40px 90px -30px rgba(38,33,92,0.35); transform:rotate(-2deg); max-width:400px;}
+  .cert-top{display:flex; justify-content:space-between; align-items:flex-start;}
+  .cert-mark{width:32px; height:32px;}
+  .cert-badge{background:var(--teal-50); color:var(--teal-600); font-size:11px; font-weight:600; padding:6px 13px; border-radius:999px; display:flex; align-items:center; gap:6px;}
+  .cert-badge .dot{width:6px; height:6px; border-radius:50%; background:var(--teal-600);}
+  .cert-title{font-family:var(--display); font-size:21px; margin-top:26px; color:var(--purple-900);}
+  .cert-sub{font-size:12px; color:var(--muted); margin-top:4px;}
+  .cert-name{font-family:var(--display); font-style:italic; font-size:25px; margin-top:22px; color:var(--ink);}
+  .cert-meta{margin-top:22px; display:grid; grid-template-columns:1fr 1fr; gap:14px; border-top:1px dashed #E4E1F5; padding-top:18px;}
+  .cert-meta div span{display:block; font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em;}
+  .cert-meta div b{font-size:13px; color:var(--ink); font-weight:600;}
+  .cert-float-illus{position:absolute; width:160px; right:-40px; bottom:-50px; z-index:2;}
+
+  .form-success .ic-wrap{width:50px; height:50px; border-radius:50%; background:var(--teal-50); color:var(--teal-600); display:flex; align-items:center; justify-content:center; margin:0 auto 16px;}
+  .icon{width:22px; height:22px;}
+
+  /* PREMIUM ENHANCEMENTS */
+  .bg-glow-teal{position:absolute; width:60vw; height:60vw; background:radial-gradient(circle, rgba(93,202,165,0.18) 0%, rgba(93,202,165,0) 65%); border-radius:50%; filter:blur(60px); z-index:-1; animation:float-glow 12s infinite alternate;}
+  .bg-glow-purple{position:absolute; width:55vw; height:55vw; background:radial-gradient(circle, rgba(127,119,221,0.22) 0%, rgba(127,119,221,0) 65%); border-radius:50%; filter:blur(50px); z-index:-1; animation:float-glow 14s infinite alternate-reverse;}
+  @keyframes float-glow{0%{transform:translate(0, 0) scale(1);} 100%{transform:translate(-40px, 50px) scale(1.1);}}
+  
+  .glass-effect {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+  }
+
+  /* waitlist */
+  .waitlist-wrap{max-width:620px; margin:56px auto 0; border-radius:26px; padding:46px; box-shadow:0 30px 80px -30px rgba(38,33,92,0.25);}
+  
+  footer{background:var(--purple-900); color:var(--purple-200); padding:64px 0 36px;}
+  .footer-inner{max-width:1180px; margin:0 auto; padding:0 40px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;}
+  .footer-brand{display:flex; align-items:center; gap:10px;}
+  .footer-mark{width:22px; height:22px;}
+  .footer-links{display:flex; gap:24px; font-size:13px;}
+  .footer-links a{text-decoration:none; color:var(--purple-200);}
+  .footer-bottom{max-width:1180px; margin:28px auto 0; padding:24px 40px 0; border-top:1px solid rgba(255,255,255,0.08); font-size:12px; color:#8f8ac0;}
+
+  @media (max-width:960px){
+    .hero-inner{grid-template-columns:1fr; text-align:left;}
+    .hero-illus{margin-top:50px;}
+    .stat-row{grid-template-columns:1fr; gap:36px;}
+    .story-row{grid-template-columns:1fr; gap:40px;}
+    .story-row.reverse .story-illus, .story-row.reverse .story-text{order:initial;}
+    .cert-row{grid-template-columns:1fr; gap:50px;}
+    .cert-card{margin:0 auto;}
+    .cert-float-illus{display:none;}
+    .journey-stops{flex-direction:column; gap:20px;}
+    .journey-stop:nth-child(2), .journey-stop:nth-child(4){margin-top:0;}
+    .journey-stop{padding:16px;}
+    .journey-track svg.track-line{display:none;}
+    .nav-links{display:none;}
+    .hamburger{display:block;}
+    .panel{padding:110px 0 130px;}
+  }
+  @media (max-width:560px){
+    .waitlist-wrap{padding:28px;}
+    .cert-card{padding:28px;}
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <svg class="nav-mark" viewBox="0 0 100 100"><path d="M20 15 L75 50" fill="none" stroke="#7F77DD" stroke-width="16" stroke-linecap="round"/><path d="M20 85 L75 50" fill="none" stroke="#1D9E75" stroke-width="16" stroke-linecap="round"/></svg>
+    <span class="nav-name">Gigway</span>
+    <div class="nav-links">
+      <a href="#for-you">For you</a>
+      <a href="#how-it-works">How it works</a>
+      <a href="#certificate">Certificates</a>
+    </div>
+    <div class="nav-cta">
+      <a class="btn btn-outline-light" href="#get-started" id="nav-cta-btn">Get started</a>
+    </div>
+    <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div data-reveal>
+      <span class="eyebrow"><span class="dot"></span> Lagos, Nigeria</span>
+      <h1>Real gigs. Real proof.<br><em>You're on your way.</em></h1>
+      <p class="sub">Gigway connects verified NGOs and companies with young volunteers in Lagos — skilled and physical gigs alike — and turns every one you complete into proof you can show.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="#get-started" data-audience="volunteer">I'm looking to volunteer</a>
+        <a class="btn btn-outline-light" href="#get-started" data-audience="org">I'm an NGO / company</a>
+      </div>
+      <p class="hero-note">Free to join. Verified organizations, real certificates, no CV required to start.</p>
+    </div>
+    <div class="hero-illus" data-reveal data-parallax="0.06">
+      <div class="bg-glow-teal" style="top:-10%; left:-20%;"></div>
+      <div class="bg-glow-purple" style="bottom:-10%; right:-20%;"></div>
+      <svg class="hero-path" viewBox="0 0 400 500" fill="none">
+        <path d="M40 460 C 100 460, 90 380, 150 350 C 220 315, 210 240, 280 200 C 330 172, 320 90, 370 40" stroke="#5DCAA5" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="1 14"/>
+      </svg>
+      <div class="illus-slot tone-white">
+        <img src="illustrations/hero-illustration.png" alt="Illustration of a young Nigerian woman walking confidently up a path" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="illus-fallback">
+          <span>Hero illustration</span>
+          <small>illustrations/hero-illustration.png</small>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="wave">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none"><path fill="#FBFAFF" d="M0,64 C240,120 480,0 720,32 C960,64 1200,120 1440,48 L1440,120 L0,120 Z"/></svg>
+  </div>
+</header>
+
+<section class="panel panel-light" id="for-you">
+  <div class="wrap">
+    <div class="kicker" data-reveal>The problem</div>
+    <h2 data-reveal>You can't get hired without experience.<br>You can't get experience without being hired.</h2>
+    <p class="lede" data-reveal>Every skilled young Nigerian hits this wall right after finishing a course or graduating — and today, the only options are informal WhatsApp groups, flyers, or global directories that aren't built for Nigeria.</p>
+    <div class="stat-row" data-reveal>
+      <div class="stat"><div class="num" data-count-to="1.7" data-suffix="M">0M</div><p>graduates enter Nigeria's job market every year, most without proof of applied skill</p></div>
+      <div class="stat"><div class="num" data-count-to="191278" data-format="comma">0</div><p>NGOs registered in Nigeria — nearly all recruiting volunteers by word of mouth</p></div>
+      <div class="stat"><div class="num">Zero</div><p>Nigerian platforms that combine short gigs, verification, and certification in one place</p></div>
+    </div>
+  </div>
+  <div class="wave">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none"><path fill="#FFFFFF" d="M0,32 C240,90 480,110 720,64 C960,18 1200,80 1440,40 L1440,120 L0,120 Z"/></svg>
+  </div>
+</section>
+
+<section class="panel panel-white">
+  <div class="wrap">
+    <div class="kicker" data-reveal>The solution</div>
+    <h2 data-reveal>A marketplace where showing up counts</h2>
+    <p class="lede" data-reveal>Two sides, one path forward — verified organizations post real work, and volunteers walk away with proof they can actually use.</p>
+
+    <div class="story-row" data-reveal>
+      <div class="story-illus" data-parallax="0.04">
+        <div class="illus-slot tone-purple">
+          <img src="illustrations/volunteers-illustration.png" alt="Illustration of young Nigerian volunteers collaborating" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div class="illus-fallback">
+            <span>Volunteers illustration</span>
+            <small>illustrations/volunteers-illustration.png — group of volunteers collaborating</small>
+          </div>
+        </div>
+      </div>
+      <div class="story-text">
+        <h3>For volunteers</h3>
+        <p>Real gigs — skilled or physical — with real proof at the end of them.</p>
+        <ul class="story-list">
+          <li>Browse open gigs and apply in a few taps</li>
+          <li>No CV needed to get started</li>
+          <li>Walk away with a verified certificate</li>
+          <li>Build a track record employers can trust</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="story-row reverse" data-reveal>
+      <div class="story-illus" data-parallax="0.04">
+        <div class="illus-slot tone-teal">
+          <img src="illustrations/orgs-illustration.png" alt="Illustration of a person posting a volunteer gig from a laptop" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div class="illus-fallback">
+            <span>Organizations illustration</span>
+            <small>illustrations/orgs-illustration.png — person posting a gig from a laptop</small>
+          </div>
+        </div>
+      </div>
+      <div class="story-text">
+        <h3>For NGOs & companies</h3>
+        <p>Skip the WhatsApp-group recruiting grind entirely.</p>
+        <ul class="story-list">
+          <li>Post a gig in minutes — skilled or physical</li>
+          <li>Reach a pool of vetted, motivated volunteers</li>
+          <li>Issue certificates automatically on completion</li>
+          <li>Build a reputation that attracts better volunteers over time</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="wave">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none"><path fill="#26215C" d="M0,48 C240,10 480,100 720,60 C960,20 1200,90 1440,32 L1440,120 L0,120 Z"/></svg>
+  </div>
+</section>
+
+<section class="panel panel-dark journey-section" id="how-it-works">
+  <div class="wrap">
+    <div class="kicker" data-reveal>How it works</div>
+    <h2 data-reveal>Four steps, start to proof</h2>
+
+    <div class="journey-track" data-reveal>
+      <svg class="track-line" viewBox="0 0 1100 140" fill="none" preserveAspectRatio="none">
+        <path d="M20 100 C 200 20, 380 180, 560 90 C 740 10, 920 170, 1080 60" stroke="#5DCAA5" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 12"/>
+      </svg>
+      <div class="journey-stops" id="journey-stops">
+        <div class="journey-stop active">
+          <div class="ic-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+          <h4>Find a gig</h4>
+          <p>Browse open roles from verified NGOs and companies near you.</p>
+        </div>
+        <div class="journey-stop">
+          <div class="ic-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg></div>
+          <h4>Apply &amp; match</h4>
+          <p>Apply in a tap. The organization picks who shows up.</p>
+        </div>
+        <div class="journey-stop">
+          <div class="ic-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg></div>
+          <h4>Get certified</h4>
+          <p>On completion, a verified certificate is issued instantly.</p>
+        </div>
+        <div class="journey-stop">
+          <div class="ic-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></div>
+          <h4>Move forward</h4>
+          <p>Show employers real, verifiable proof of what you can do.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile App Illustration embedded here -->
+    <div style="margin-top:90px; text-align:center; position:relative;" data-reveal data-parallax="0.04">
+      <div class="bg-glow-purple" style="top:50%; left:50%; transform:translate(-50%,-50%); filter:blur(80px); opacity:0.6;"></div>
+      <div class="illus-slot tone-teal" style="max-width:550px; margin:0 auto; z-index:2; position:relative;">
+        <img src="illustrations/mobile-illustration.png" alt="Mobile app illustration for Gigway" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      </div>
+    </div>
+  </div>
+  <div class="wave">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none"><path fill="#FFFFFF" d="M0,40 C240,100 480,10 720,50 C960,90 1200,20 1440,64 L1440,120 L0,120 Z"/></svg>
+  </div>
+</section>
+
+<section class="panel panel-white" id="certificate" style="overflow:hidden;">
+  <div class="wrap">
+    <div class="cert-row">
+      <div style="position:relative;" data-reveal data-parallax="0.05">
+        <div class="bg-glow-teal" style="top:-30%; left:-30%; filter:blur(70px); opacity:0.8;"></div>
+        <div class="cert-card glass-effect">
+          <div class="cert-top">
+            <svg class="cert-mark" viewBox="0 0 100 100"><path d="M20 15 L75 50" fill="none" stroke="#7F77DD" stroke-width="16" stroke-linecap="round"/><path d="M20 85 L75 50" fill="none" stroke="#1D9E75" stroke-width="16" stroke-linecap="round"/></svg>
+            <span class="cert-badge"><span class="dot"></span>Verified</span>
+          </div>
+          <div class="cert-title">Certificate of Completion</div>
+          <div class="cert-sub">Issued via Gigway</div>
+          <div class="cert-name">Amara Okafor</div>
+          <div class="cert-meta">
+            <div><span>Organization</span><b>Lagos Food Bank Initiative</b></div>
+            <div><span>Gig type</span><b>Event support · Physical</b></div>
+            <div><span>Hours logged</span><b>18 hours</b></div>
+            <div><span>Issued</span><b>March 2027</b></div>
+          </div>
+        </div>
+        <div class="cert-float-illus illus-slot tone-teal">
+          <img src="illustrations/certificate-illustration.png" alt="Illustration of a person holding up a glowing certificate" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div class="illus-fallback" style="aspect-ratio:1/1; padding:18%;">
+            <small>illustrations/certificate-illustration.png</small>
+          </div>
+        </div>
+      </div>
+      <div data-reveal>
+        <div class="kicker">The differentiator</div>
+        <h2>Proof, not just a thank-you note</h2>
+        <p class="lede">Every gig completed on Gigway produces a real, verifiable certificate — something an employer, a school, or the next NGO can actually check, not just a line on a CV nobody can confirm.</p>
+        <ul class="story-list">
+          <li>Verified, not self-reported — issued by the organization directly</li>
+          <li>Builds into a growing, checkable track record</li>
+          <li>Issued instantly the moment a gig is marked complete</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="wave">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none"><path fill="#26215C" d="M0,60 C240,110 480,10 720,48 C960,86 1200,30 1440,70 L1440,120 L0,120 Z"/></svg>
+  </div>
+</section>
+
+<section class="panel panel-dark">
+  <div class="wrap">
+    <div data-reveal>
+      <div class="kicker">Why now</div>
+      <h2>Nigeria's volunteering market is large, informal, and untouched</h2>
+      <p class="lede">No existing platform packages short-term Nigerian gigs, verification, and certification in one place — not Catchafire (US-only, professional-skills only), not global directories, not word of mouth.</p>
+      <blockquote class="pull-quote">
+        <p>"Every gig completed here adds a verified data point to a volunteer's track record and an NGO's reliability record — the more that accumulates, the harder it is for anyone else to catch up."</p>
+        <cite>The Gigway thesis</cite>
+      </blockquote>
+    </div>
+
+    <!-- Community Illustration inserted here -->
+    <div style="margin-top:100px; display:flex; justify-content:center;" data-reveal>
+      <div class="illus-slot tone-white" style="max-width:600px;">
+        <img src="illustrations/community-illustration.png" alt="Community of young Nigerians on Gigway" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      </div>
+    </div>
+  </div>
+  <div class="wave">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none"><path fill="#FBFAFF" d="M0,50 C240,0 480,100 720,60 C960,20 1200,90 1440,44 L1440,120 L0,120 Z"/></svg>
+  </div>
+</section>
+
+<section class="panel panel-light" id="get-started">
+  <div class="wrap" style="text-align:center;">
+    <div class="kicker" data-reveal>Get started</div>
+    <h2 data-reveal style="margin-left:auto; margin-right:auto;">Create your free Gigway account</h2>
+    <p class="lede" data-reveal style="margin-left:auto; margin-right:auto;">Takes under a minute. Verified organizations, real certificates, zero cost to join.</p>
+
+    <div class="waitlist-wrap glass-effect" data-reveal style="position:relative; z-index:2;">
+      <div class="bg-glow-teal" style="top:-40%; left:-40%; z-index:-1; opacity:0.4;"></div>
+      <div class="bg-glow-purple" style="bottom:-40%; right:-40%; z-index:-1; opacity:0.4;"></div>
+      
+      <div class="toggle" role="tablist" aria-label="I am joining as">
+        <button type="button" class="active" data-role="volunteer">I'm a volunteer</button>
+        <button type="button" data-role="org">I'm an NGO / company</button>
+      </div>
+
+      <form id="waitlist-form">
+        <div class="form-row">
+          <label for="wl-name">Full name</label>
+          <input id="wl-name" type="text" placeholder="Your name" required>
+        </div>
+        <div class="form-row">
+          <label for="wl-email">Email address</label>
+          <input id="wl-email" type="email" placeholder="you@email.com" required>
+        </div>
+        <div class="form-row" id="org-row" style="display:none;">
+          <label for="wl-org">Organization name</label>
+          <input id="wl-org" type="text" placeholder="e.g. Lagos Food Bank Initiative">
+        </div>
+        <button type="submit" class="btn btn-primary waitlist-submit">Create my account</button>
+      </form>
+
+      <div class="form-success" id="form-success">
+        <div class="ic-wrap"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"></path><circle cx="12" cy="12" r="10"></circle></svg></div>
+        <h3 style="font-size:19px;">Welcome to Gigway</h3>
+        <p style="font-size:13.5px; color:var(--muted); margin-top:6px;">Check your inbox to confirm your email and finish setting up.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <svg class="footer-mark" viewBox="0 0 100 100"><path d="M20 15 L75 50" fill="none" stroke="#FFFFFF" stroke-width="16" stroke-linecap="round"/><path d="M20 85 L75 50" fill="none" stroke="#5DCAA5" stroke-width="16" stroke-linecap="round"/></svg>
+      <span style="font-family:'Fraunces',serif; font-weight:600; font-size:16px; color:#fff;">Gigway</span>
+    </div>
+    <div class="footer-links">
+      <a href="#for-you">For you</a>
+      <a href="#how-it-works">How it works</a>
+      <a href="#certificate">Certificates</a>
+      <a href="#waitlist">Join waitlist</a>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2026 Gigway · Lagos, Nigeria · hello@gigway.ng (placeholder)</div>
+</footer>
+
+<script>
+  // scroll reveal — enable the hidden-until-scrolled state only now that JS is confirmed running
+  document.documentElement.classList.add('js-ready');
+  const revealEls = document.querySelectorAll('[data-reveal]');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in-view'); io.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    revealEls.forEach(el => io.observe(el));
+  } else {
+    revealEls.forEach(el => el.classList.add('in-view'));
+  }
+
+  // sticky nav background swap
+  const nav = document.getElementById('nav');
+  const navCta = document.getElementById('nav-cta-btn');
+  const onScroll = () => {
+    const scrolled = window.scrollY > 60;
+    nav.classList.toggle('scrolled', scrolled);
+    navCta.className = 'btn ' + (scrolled ? 'btn-ghost-dark' : 'btn-outline-light');
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // subtle parallax on illustration layers — skipped entirely for reduced-motion users
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!prefersReduced) {
+    const parallaxEls = Array.from(document.querySelectorAll('[data-parallax]'));
+    let ticking = false;
+    const applyParallax = () => {
+      const vh = window.innerHeight;
+      parallaxEls.forEach(el => {
+        const speed = parseFloat(el.dataset.parallax) || 0;
+        const rect = el.getBoundingClientRect();
+        const centerDelta = (rect.top + rect.height / 2) - vh / 2;
+        el.style.transform = 'translateY(' + (centerDelta * speed * -1) + 'px)';
+      });
+      ticking = false;
+    };
+    window.addEventListener('scroll', () => {
+      if (!ticking) { requestAnimationFrame(applyParallax); ticking = true; }
+    }, { passive: true });
+    applyParallax();
+  }
+
+  // waitlist toggle
+  const toggleBtns = document.querySelectorAll('.toggle button');
+  const orgRow = document.getElementById('org-row');
+  toggleBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      toggleBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      orgRow.style.display = btn.dataset.role === 'org' ? 'block' : 'none';
+    });
+  });
+
+  // hero CTA sets the right toggle before scrolling
+  document.querySelectorAll('[data-audience]').forEach(a => {
+    a.addEventListener('click', () => {
+      const target = a.dataset.audience;
+      toggleBtns.forEach(b => b.classList.toggle('active', b.dataset.role === target));
+      orgRow.style.display = target === 'org' ? 'block' : 'none';
+    });
+  });
+
+  // form submit (client-side only — wire up a real email/backend service before launch)
+  const form = document.getElementById('waitlist-form');
+  const success = document.getElementById('form-success');
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    form.style.display = 'none';
+    document.querySelector('.toggle').style.display = 'none';
+    success.classList.add('show');
+  });
+
+  // mobile hamburger
+  const hamburger = document.querySelector('.hamburger');
+  const navLinks = document.querySelector('.nav-links');
+  hamburger.addEventListener('click', () => {
+    const isOpen = navLinks.style.display === 'flex';
+    navLinks.style.display = isOpen ? 'none' : 'flex';
+    navLinks.style.flexDirection = 'column';
+    navLinks.style.position = 'absolute';
+    navLinks.style.top = '60px';
+    navLinks.style.left = '0';
+    navLinks.style.right = '0';
+    navLinks.style.background = '#FBFAFF';
+    navLinks.style.padding = '20px 40px';
+    navLinks.style.boxShadow = '0 8px 20px rgba(38,33,92,0.1)';
+    navLinks.querySelectorAll('a').forEach(a => a.style.color = '#4A4770');
+  });
+</script>
+
+</body>
+</html>

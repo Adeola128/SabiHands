@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import './Home.css';
 
 const fadeUpVariant: Variants = {
-  hidden: { opacity: 0, y: 25 },
+  hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,
     y: 0,
@@ -17,287 +17,311 @@ const staggerContainer: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.15
-    }
+    transition: { staggerChildren: 0.15 }
+  }
+};
+
+const scaleUpVariant: Variants = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: { type: "spring", stiffness: 60, damping: 15, mass: 0.8 }
   }
 };
 
 const Home: React.FC = () => {
+  useEffect(() => {
+    // Parallax logic for floating elements (if not reduced motion)
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!prefersReduced) {
+      const parallaxEls = Array.from(document.querySelectorAll('[data-parallax]')) as HTMLElement[];
+      let ticking = false;
+      const applyParallax = () => {
+        const vh = window.innerHeight;
+        parallaxEls.forEach(el => {
+          const speed = parseFloat(el.dataset.parallax || '0') || 0;
+          const rect = el.getBoundingClientRect();
+          const centerDelta = (rect.top + rect.height / 2) - vh / 2;
+          el.style.transform = `translateY(${centerDelta * speed * -1}px)`;
+        });
+        ticking = false;
+      };
+      const onScroll = () => {
+        if (!ticking) { requestAnimationFrame(applyParallax); ticking = true; }
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      applyParallax();
+      return () => window.removeEventListener('scroll', onScroll);
+    }
+  }, []);
+
   return (
     <div className="home-page">
-
-      {/* Hero Section */}
-      <header className="hero" id="top">
-        <div className="wrap hero-inner">
-          <motion.div
-            className="hero-copy"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            variants={fadeUpVariant}
+      
+      {/* HERO */}
+      <header className="hero hero-premium">
+        <div className="hero-inner-premium">
+          <motion.div 
+            className="hero-copy-premium"
+            initial="hidden" animate="visible" variants={staggerContainer}
           >
-            <div className="eyebrow">Lagos, Nigeria · Volunteer marketplace</div>
-            <h1>You're not just volunteering.<br /><em>You're a Sabi Hand.</em></h1>
-            <p className="hero-sub">Post a gig in minutes, or apply in a few taps. Show up, and walk away with a certificate that proves it — verified and automatic, every time.</p>
-            <div className="hero-ctas">
-              <Link className="btn btn-solid-purple" to="/signup?role=volunteer">Find a gig</Link>
-              <Link className="btn btn-outline-teal" to="/signup?role=org">Post a gig</Link>
-            </div>
-            <div className="trust-bar">
-              <div className="trust-item"><b>1.7M</b>grads enter the job market yearly</div>
-              <div className="trust-item"><b>191,278</b>registered NGOs in Nigeria</div>
-              <div className="trust-item"><b>Lagos</b>first, before anywhere else</div>
+            <motion.div className="eyebrow" variants={fadeUpVariant}><span className="dot"></span> Lagos, Nigeria</motion.div>
+            <motion.h1 variants={fadeUpVariant}>
+              Show up. Get <em className="gradient-text">verified.</em><br/>
+              Build your track record.
+            </motion.h1>
+            <motion.p className="sub" variants={fadeUpVariant}>
+              Gigway connects NGOs with young volunteers in Lagos. Complete real gigs, earn verified certificates, and build a portfolio employers trust.
+            </motion.p>
+            <motion.div className="hero-ctas" variants={fadeUpVariant}>
+              <Link className="btn btn-primary btn-glow" to="/signup?role=volunteer">I'm looking to volunteer</Link>
+              <Link className="btn btn-outline-light" to="/signup?role=org">I'm an NGO / company</Link>
+            </motion.div>
+          </motion.div>
+          
+          <motion.div 
+            className="hero-visual-premium" 
+            initial="hidden" animate="visible" variants={scaleUpVariant}
+          >
+            {/* The transparent character image */}
+            <div className="main-character-wrap" data-parallax="0.08">
+              <img src="/illustrations/hero-transparent.png" alt="Young Nigerian woman ready to volunteer" className="main-character" />
             </div>
           </motion.div>
+        </div>
 
-          <motion.div
-            className="hero-visual"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            variants={fadeUpVariant}
-          >
-            <div className="orb orb-a">
-              <img src="https://images.unsplash.com/photo-1616680214084-22670de1bc82?auto=format&fit=crop&w=700&q=80" alt="Young volunteers working together outdoors" />
-            </div>
-            <div className="orb orb-b">
-              <img src="https://images.unsplash.com/photo-1563132337-f159f484226c?auto=format&fit=crop&w=700&q=80" alt="An organization representative ready to post a gig" />
-            </div>
-            <div className="hero-tag">
-              <svg viewBox="0 0 100 100">
-                <path d="M60 15 A35 35 0 1 0 60 85" fill="none" stroke="#7F77DD" strokeWidth="16" strokeLinecap="round" />
-                <path d="M40 15 A35 35 0 1 1 40 85" fill="none" stroke="#1D9E75" strokeWidth="16" strokeLinecap="round" />
-              </svg>
-              <span>Volunteer meets org</span>
-            </div>
-          </motion.div>
+        <div className="wave">
+          <svg viewBox="0 0 1440 120" preserveAspectRatio="none"><path fill="#FBFAFF" d="M0,64 C240,120 480,0 720,32 C960,64 1200,120 1440,48 L1440,120 L0,120 Z"/></svg>
         </div>
       </header>
 
-      {/* Problem Section */}
-      <section className="problem">
-        <motion.div
-          className="wrap problem-inner"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-          variants={fadeUpVariant}
-        >
-          <div className="eyebrow">The gap</div>
-          <p className="problem-statement">"You can't get hired without experience.<br />You can't get experience without being hired."</p>
-          <p className="problem-body">Every skilled young Nigerian who finishes a course or graduates hits this wall — it isn't optional, it's the next step for the entire cohort. Today, the only options are informal WhatsApp groups, flyers, or generic global directories that aren't built for Nigeria and issue no proof of work.</p>
-          <div className="problem-stats">
-            <div className="stat"><b>1.7M</b><span>graduates enter Nigeria's job market every year</span></div>
-            <div className="stat"><b>191,278</b><span>NGOs recruiting almost entirely by word of mouth</span></div>
+      {/* FOR YOU */}
+      <section className="panel panel-light" id="for-you">
+        <div className="wrap">
+          <motion.div className="kicker" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={fadeUpVariant}>The problem</motion.div>
+          <motion.h2 initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={fadeUpVariant}>You can't get hired without experience.<br/>You can't get experience without being hired.</motion.h2>
+          <motion.p className="lede" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={fadeUpVariant}>Every skilled young Nigerian hits this wall right after finishing a course or graduating - and today, the only options are informal WhatsApp groups, flyers, or global directories that aren't built for Nigeria.</motion.p>
+          
+
+        </div>
+        <div className="wave">
+          <svg viewBox="0 0 1440 120" preserveAspectRatio="none"><path fill="#FFFFFF" d="M0,32 C240,90 480,110 720,64 C960,18 1200,80 1440,40 L1440,120 L0,120 Z"/></svg>
+        </div>
+      </section>
+
+      {/* THE SOLUTION */}
+      <section className="panel panel-white">
+        <div className="wrap">
+          <motion.div className="kicker" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={fadeUpVariant}>The solution</motion.div>
+          <motion.h2 initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={fadeUpVariant}>A marketplace where showing up counts</motion.h2>
+          <motion.p className="lede" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={fadeUpVariant}>Two sides, one path forward - verified organizations post real work, and volunteers walk away with proof they can actually use.</motion.p>
+
+          <motion.div className="story-row" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.4 }} variants={fadeUpVariant}>
+            <div className="story-illus" data-parallax="0.04">
+              <div className="illus-slot tone-purple">
+                <img src="/illustrations/volunteers-illustration.png" alt="Volunteers" />
+              </div>
+            </div>
+            <div className="story-text">
+              <h3>For volunteers</h3>
+              <p>Real gigs - skilled or physical - with real proof at the end of them.</p>
+              <ul className="story-list">
+                <li>Browse open gigs and apply in a few taps</li>
+                <li>No CV needed to get started</li>
+                <li>Walk away with a verified certificate</li>
+                <li>Build a track record employers can trust</li>
+              </ul>
+            </div>
+          </motion.div>
+
+          <motion.div className="story-row reverse" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.4 }} variants={fadeUpVariant}>
+            <div className="story-illus" data-parallax="0.04">
+              <div className="illus-slot tone-teal">
+                <img src="/illustrations/orgs-illustration.png" alt="Organizations" />
+              </div>
+            </div>
+            <div className="story-text">
+              <h3>For NGOs & companies</h3>
+              <p>Skip the WhatsApp-group recruiting grind entirely.</p>
+              <ul className="story-list">
+                <li>Post a gig in minutes - skilled or physical</li>
+                <li>Reach a pool of vetted, motivated volunteers</li>
+                <li>Issue certificates automatically on completion</li>
+                <li>Build a reputation that attracts better volunteers over time</li>
+              </ul>
+            </div>
+          </motion.div>
+        </div>
+        <div className="wave">
+          <svg viewBox="0 0 1440 120" preserveAspectRatio="none"><path fill="#26215C" d="M0,48 C240,10 480,100 720,60 C960,20 1200,90 1440,32 L1440,120 L0,120 Z"/></svg>
+        </div>
+      </section>
+
+      {/* HOW IT WORKS (Sticky Editorial Redesign) */}
+      <section className="panel panel-dark" id="how-it-works">
+        <div className="wrap editorial-layout">
+          <div className="editorial-text">
+            <motion.div className="kicker" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={fadeUpVariant}>How it works</motion.div>
+            <motion.h2 initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={fadeUpVariant}>Four steps, start to proof</motion.h2>
+
+            <div className="editorial-steps">
+              <motion.div className="step-block" initial={{ opacity: 0.4, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ margin: "-20% 0px -50% 0px" }}>
+                <div className="step-num">01</div>
+                <h3>Find a gig</h3>
+                <p>Browse open roles from verified NGOs and companies near you.</p>
+              </motion.div>
+              
+              <motion.div className="step-block" initial={{ opacity: 0.4, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ margin: "-20% 0px -50% 0px" }}>
+                <div className="step-num">02</div>
+                <h3>Apply &amp; match</h3>
+                <p>Apply in a tap. The organization picks who shows up.</p>
+              </motion.div>
+              
+              <motion.div className="step-block" initial={{ opacity: 0.4, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ margin: "-20% 0px -50% 0px" }}>
+                <div className="step-num">03</div>
+                <h3>Get certified</h3>
+                <p>On completion, a verified certificate is issued instantly.</p>
+              </motion.div>
+              
+              <motion.div className="step-block" initial={{ opacity: 0.4, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ margin: "-20% 0px -50% 0px" }}>
+                <div className="step-num">04</div>
+                <h3>Move forward</h3>
+                <p>Show employers real, verifiable proof of what you can do.</p>
+              </motion.div>
+            </div>
           </div>
-        </motion.div>
-      </section>
+          
+          <div className="editorial-visual">
+            <div className="sticky-mobile">
+              <motion.img 
+                src="/illustrations/how-it-works-mobile.png" 
+                alt="Mobile app illustration for Gigway"
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                viewport={{ once: true, amount: 0.3 }}
+              />
+            </div>
+          </div>
+        </div>
 
-      {/* How it works */}
-      <section className="how" id="how">
-        <div className="wrap">
-          <motion.div
-            className="how-head"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            variants={fadeUpVariant}
-          >
-            <div className="eyebrow">How it works</div>
-            <h2>Three steps, from post to proof.</h2>
-          </motion.div>
-
-          <motion.div
-            className="how-steps"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            variants={staggerContainer}
-          >
-            <svg className="how-connector" viewBox="0 0 800 40" preserveAspectRatio="none">
-              <path d="M130 8 C 280 55, 320 -35, 400 8" fill="none" stroke="#AFA9EC" strokeWidth="2" strokeDasharray="1 10" strokeLinecap="round" />
-              <path d="M400 8 C 480 55, 520 -35, 670 8" fill="none" stroke="#5DCAA5" strokeWidth="2" strokeDasharray="1 10" strokeLinecap="round" />
-            </svg>
-            <motion.div className="step" variants={fadeUpVariant}>
-              <div className="step-badge"><span>01</span></div>
-              <h3>Post</h3>
-              <p>A verified NGO or company posts a gig — skilled or physical, one-off or recurring.</p>
-            </motion.div>
-            <motion.div className="step" variants={fadeUpVariant}>
-              <div className="step-badge"><span>02</span></div>
-              <h3>Match</h3>
-              <p>Volunteers browse and apply. The organization picks who shows up.</p>
-            </motion.div>
-            <motion.div className="step" variants={fadeUpVariant}>
-              <div className="step-badge"><span>03</span></div>
-              <h3>Certify</h3>
-              <p>On completion, SabiHands issues a verified certificate — instantly, automatically.</p>
-            </motion.div>
-          </motion.div>
+        <div className="wave">
+          <svg viewBox="0 0 1440 120" preserveAspectRatio="none"><path fill="#FFFFFF" d="M0,40 C240,100 480,10 720,50 C960,90 1200,20 1440,64 L1440,120 L0,120 Z"/></svg>
         </div>
       </section>
 
-      {/* Audiences */}
-      <section className="audiences" id="audiences">
+      {/* CERTIFICATE */}
+      <section className="panel panel-white" id="certificate" style={{ overflow: 'hidden' }}>
         <div className="wrap">
-          <motion.div
-            className="how-head"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            variants={fadeUpVariant}
-          >
-            <div className="eyebrow">Built for both sides</div>
-            <h2>Whichever side you're on, you get more than a listing.</h2>
-          </motion.div>
-
-          <motion.div
-            className="aud-grid"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            variants={staggerContainer}
-          >
-            <motion.div className="aud-card" variants={fadeUpVariant}>
-              <div className="aud-photo">
-                <img src="https://images.unsplash.com/photo-1628717341663-0007b0ee2597?auto=format&fit=crop&w=800&q=80" alt="A young volunteer taking part in a community cleanup gig" />
-                <span>Show up. Get sabi.</span>
-              </div>
-              <div className="aud-body">
-                <h3>For volunteers</h3>
-                <ul>
-                  <li>Browse real gigs — skilled or physical</li>
-                  <li>Apply in a few taps, no CV needed to start</li>
-                  <li>Walk away with a verified certificate</li>
-                  <li>Build a track record employers can trust</li>
-                </ul>
-                <Link className="btn btn-solid-purple" to="/signup?role=volunteer">Find a gig</Link>
-              </div>
-            </motion.div>
-
-            <motion.div className="aud-card teal" variants={fadeUpVariant}>
-              <div className="aud-photo">
-                <img src="https://images.unsplash.com/photo-1655720357872-ce227e4164ba?auto=format&fit=crop&w=800&q=80" alt="A team from an organization planning a gig posting" />
-                <span>Real hands. Real gigs. Real proof.</span>
-              </div>
-              <div className="aud-body">
-                <h3>For NGOs &amp; companies</h3>
-                <ul>
-                  <li>Post a gig in minutes — skilled or physical</li>
-                  <li>Reach a pool of vetted, motivated volunteers</li>
-                  <li>Issue certificates automatically on completion</li>
-                  <li>Skip the WhatsApp-group recruiting grind</li>
-                </ul>
-                <Link className="btn btn-solid-teal" to="/signup?role=org">Post a gig</Link>
-              </div>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Certificate Section */}
-      <section className="certificate" id="certificate">
-        <div className="wrap cert-inner">
-          <motion.div
-            className="cert-copy"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            variants={fadeUpVariant}
-          >
-            <div className="eyebrow">The proof</div>
-            <h2>The certificate is the whole point.</h2>
-            <p>An organization confirms you showed up. SabiHands takes it from there — no paperwork, no waiting, no chasing anyone down for a signature.</p>
-            <div className="cert-mini">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#0F6E56" strokeWidth="2"><path d="M20 6L9 17l-5-5" /></svg>
-              <p>Issued the moment a gig is marked complete — automatically.</p>
-            </div>
-            <div className="cert-mini">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#0F6E56" strokeWidth="2"><path d="M20 6L9 17l-5-5" /></svg>
-              <p>Verifiable by anyone with the link — an employer, a school, another NGO.</p>
-            </div>
-            <div className="cert-mini">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#0F6E56" strokeWidth="2"><path d="M20 6L9 17l-5-5" /></svg>
-              <p>Every certificate adds to a track record that compounds over time.</p>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            variants={fadeUpVariant}
-          >
-            <div className="cert-card">
-              <div className="cert-top">
-                <svg viewBox="0 0 100 100">
-                  <path d="M60 15 A35 35 0 1 0 60 85" fill="none" stroke="#7F77DD" strokeWidth="16" strokeLinecap="round" />
-                  <path d="M40 15 A35 35 0 1 1 40 85" fill="none" stroke="#1D9E75" strokeWidth="16" strokeLinecap="round" />
-                </svg>
-                <span>Certified Sabi Hand</span>
-              </div>
-              <div className="cert-title">Awarded to</div>
-              <div className="cert-name">Ade Okonkwo</div>
-              <div className="cert-detail"><b>Gig:</b> Beach Cleanup — Lagos Environmental Trust</div>
-              <div className="cert-detail"><b>Completed:</b> 14 gigs · 62 volunteer hours</div>
-              <div className="cert-footer">
-                <div className="cert-verified">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 6L9 17l-5-5" /></svg>
-                  Verified
+          <div className="cert-row">
+            <motion.div style={{ position: 'relative' }} data-parallax="0.05" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={fadeUpVariant}>
+              <div className="bg-glow-teal" style={{ top: '-30%', left: '-30%', filter: 'blur(70px)', opacity: 0.8 }}></div>
+              <div className="cert-card glass-effect">
+                <div className="cert-top">
+                  <svg className="cert-mark" viewBox="0 0 100 100"><path d="M20 15 L75 50" fill="none" stroke="#7F77DD" strokeWidth="16" strokeLinecap="round"/><path d="M20 85 L75 50" fill="none" stroke="#1D9E75" strokeWidth="16" strokeLinecap="round"/></svg>
+                  <span className="cert-badge"><span className="dot"></span>Verified</span>
                 </div>
-                <div className="cert-code">sabihands.ng/verify/SH-2941</div>
+                <div className="cert-title">Certificate of Completion</div>
+                <div className="cert-sub">Issued via Gigway</div>
+                <div className="cert-name">Amara Okafor</div>
+                <div className="cert-meta">
+                  <div><span>Organization</span><b>Lagos Food Bank Initiative</b></div>
+                  <div><span>Gig type</span><b>Event support · Physical</b></div>
+                  <div><span>Hours logged</span><b>18 hours</b></div>
+                  <div><span>Issued</span><b>March 2027</b></div>
+                </div>
               </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Why Lagos */}
-      <section className="why-lagos">
-        <img className="why-bg" src="https://images.unsplash.com/photo-1572727850654-f50a7ead20df?auto=format&fit=crop&w=1600&q=80" alt="Lagos, Nigeria skyline" />
-        <motion.div
-          className="wrap why-inner"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-          variants={fadeUpVariant}
-        >
-          <div className="eyebrow">Why South West & North Central Nigeria, why now</div>
-          <h2>A large, informal market that no one has packaged yet.</h2>
-          <p className="lede">Not Catchafire — US-only, professional-skills only. Not a global directory. Not word of mouth. Nothing today packages short-term Nigerian gigs, verification, and certification in one place.</p>
-          <div className="why-stats">
-            <div className="stat"><b>45M+</b><span>people living in South West & North Central Nigeria - our launch markets</span></div>
-            <div className="stat"><b>191,278</b><span>NGOs registered with Nigeria's CAC</span></div>
-            <div className="stat"><b>1.7M</b><span>new graduates a year, nationally</span></div>
+              <div className="cert-float-illus illus-slot tone-teal">
+                <img src="/illustrations/certificate-illustration.png" alt="Certificate" />
+              </div>
+            </motion.div>
+            
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.4 }} variants={fadeUpVariant}>
+              <div className="kicker">The differentiator</div>
+              <h2>Proof, not just a thank-you note</h2>
+              <p className="lede">Every gig completed on Gigway produces a real, verifiable certificate - something an employer, a school, or the next NGO can actually check, not just a line on a CV nobody can confirm.</p>
+              <ul className="story-list">
+                <li>Verified, not self-reported - issued by the organization directly</li>
+                <li>Builds into a growing, checkable track record</li>
+                <li>Issued instantly the moment a gig is marked complete</li>
+              </ul>
+            </motion.div>
           </div>
-        </motion.div>
+        </div>
+        <div className="wave">
+          <svg viewBox="0 0 1440 120" preserveAspectRatio="none"><path fill="#26215C" d="M0,60 C240,110 480,10 720,48 C960,86 1200,30 1440,70 L1440,120 L0,120 Z"/></svg>
+        </div>
       </section>
 
-      {/* Final CTA */}
-      <section className="final-cta" id="final-cta">
-        <div className="final-cta-bg-mesh">
-          <div className="mesh-blob blob-3"></div>
-          <div className="mesh-blob blob-4"></div>
-        </div>
-        <motion.div 
-          className="wrap"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.3 }}
-          variants={staggerContainer}
-          style={{ position: 'relative', zIndex: 1 }}
-        >
-          <motion.h2 variants={fadeUpVariant}>
-            You're not just volunteering.<br/>
-            <em className="gradient-text-alt">You're a Sabi Hand.</em>
-          </motion.h2>
-          <motion.p variants={fadeUpVariant}>Let's build the home for showing up in South West & North Central Nigeria.</motion.p>
-          <motion.div className="final-ctas" variants={fadeUpVariant}>
-            <Link className="btn btn-solid-teal hover-scale" to="/signup?role=volunteer">Find a gig</Link>
-            <Link className="btn btn-outline-white hover-scale" to="/signup?role=org">Post a gig</Link>
+      {/* WHY NOW (Bento Grid Redesign) */}
+      <section className="panel panel-dark" id="why-now" style={{ overflow: 'hidden' }}>
+        <div className="wrap">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={fadeUpVariant} style={{ textAlign: 'center', marginBottom: '100px' }}>
+            <div className="kicker">Why now</div>
+            <h2 style={{ maxWidth: '800px', margin: '0 auto' }}>Nigeria's volunteering market is large, informal, and untouched</h2>
           </motion.div>
-        </motion.div>
+
+          <div className="why-bento">
+            {/* The central illustration */}
+            <motion.div className="bento-center" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={scaleUpVariant}>
+              <div className="bg-glow-teal" style={{ top: '50%', left: '50%', transform: 'translate(-50%,-50%)', filter: 'blur(100px)', opacity: 0.35 }}></div>
+              <img src="/illustrations/why-now-volunteers.png" alt="Volunteers community" className="bento-image" />
+            </motion.div>
+
+            {/* Floating Stats Cards */}
+            <motion.div className="bento-card card-top-left" initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}>
+              <div className="stat-num">1.7M</div>
+              <p>graduates enter Nigeria's job market every year, most without proof of applied skill.</p>
+            </motion.div>
+
+            <motion.div className="bento-card card-bottom-right" initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.4 }}>
+              <div className="stat-num">191k+</div>
+              <p>NGOs registered in Nigeria - nearly all recruiting volunteers by word of mouth.</p>
+            </motion.div>
+
+            <motion.div className="bento-card card-bottom-left" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.6 }}>
+              <div className="stat-num">Zero</div>
+              <p>Nigerian platforms that combine short gigs, verification, and certification.</p>
+            </motion.div>
+          </div>
+
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.4 }} variants={fadeUpVariant} style={{ marginTop: '120px' }}>
+            <blockquote className="pull-quote bento-quote">
+              <p>"Every gig completed here adds a verified data point to a volunteer's track record and an NGO's reliability record - the more that accumulates, the harder it is for anyone else to catch up."</p>
+              <cite>The Gigway thesis</cite>
+            </blockquote>
+          </motion.div>
+        </div>
+        <div className="wave">
+          <svg viewBox="0 0 1440 120" preserveAspectRatio="none"><path fill="#FBFAFF" d="M0,50 C240,0 480,100 720,60 C960,20 1200,90 1440,44 L1440,120 L0,120 Z"/></svg>
+        </div>
+      </section>
+
+      {/* GET STARTED (Conversion Gateway Redesign) */}
+      {/* GET STARTED (Conversion Gateway Redesign) */}
+      <section className="panel panel-dark get-started-panel" id="get-started">
+        <div className="wrap" style={{ textAlign: 'center', position: 'relative' }}>
+          <div className="bg-glow-teal" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 0, opacity: 0.3, width: '80%', height: '100%', filter: 'blur(120px)' }}></div>
+          
+          <motion.div style={{ position: 'relative', zIndex: 2, maxWidth: '800px', margin: '0 auto' }} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={fadeUpVariant}>
+            <div className="kicker" style={{ color: 'var(--teal-200)', borderColor: 'rgba(93, 202, 165, 0.3)' }}>Your Next Step</div>
+            <h2 style={{ fontSize: 'clamp(40px, 5vw, 64px)', marginBottom: '24px' }}>Build your track record today.</h2>
+            <p className="lede" style={{ color: 'var(--purple-200)', marginBottom: '48px', fontSize: '20px' }}>
+              Takes under a minute to join. No CV required. Start matching with verified NGOs and earning certificates that employers actually trust.
+            </p>
+
+            <div className="cta-btn-group">
+              <Link className="btn btn-primary btn-glow btn-large" to="/signup?role=volunteer">
+                Start Building My Profile
+              </Link>
+              <Link className="btn btn-outline-light btn-large" to="/signup?role=org">
+                Post a Gig as an NGO
+              </Link>
+            </div>
+            <p style={{ marginTop: '24px', fontSize: '14px', color: 'rgba(255, 255, 255, 0.5)' }}>100% free for volunteers. Join 10,000+ others in Lagos.</p>
+          </motion.div>
+        </div>
       </section>
 
     </div>

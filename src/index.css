@@ -62,6 +62,17 @@ a {
   text-decoration: none;
 }
 
+/* Accessibility: Focus States */
+a:focus-visible, button:focus-visible, input:focus-visible, .btn:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--teal-400);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.btn:focus-visible {
+  border-radius: 999px; /* Override for rounded buttons */
+}
+
 a:hover {
   text-decoration: underline;
 }
