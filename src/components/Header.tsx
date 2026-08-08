@@ -25,7 +25,7 @@ const Header: React.FC = () => {
           </Link>
         </div>
         <button 
-          className="nav-toggle" 
+          className={`nav-toggle ${isOpen ? 'open' : ''}`} 
           aria-label="Open menu"
           onClick={() => setIsOpen(!isOpen)}
         >
