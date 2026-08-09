@@ -320,6 +320,9 @@ const Home: React.FC = () => {
               </Link>
             </div>
             <p style={{ marginTop: '24px', fontSize: '14px', color: 'rgba(255, 255, 255, 0.5)' }}>100% free for volunteers. Join 10,000+ others in Lagos.</p>
+            <p style={{ marginTop: '24px', fontSize: '12px', color: 'rgba(255, 255, 255, 0.4)', maxWidth: '600px', margin: '24px auto 0 auto', lineHeight: '1.6' }}>
+              <strong>About Ralvo:</strong> Ralvo is an application designed to connect verified non-governmental organizations (NGOs) with volunteers across Nigeria. By using our platform, volunteers can find physical and skilled opportunities, while NGOs can easily manage and issue completion certificates. We use authentication services (like Google OAuth) solely to verify user identity securely and ensure a trustworthy community environment.
+            </p>
           </motion.div>
         </div>
       </section>
