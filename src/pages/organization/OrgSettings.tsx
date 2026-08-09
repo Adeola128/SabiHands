@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { uploadImage } from '../../lib/uploadImage';
@@ -296,7 +296,7 @@ const OrgSettings: React.FC = () => {
                       </div>
                       <div>
                         <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--teal-900)', margin: '0 0 4px' }}>Your Organization is Verified</h3>
-                        <p style={{ fontSize: '13px', color: 'var(--teal-900)', margin: 0, opacity: 0.8 }}>Gigway has verified your registration details. Volunteers trust verified organizations more.</p>
+                        <p style={{ fontSize: '13px', color: 'var(--teal-900)', margin: 0, opacity: 0.8 }}>Ralvo has verified your registration details. Volunteers trust verified organizations more.</p>
                       </div>
                     </div>
                   ) : (

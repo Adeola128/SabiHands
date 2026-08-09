@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { sendBrevoEmail } from "../_shared/brevo.ts";
@@ -41,20 +41,20 @@ serve(async (req: Request) => {
       throw new Error("Organization user email not found");
     }
 
-    const subject = `Your Gigway organization profile has been approved!`;
+    const subject = `Your Ralvo organization profile has been approved!`;
 
     const bodyText = `
       <h2 class="headline">Congratulations, ${name}!</h2>
-      <p>We are delighted to inform you that your organization has been <strong>approved</strong> by the Gigway review board.</p>
+      <p>We are delighted to inform you that your organization has been <strong>approved</strong> by the Ralvo review board.</p>
       
       <p>You can now start posting volunteer gigs, recruiting Sabi Hands, reviewing submissions, and issuing certificates to impact makers.</p>
       
       <div class="button-wrap">
-        <a href="https://Gigway.vercel.app/dashboard/organization/gigs/new" class="button">Create Your First Gig</a>
+        <a href="https://Ralvo.vercel.app/dashboard/organization/gigs/new" class="button">Create Your First Gig</a>
       </div>
       
       <p>Thank you for partnering with us to build a stronger community.</p>
-      <p>Best regards,<br>The Gigway Team</p>
+      <p>Best regards,<br>The Ralvo Team</p>
     `;
 
     const htmlContent = buildEmailTemplate(

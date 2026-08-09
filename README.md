@@ -1,8 +1,8 @@
-﻿# Gigway ðŸ¤
+# Ralvo ðŸ¤
 
 **Nigeria's Volunteer Marketplace** â€” connecting passionate volunteers with NGOs and social impact organizations.
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?logo=vercel)](https://Gigway.vercel.app)
+[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?logo=vercel)](https://Ralvo.vercel.app)
 [![Built with React](https://img.shields.io/badge/React-19-61dafb?logo=react)](https://react.dev)
 [![Supabase](https://img.shields.io/badge/Supabase-Backend-3fcf8e?logo=supabase)](https://supabase.com)
 
@@ -10,7 +10,7 @@
 
 ## About
 
-Gigway bridges the gap between skilled volunteers and the organisations that need them. Volunteers can browse gigs, apply, check in, and earn verified digital certificates. Organizations can post gigs, review applicants, mark attendance, and issue certificates â€” all in one platform.
+Ralvo bridges the gap between skilled volunteers and the organisations that need them. Volunteers can browse gigs, apply, check in, and earn verified digital certificates. Organizations can post gigs, review applicants, mark attendance, and issue certificates â€” all in one platform.
 
 ## Features
 
@@ -38,8 +38,8 @@ Gigway bridges the gap between skilled volunteers and the organisations that nee
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/YOUR_USERNAME/Gigway.git
-cd Gigway
+git clone https://github.com/YOUR_USERNAME/Ralvo.git
+cd Ralvo
 
 # 2. Install dependencies
 npm install

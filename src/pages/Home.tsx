@@ -72,7 +72,7 @@ const Home: React.FC = () => {
               Build your track record.
             </motion.h1>
             <motion.p className="sub" variants={fadeUpVariant}>
-              Gigway connects NGOs with young volunteers in Lagos. Complete real gigs, earn verified certificates, and build a portfolio employers trust.
+              Ralvo connects NGOs with young volunteers in Lagos. Complete real gigs, earn verified certificates, and build a portfolio employers trust.
             </motion.p>
             <motion.div className="hero-ctas" variants={fadeUpVariant}>
               <Link className="btn btn-primary btn-glow" to="/signup?role=volunteer">I'm looking to volunteer</Link>
@@ -196,7 +196,7 @@ const Home: React.FC = () => {
             <div className="sticky-mobile">
               <motion.img 
                 src="/illustrations/how-it-works-mobile.png" 
-                alt="Mobile app illustration for Gigway"
+                alt="Mobile app illustration for Ralvo"
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
@@ -223,7 +223,7 @@ const Home: React.FC = () => {
                   <span className="cert-badge"><span className="dot"></span>Verified</span>
                 </div>
                 <div className="cert-title">Certificate of Completion</div>
-                <div className="cert-sub">Issued via Gigway</div>
+                <div className="cert-sub">Issued via Ralvo</div>
                 <div className="cert-name">Amara Okafor</div>
                 <div className="cert-meta">
                   <div><span>Organization</span><b>Lagos Food Bank Initiative</b></div>
@@ -240,7 +240,7 @@ const Home: React.FC = () => {
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.4 }} variants={fadeUpVariant}>
               <div className="kicker">The differentiator</div>
               <h2>Proof, not just a thank-you note</h2>
-              <p className="lede">Every gig completed on Gigway produces a real, verifiable certificate - something an employer, a school, or the next NGO can actually check, not just a line on a CV nobody can confirm.</p>
+              <p className="lede">Every gig completed on Ralvo produces a real, verifiable certificate - something an employer, a school, or the next NGO can actually check, not just a line on a CV nobody can confirm.</p>
               <ul className="story-list">
                 <li>Verified, not self-reported - issued by the organization directly</li>
                 <li>Builds into a growing, checkable track record</li>
@@ -289,7 +289,7 @@ const Home: React.FC = () => {
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.4 }} variants={fadeUpVariant} style={{ marginTop: '120px' }}>
             <blockquote className="pull-quote bento-quote">
               <p>"Every gig completed here adds a verified data point to a volunteer's track record and an NGO's reliability record - the more that accumulates, the harder it is for anyone else to catch up."</p>
-              <cite>The Gigway thesis</cite>
+              <cite>The Ralvo thesis</cite>
             </blockquote>
           </motion.div>
         </div>

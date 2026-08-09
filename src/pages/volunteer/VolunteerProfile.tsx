@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
@@ -118,7 +118,7 @@ const VolunteerProfile: React.FC = () => {
                 {profile?.full_name || 'Anonymous Volunteer'}
               </h1>
               <div className="vol-profile-headline">
-                <span>{profile?.headline || 'Volunteer at Gigway'}</span>
+                <span>{profile?.headline || 'Volunteer at Ralvo'}</span>
                 <span style={{ color: '#D1CEDF' }}>â€¢</span>
                 <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>

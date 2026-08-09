@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
@@ -230,7 +230,7 @@ const IssueCertificates: React.FC = () => {
           <div className="dash-card-padding">
             <h3 style={{ fontSize: '14px', fontWeight: 700, color: 'var(--ink)', marginBottom: '8px' }}>How it works</h3>
             <p style={{ fontSize: '13px', color: 'var(--body)', lineHeight: 1.5, margin: 0 }}>
-              Certificates are automatically generated and cryptographically signed by Gigway, making them verifiable and secure.
+              Certificates are automatically generated and cryptographically signed by Ralvo, making them verifiable and secure.
             </p>
           </div>
         </div>
@@ -338,7 +338,7 @@ const IssueCertificates: React.FC = () => {
                           </div>
                           
                           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
-                             <img src="https://api.qrserver.com/v1/create-qr-code/?size=50x50&data=https://Gigway.com/verify/preview" alt="QR Code" style={{ width: '40px', height: '40px' }} />
+                             <img src="https://api.qrserver.com/v1/create-qr-code/?size=50x50&data=https://Ralvo.com/verify/preview" alt="QR Code" style={{ width: '40px', height: '40px' }} />
                           </div>
                         </div>
 
@@ -367,7 +367,7 @@ const IssueCertificates: React.FC = () => {
                         {/* Footer */}
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', zIndex: 1, padding: '0 5% 5% 22%', marginTop: 'auto', position: 'relative' }}>
                           <div style={{ flex: 1, textAlign: 'left' }}>
-                            <div style={{ fontSize: '0.55rem', fontWeight: 700, color: 'var(--ink)' }}>Authorized by Gigway</div>
+                            <div style={{ fontSize: '0.55rem', fontWeight: 700, color: 'var(--ink)' }}>Authorized by Ralvo</div>
                             <div style={{ fontSize: '0.45rem', color: 'var(--muted)' }}>Verification Partner</div>
                           </div>
                           

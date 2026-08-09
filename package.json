@@ -1,5 +1,5 @@
 {
-  "name": "gigway",
+  "name": "ralvo",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -20,6 +20,7 @@
     "react-dom": "^19.2.8",
     "react-helmet-async": "^3.0.0",
     "react-hot-toast": "^2.6.0",
+    "react-intersection-observer": "^11.0.0",
     "react-router-dom": "^7.18.2"
   },
   "devDependencies": {

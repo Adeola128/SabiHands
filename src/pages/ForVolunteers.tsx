@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import './RolePages.css'; // Shared CSS for role landing pages
 
@@ -10,7 +10,7 @@ const ForVolunteers: React.FC = () => {
           <div className="eyebrow" style={{ color: 'var(--teal-200)' }}>For Volunteers</div>
           <h1 className="text-display">Show up. Get sabi. Become a Sabi Hand.</h1>
           <p className="hero-sub mx-auto">
-            You don't need a 5-year degree to prove you can do the work. Gigway connects you with real NGOs and companies in Lagos. Complete a gig, get a verified certificate, and build a track record they can't ignore.
+            You don't need a 5-year degree to prove you can do the work. Ralvo connects you with real NGOs and companies in Lagos. Complete a gig, get a verified certificate, and build a track record they can't ignore.
           </p>
           <div className="hero-actions center-actions mt-32">
             <Link to="/signup/volunteer" className="btn-primary btn-large">Create your profile</Link>
@@ -25,7 +25,7 @@ const ForVolunteers: React.FC = () => {
             <div className="feature-card">
               <img src="/images/real_world_proof.png" alt="Real-world proof" className="feature-img" />
               <h3>Real-world proof</h3>
-              <p>Every completed gig turns into a Gigway certificate you can share on LinkedIn or add to your CV.</p>
+              <p>Every completed gig turns into a Ralvo certificate you can share on LinkedIn or add to your CV.</p>
             </div>
             <div className="feature-card">
               <img src="/images/direct_connections.png" alt="Direct connections" className="feature-img" />

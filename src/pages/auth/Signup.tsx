@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import './Signup.css';
@@ -140,7 +140,7 @@ const Signup: React.FC = () => {
               <path d="M60 15 A35 35 0 1 0 60 85" fill="none" stroke="#AFA9EC" strokeWidth="16" strokeLinecap="round" />
               <path d="M40 15 A35 35 0 1 1 40 85" fill="none" stroke="#5DCAA5" strokeWidth="16" strokeLinecap="round" />
             </svg>
-            <span>Gigway</span>
+            <span>Ralvo</span>
           </Link>
           <div>
             <p className="visual-quote">{current.quote}</p>
@@ -166,7 +166,7 @@ const Signup: React.FC = () => {
           </div>
 
           <div className="auth-eyebrow">Create your account</div>
-          <h1>Welcome to Gigway</h1>
+          <h1>Welcome to Ralvo</h1>
           <p className="form-sub">{current.formSub}</p>
 
           <div className="role-toggle">
@@ -276,7 +276,7 @@ const Signup: React.FC = () => {
 
             <label className="terms">
               <input type="checkbox" required />
-              <span>I agree to Gigway' <Link to="/terms">Terms of Service</Link> and <Link to="/privacy">Privacy Policy</Link>.</span>
+              <span>I agree to Ralvo' <Link to="/terms">Terms of Service</Link> and <Link to="/privacy">Privacy Policy</Link>.</span>
             </label>
 
             <button type="submit" disabled={loading} className={`submit-btn ${isOrg ? 'org-btn' : ''}`} style={{ opacity: loading ? 0.7 : 1 }}>

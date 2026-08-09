@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
@@ -13,7 +13,7 @@ const CertificateDetail: React.FC = () => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(`https://Gigway.com/verify/${id}`);
+    navigator.clipboard.writeText(`https://Ralvo.com/verify/${id}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -82,7 +82,7 @@ const CertificateDetail: React.FC = () => {
               Verified
             </div>
             <p style={{ fontSize: '13px', color: 'var(--body)', lineHeight: 1.6, marginBottom: '0' }}>
-              This certificate is cryptographically signed and publicly verifiable on the Gigway platform.
+              This certificate is cryptographically signed and publicly verifiable on the Ralvo platform.
             </p>
           </div>
         </div>
@@ -158,7 +158,7 @@ const CertificateDetail: React.FC = () => {
               </div>
               
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
-                 <img src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://Gigway.com/verify/${id}`} alt="QR Code" style={{ width: '80px', height: '80px' }} />
+                 <img src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://Ralvo.com/verify/${id}`} alt="QR Code" style={{ width: '80px', height: '80px' }} />
               </div>
             </div>
 
@@ -187,7 +187,7 @@ const CertificateDetail: React.FC = () => {
             {/* Footer */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', zIndex: 1, padding: '0 5% 5% 22%', marginTop: 'auto', position: 'relative' }}>
               <div style={{ flex: 1, textAlign: 'left' }}>
-                <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--ink)' }}>Authorized by Gigway</div>
+                <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--ink)' }}>Authorized by Ralvo</div>
                 <div style={{ fontSize: '0.9rem', color: 'var(--muted)' }}>Verification Partner</div>
               </div>
               

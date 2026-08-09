@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { sendBrevoEmail } from "../_shared/brevo.ts";
 
@@ -26,7 +26,7 @@ serve(async (req: Request) => {
     
     // Extract first name
     const firstName = volunteer_name ? volunteer_name.split(' ')[0] : 'there';
-    const displayUrl = browse_gigs_url || 'https://Gigway.vercel.app/dashboard/volunteer/gigs';
+    const displayUrl = browse_gigs_url || 'https://Ralvo.vercel.app/dashboard/volunteer/gigs';
 
     const htmlContent = `<!DOCTYPE html>
 <html lang="en">
@@ -93,11 +93,11 @@ serve(async (req: Request) => {
 
   <tr>
     <td class="stack-pad" style="padding:28px 48px 40px; border-top:1px solid #EDEBF7; margin-top:24px; text-align:left;">
-      <p style="margin:0 0 6px; font-family:Arial,Helvetica,sans-serif; font-size:12px; color:#8B87B0;">Gigway Â· Lagos, Nigeria</p>
+      <p style="margin:0 0 6px; font-family:Arial,Helvetica,sans-serif; font-size:12px; color:#8B87B0;">Ralvo Â· Lagos, Nigeria</p>
       <p style="margin:0; font-family:Arial,Helvetica,sans-serif; font-size:12px; color:#8B87B0;">
-        <a href="https://Gigway.vercel.app/settings" style="color:#8B87B0; text-decoration:underline;">Notification settings</a>
+        <a href="https://Ralvo.vercel.app/settings" style="color:#8B87B0; text-decoration:underline;">Notification settings</a>
         &nbsp;Â·&nbsp;
-        <a href="https://Gigway.vercel.app/help" style="color:#8B87B0; text-decoration:underline;">Help</a>
+        <a href="https://Ralvo.vercel.app/help" style="color:#8B87B0; text-decoration:underline;">Help</a>
       </p>
     </td>
   </tr>

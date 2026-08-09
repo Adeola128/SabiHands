@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -209,7 +209,7 @@ const GigCheckIn: React.FC = () => {
                     {[
                       { step: '1', title: 'Attend the event', body: 'Show up, do great work, and enjoy making an impact.', done: true },
                       { step: '2', title: 'Hours confirmed', body: 'The organizer marks your hours complete after the event.', done: false },
-                      { step: '3', title: 'Certificate issued', body: 'Your Gigway certificate is automatically generated and ready to share.', done: false },
+                      { step: '3', title: 'Certificate issued', body: 'Your Ralvo certificate is automatically generated and ready to share.', done: false },
                     ].map((item, idx, arr) => (
                       <div key={item.step} style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', position: 'relative', paddingBottom: idx < arr.length - 1 ? '24px' : '0' }}>
                         {/* Connecting line */}

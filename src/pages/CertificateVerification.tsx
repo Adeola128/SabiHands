@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import LoadingScreen from '../components/LoadingScreen';
@@ -62,7 +62,7 @@ const CertificateVerification: React.FC = () => {
           variants={fadeUpVariant}
         >
           <h1>Verify a Certificate</h1>
-          <p>Enter the unique certificate code below to verify its authenticity on the Gigway registry.</p>
+          <p>Enter the unique certificate code below to verify its authenticity on the Ralvo registry.</p>
         </motion.div>
       </header>
 

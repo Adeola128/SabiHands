@@ -1,4 +1,4 @@
-﻿export function buildEmailTemplate(preheader: string, headline: string, bodyContent: string, eyebrow: string = "Notification", headerColor: string = "#534AB7"): string {
+export function buildEmailTemplate(preheader: string, headline: string, bodyContent: string, eyebrow: string = "Notification", headerColor: string = "#534AB7"): string {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -59,11 +59,11 @@
 
   <tr>
     <td class="stack-pad" style="padding:28px 48px 40px; border-top:1px solid #EDEBF7; margin-top:36px; text-align:left;">
-      <p style="margin:0 0 6px; font-family:Arial,Helvetica,sans-serif; font-size:12px; color:#8B87B0; line-height:1.5;">Gigway Â· Lagos, Nigeria</p>
+      <p style="margin:0 0 6px; font-family:Arial,Helvetica,sans-serif; font-size:12px; color:#8B87B0; line-height:1.5;">Ralvo Â· Lagos, Nigeria</p>
       <p style="margin:0; font-family:Arial,Helvetica,sans-serif; font-size:12px; color:#8B87B0; line-height:1.5;">
-        <a href="https://Gigway.vercel.app/settings" style="color:#8B87B0; text-decoration:underline;">Notification settings</a>
+        <a href="https://Ralvo.vercel.app/settings" style="color:#8B87B0; text-decoration:underline;">Notification settings</a>
         &nbsp;Â·&nbsp;
-        <a href="https://Gigway.vercel.app/help" style="color:#8B87B0; text-decoration:underline;">Help</a>
+        <a href="https://Ralvo.vercel.app/help" style="color:#8B87B0; text-decoration:underline;">Help</a>
       </p>
     </td>
   </tr>

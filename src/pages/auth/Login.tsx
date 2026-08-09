@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import './Login.css';
@@ -81,7 +81,7 @@ const Login: React.FC = () => {
               <path d="M60 15 A35 35 0 1 0 60 85" fill="none" stroke="#AFA9EC" strokeWidth="16" strokeLinecap="round" />
               <path d="M40 15 A35 35 0 1 1 40 85" fill="none" stroke="#5DCAA5" strokeWidth="16" strokeLinecap="round" />
             </svg>
-            <span>Gigway</span>
+            <span>Ralvo</span>
           </Link>
           <div>
             <p className="visual-quote">"Show up. Get sabi. Become a Sabi Hand."</p>
@@ -103,7 +103,7 @@ const Login: React.FC = () => {
                 <path d="M19 12H5M12 19l-7-7 7-7" />
               </svg> Back to home
             </Link>
-            <span className="login-hint">New to Gigway? <Link to="/signup">Sign up</Link></span>
+            <span className="login-hint">New to Ralvo? <Link to="/signup">Sign up</Link></span>
           </div>
 
           <div className="auth-eyebrow">Log in to your account</div>

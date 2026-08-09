@@ -13,7 +13,7 @@ const Header: React.FC = () => {
             <path d="M20 15 L75 50" fill="none" stroke="#7F77DD" strokeWidth="16" strokeLinecap="round"/>
             <path d="M20 85 L75 50" fill="none" stroke="#1D9E75" strokeWidth="16" strokeLinecap="round"/>
           </svg>
-          <span>Gigway</span>
+          <span>Ralvo</span>
         </Link>
         <div className={`nav-links ${isOpen ? 'open' : ''}`}>
           <a href="#how" onClick={() => setIsOpen(false)}>How it works</a>

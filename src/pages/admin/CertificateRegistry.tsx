@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 
 const CertificateRegistry: React.FC = () => {
   const certificates = [
@@ -12,7 +12,7 @@ const CertificateRegistry: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '32px' }}>
         <div>
           <h1 style={{ fontSize: '28px', fontWeight: 700, color: '#0F172A', margin: '0 0 8px 0', fontFamily: 'var(--display)' }}>Certificate Registry & Audit Log</h1>
-          <p style={{ color: '#64748B', margin: 0, fontSize: '15px' }}>Immutable ledger of all verified certificates issued on Gigway.</p>
+          <p style={{ color: '#64748B', margin: 0, fontSize: '15px' }}>Immutable ledger of all verified certificates issued on Ralvo.</p>
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
           <div className="admin-topbar-search" style={{ width: '280px', backgroundColor: 'white', border: '1px solid #E2E8F0' }}>

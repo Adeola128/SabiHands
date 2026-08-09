@@ -59,14 +59,14 @@ const PublicGigDetail: React.FC = () => {
   return (
     <div style={{ backgroundColor: '#F8F9FA', minHeight: '100vh', padding: '40px 24px', fontFamily: 'var(--sans)' }}>
       <Helmet>
-        <title>{gig.title} &mdash; Gigway</title>
-        <meta name="description" content={`Apply for ${gig.title} with ${gig.organizations?.name || 'an NGO'} on Gigway.`} />
-        <meta property="og:title" content={`${gig.title} &mdash; Gigway`} />
-        <meta property="og:description" content={`Apply for ${gig.title} with ${gig.organizations?.name || 'an NGO'} on Gigway.`} />
-        <meta property="og:image" content={gig.image_url || "https://Gigway.vercel.app/og-image.png"} />
-        <meta name="twitter:title" content={`${gig.title} &mdash; Gigway`} />
-        <meta name="twitter:description" content={`Apply for ${gig.title} with ${gig.organizations?.name || 'an NGO'} on Gigway.`} />
-        <meta name="twitter:image" content={gig.image_url || "https://Gigway.vercel.app/og-image.png"} />
+        <title>{gig.title} &mdash; Ralvo</title>
+        <meta name="description" content={`Apply for ${gig.title} with ${gig.organizations?.name || 'an NGO'} on Ralvo.`} />
+        <meta property="og:title" content={`${gig.title} &mdash; Ralvo`} />
+        <meta property="og:description" content={`Apply for ${gig.title} with ${gig.organizations?.name || 'an NGO'} on Ralvo.`} />
+        <meta property="og:image" content={gig.image_url || "https://www.ralvo.com.ng/og-image.png"} />
+        <meta name="twitter:title" content={`${gig.title} &mdash; Ralvo`} />
+        <meta name="twitter:description" content={`Apply for ${gig.title} with ${gig.organizations?.name || 'an NGO'} on Ralvo.`} />
+        <meta name="twitter:image" content={gig.image_url || "https://www.ralvo.com.ng/og-image.png"} />
       </Helmet>
       <div style={{ maxWidth: '1000px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 340px', gap: '32px' }}>
         
@@ -122,7 +122,7 @@ const PublicGigDetail: React.FC = () => {
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--teal-600)" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             </div>
             <h3 style={{ fontSize: '20px', color: 'var(--ink)', fontWeight: 700, marginBottom: '8px', fontFamily: 'var(--display)' }}>Ready to make an impact?</h3>
-            <p style={{ fontSize: '14px', color: 'var(--body)', marginBottom: '24px', lineHeight: 1.5 }}>Join Gigway to apply for this gig and start building your volunteer portfolio.</p>
+            <p style={{ fontSize: '14px', color: 'var(--body)', marginBottom: '24px', lineHeight: 1.5 }}>Join Ralvo to apply for this gig and start building your volunteer portfolio.</p>
 
             <Link
               to="/signup"
@@ -135,7 +135,7 @@ const PublicGigDetail: React.FC = () => {
             </p>
           </div>
 
-          <ShareGigButton gigId={gig.id} title={gig.title} text={`Check out this volunteering opportunity on Gigway: ${gig.title}`} />
+          <ShareGigButton gigId={gig.id} title={gig.title} text={`Check out this volunteering opportunity on Ralvo: ${gig.title}`} />
 
           {/* Date & Time */}
           <div style={{ backgroundColor: 'white', borderRadius: '16px', border: '1px solid #E4E1F5', padding: '24px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', marginBottom: '24px' }}>

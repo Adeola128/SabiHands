@@ -13,13 +13,13 @@ const Footer: React.FC = () => {
                 <path d="M20 15 L75 50" fill="none" stroke="#7F77DD" strokeWidth="16" strokeLinecap="round"/>
                 <path d="M20 85 L75 50" fill="none" stroke="#1D9E75" strokeWidth="16" strokeLinecap="round"/>
               </svg>
-              <span style={{ color: 'var(--purple-900)' }}>Gigway</span>
+              <span style={{ color: 'var(--purple-900)' }}>Ralvo</span>
             </Link>
             <p className="footer-tagline">A Lagos-first marketplace for real gigs and real proof.</p>
           </div>
           
           <div className="footer-nav">
-            <Link to="/how-it-works">How it works</Link>
+
             <Link to="/volunteers">For volunteers</Link>
             <Link to="/organizations">For NGOs &amp; companies</Link>
             <Link to="/verify">Verify certificate</Link>
@@ -33,7 +33,7 @@ const Footer: React.FC = () => {
           </div>
           
           <div className="footer-legal">
-            <span>© 2026 Gigway.</span>
+            <span>© 2026 Ralvo.</span>
             <Link to="/privacy">Privacy</Link>
             <Link to="/terms">Terms</Link>
             <Link to="/contact">Contact</Link>

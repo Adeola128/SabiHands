@@ -1,7 +1,7 @@
-﻿User-agent: *
+User-agent: *
 Allow: /
 Disallow: /dashboard/
 Disallow: /admin/
 Disallow: /onboarding/
 
-Sitemap: https://gigway.vercel.app/sitemap.xml
+Sitemap: https://www.ralvo.com.ng/sitemap.xml

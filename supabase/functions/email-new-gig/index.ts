@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { sendBrevoEmail } from "../_shared/brevo.ts";
@@ -67,7 +67,7 @@ serve(async (req: Request) => {
       <p><strong>Location:</strong> ${record.location || 'Remote'}</p>
       <p><strong>Type:</strong> ${record.type}</p>
       <p>A new gig just dropped that perfectly matches your skills. Check it out and be the first to apply.</p>
-      <a href="https://Gigway.com/dashboard/volunteer/gigs/${record.id}" class="button">View Gig</a>
+      <a href="https://Ralvo.com/dashboard/volunteer/gigs/${record.id}" class="button">View Gig</a>
     `;
 
     const htmlContent = buildEmailTemplate(

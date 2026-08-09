@@ -1,4 +1,4 @@
-﻿# Gigway — QA Scorecard
+# Ralvo — QA Scorecard
 
 The living record described in Section 4 of the QA & Testing Roadmap.
 

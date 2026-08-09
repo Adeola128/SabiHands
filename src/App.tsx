@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import MainLayout from './layouts/MainLayout';
 import Home from './pages/Home';
-import HowItWorks from './pages/HowItWorks';
+
 import ForVolunteers from './pages/ForVolunteers';
 import ForOrganizations from './pages/ForOrganizations';
 import Community from './pages/Community';
@@ -81,7 +81,7 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/" element={<MainLayout />} errorElement={<ErrorPage />}>
           <Route index element={<Home />} />
-          <Route path="how-it-works" element={<HowItWorks />} />
+
           <Route path="volunteers" element={<ForVolunteers />} />
           <Route path="organizations" element={<ForOrganizations />} />
           <Route path="community" element={<Community />} />

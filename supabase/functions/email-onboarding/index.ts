@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { sendBrevoEmail } from "../_shared/brevo.ts";
@@ -59,13 +59,13 @@ serve(async (req: Request) => {
       const profile = Array.isArray(target.volunteer_profiles) ? target.volunteer_profiles[0] : target.volunteer_profiles;
       const name = profile?.full_name || "Volunteer";
 
-      const subject = "Complete Your Gigway Profile!";
+      const subject = "Complete Your Ralvo Profile!";
       
       const bodyText = `
         <p>Hi ${name},</p>
-        <p>We noticed you haven't completed your volunteer profile on Gigway yet.</p>
+        <p>We noticed you haven't completed your volunteer profile on Ralvo yet.</p>
         <p>Complete your profile to unlock the best gigs. NGOs and companies are looking for real hands like you. Adding your interests and a short bio helps us match you with opportunities you'll actually care about.</p>
-        <a href="https://Gigway.com/dashboard/volunteer/settings" class="button">Complete Profile</a>
+        <a href="https://Ralvo.com/dashboard/volunteer/settings" class="button">Complete Profile</a>
       `;
 
       const htmlContent = buildEmailTemplate(

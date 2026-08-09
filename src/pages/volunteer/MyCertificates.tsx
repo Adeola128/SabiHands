@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
@@ -81,7 +81,7 @@ const MyCertificates: React.FC = () => {
           <div className="dash-card-padding">
             <h2 className="dash-card-title" style={{ fontSize: '15px', marginBottom: '12px' }}>Share your achievements</h2>
             <p style={{ fontSize: '13px', color: 'var(--body)', lineHeight: 1.5, marginBottom: '16px' }}>
-              All Gigway certificates are publicly verifiable. Add them to your LinkedIn or share a link directly.
+              All Ralvo certificates are publicly verifiable. Add them to your LinkedIn or share a link directly.
             </p>
             <Link to="/dashboard/volunteer/profile" style={{ display: 'block', textAlign: 'center', width: '100%', padding: '10px 16px', backgroundColor: 'var(--white)', border: '1.5px solid #E4E1F5', borderRadius: '8px', color: 'var(--ink)', fontWeight: 600, fontSize: '14px', textDecoration: 'none' }}>
               View Public Profile
@@ -150,13 +150,13 @@ const MyCertificates: React.FC = () => {
                   <button
                     className="gig-action"
                     style={{ background: 'none', border: '1.5px solid #E4E1F5', color: 'var(--body)' }}
-                    onClick={() => navigator.clipboard.writeText(`https://Gigway.com/verify/${cert.verification_code}`)}
+                    onClick={() => navigator.clipboard.writeText(`https://Ralvo.com/verify/${cert.verification_code}`)}
                   >
                     Copy Link
                   </button>
                   <span style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '13px', color: 'var(--teal-600)', fontWeight: 600, marginLeft: 'auto' }}>
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                    Verified on Gigway
+                    Verified on Ralvo
                   </span>
                 </div>
               </div>

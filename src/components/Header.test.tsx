@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Lens 3.4 — Routing: Navigation header (Header.tsx)
  *
  * Definition of done checklist (Section 8):
@@ -19,9 +19,9 @@ const renderHeader = () =>
   );
 
 describe("Header — Lens 3.4: Navigation routing", () => {
-  it('logo "Gigway" routes to /', () => {
+  it('logo "Ralvo" routes to /', () => {
     renderHeader();
-    expect(screen.getByRole("link", { name: /Gigway/i })).toHaveAttribute("href", "/");
+    expect(screen.getByRole("link", { name: /Ralvo/i })).toHaveAttribute("href", "/");
   });
 
   it('"Get started" routes to /login', () => {

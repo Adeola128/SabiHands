@@ -1,9 +1,9 @@
-﻿/**
+/**
  * Email Notification System â€” Full Test Suite
  *
  * Benchmark targets (all must pass):
  *  1.  Template renders valid HTML (<!DOCTYPE html> present)
- *  2.  Template contains Gigway branding
+ *  2.  Template contains Ralvo branding
  *  3.  Template injects dynamic values (name, gig title, org name)
  *  4.  No debug artifacts (dYZ% must be absent from all output)
  *  5.  CTA button href is a valid URL
@@ -72,8 +72,8 @@ function buildEmailTemplate(preheader: string, headline: string, bodyContent: st
   <center style="width:100%;background:#FBFAFF;">
     <div class="email-container">
       <div class="header-banner">
-        <img class="header-logo" src="data:image/svg+xml;charset=UTF-8,${logoSvg}" alt="Gigway Logo">
-        <div class="header-wordmark">Gigway</div>
+        <img class="header-logo" src="data:image/svg+xml;charset=UTF-8,${logoSvg}" alt="Ralvo Logo">
+        <div class="header-wordmark">Ralvo</div>
         <div class="header-tagline">Making an impact, one sabi hand at a time.</div>
         <div class="header-event-badge">${headline}</div>
       </div>
@@ -82,7 +82,7 @@ function buildEmailTemplate(preheader: string, headline: string, bodyContent: st
       </div>
       <div class="footer">
         <p class="footer-tagline">"You're not just volunteering. You're a Sabi Hand."</p>
-        <p class="footer-copy">&copy; 2026 Gigway, Lagos, Nigeria. &nbsp;|&nbsp; <a href="https://Gigway.vercel.app">Visit Website</a></p>
+        <p class="footer-copy">&copy; 2026 Ralvo, Lagos, Nigeria. &nbsp;|&nbsp; <a href="https://www.ralvo.com.ng">Visit Website</a></p>
       </div>
     </div>
   </center>
@@ -164,7 +164,7 @@ describe('Email Template â€” Unit Tests', () => {
       <div class="info-card-value">Code Clinic Mentor</div>
       <div class="info-card-sub">Hosted by TechForGood NGO</div>
     </div>
-    <div class="button-wrap"><a href="https://Gigway.vercel.app/dashboard/volunteer/applications" class="button">View My Applications &rarr;</a></div>
+    <div class="button-wrap"><a href="https://www.ralvo.com.ng/dashboard/volunteer/applications" class="button">View My Applications &rarr;</a></div>
   `;
   let html: string;
 
@@ -180,10 +180,10 @@ describe('Email Template â€” Unit Tests', () => {
   });
 
   // Benchmark 2
-  it('BENCHMARK 2: contains Gigway branding', () => {
-    expect(html).toContain('Gigway');
+  it('BENCHMARK 2: contains Ralvo branding', () => {
+    expect(html).toContain('Ralvo');
     expect(html).toContain('Sabi Hand');
-    expect(html.toLowerCase()).toContain('Gigway');
+    expect(html.toLowerCase()).toContain('Ralvo');
   });
 
   // Benchmark 3
@@ -222,7 +222,7 @@ describe('Email Template â€” Unit Tests', () => {
 
   // Benchmark 7
   it('BENCHMARK 7: footer copyright is present', () => {
-    expect(html).toContain('Gigway');
+    expect(html).toContain('Ralvo');
     expect(html).toContain('2026');
     expect(html).toContain('Lagos');
   });
