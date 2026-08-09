@@ -1,4 +1,4 @@
-﻿# SabiHands — QA Scorecard
+﻿# Gigway — QA Scorecard
 
 The living record described in Section 4 of the QA & Testing Roadmap.
 
@@ -129,3 +129,4 @@ Blocked and Not yet planned are excluded from the denominator — they are expec
 2. Run `npm test` — new tests should fail first, then pass after the implementation.
 3. Update the status column and the summary table at the bottom.
 4. If an item moves from Blocked to testable, move it to the appropriate lens section and run the loop (Section 2 of the roadmap).
+

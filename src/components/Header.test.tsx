@@ -19,9 +19,9 @@ const renderHeader = () =>
   );
 
 describe("Header — Lens 3.4: Navigation routing", () => {
-  it('logo "SabiHands" routes to /', () => {
+  it('logo "Gigway" routes to /', () => {
     renderHeader();
-    expect(screen.getByRole("link", { name: /sabihands/i })).toHaveAttribute("href", "/");
+    expect(screen.getByRole("link", { name: /Gigway/i })).toHaveAttribute("href", "/");
   });
 
   it('"Get started" routes to /login', () => {
@@ -67,3 +67,4 @@ describe("Header — Lens 3.4: Navigation routing", () => {
     expect(bareHash).toHaveLength(0);
   });
 });
+

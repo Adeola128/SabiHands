@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import LoadingScreen from '../../components/LoadingScreen';
@@ -98,8 +99,18 @@ const PublicVolunteerProfile: React.FC = () => {
 
   return (
     <div className="vol-profile-container" style={{ maxWidth: '1000px', margin: '0 auto', padding: '40px 24px' }}>
+      <Helmet>
+        <title>{profile?.full_name || 'Volunteer'} &mdash; Gigway</title>
+        <meta name="description" content={`View the volunteer profile and certificates of ${profile?.full_name || 'this volunteer'} on Gigway.`} />
+        <meta property="og:title" content={`${profile?.full_name || 'Volunteer'} &mdash; Gigway`} />
+        <meta property="og:description" content={`View the volunteer profile and certificates of ${profile?.full_name || 'this volunteer'} on Gigway.`} />
+        <meta property="og:image" content={profile?.cover_url || profile?.avatar_url || "https://Gigway.vercel.app/og-image.png"} />
+        <meta name="twitter:title" content={`${profile?.full_name || 'Volunteer'} &mdash; Gigway`} />
+        <meta name="twitter:description" content={`View the volunteer profile and certificates of ${profile?.full_name || 'this volunteer'} on Gigway.`} />
+        <meta name="twitter:image" content={profile?.cover_url || profile?.avatar_url || "https://Gigway.vercel.app/og-image.png"} />
+      </Helmet>
       
-      {/* ── HERO SECTION ── */}
+      {/* â”€â”€ HERO SECTION â”€â”€ */}
       <div className="vol-profile-hero">
         <div className="vol-profile-cover" style={{ backgroundImage: profile?.cover_url ? `url(${profile.cover_url})` : undefined }} />
         
@@ -121,8 +132,8 @@ const PublicVolunteerProfile: React.FC = () => {
                 {profile?.full_name || 'Anonymous Volunteer'}
               </h1>
               <div className="vol-profile-headline">
-                <span>{profile?.headline || 'Volunteer at SabiHands'}</span>
-                <span style={{ color: '#D1CEDF' }}>•</span>
+                <span>{profile?.headline || 'Volunteer at Gigway'}</span>
+                <span style={{ color: '#D1CEDF' }}>â€¢</span>
                 <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
                   {profile?.location || 'Location Not Set'}
@@ -168,7 +179,7 @@ const PublicVolunteerProfile: React.FC = () => {
       </div>
 
       <div className="vol-profile-grid">
-        {/* ── LEFT COLUMN ── */}
+        {/* â”€â”€ LEFT COLUMN â”€â”€ */}
         <div>
           {/* About */}
           <div className="vol-card">
@@ -205,7 +216,7 @@ const PublicVolunteerProfile: React.FC = () => {
           )}
         </div>
 
-        {/* ── RIGHT COLUMN ── */}
+        {/* â”€â”€ RIGHT COLUMN â”€â”€ */}
         <div>
           {/* Certificates & Badges */}
           <div className="vol-card">
@@ -238,3 +249,4 @@ const PublicVolunteerProfile: React.FC = () => {
 };
 
 export default PublicVolunteerProfile;
+

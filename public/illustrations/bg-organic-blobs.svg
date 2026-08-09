@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+<style>
+  @keyframes float1 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(20px, -20px) scale(1.03); }
+  }
+  @keyframes float2 {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(-20px, 20px) rotate(2deg); }
+  }
+  @keyframes float3 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(15px, 15px) scale(0.97); }
+  }
+  path:nth-of-type(1) { animation: float1 12s ease-in-out infinite; transform-origin: center; }
+  path:nth-of-type(2) { animation: float2 15s ease-in-out infinite; transform-origin: center; }
+  path:nth-of-type(3) { animation: float3 18s ease-in-out infinite; transform-origin: center; }
+  path:nth-of-type(4) { animation: float1 14s ease-in-out infinite reverse; transform-origin: center; }
+</style>
+  <defs>
+    <filter id="softBlur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="60"/>
+    </filter>
+  </defs>
+
+  <rect width="1440" height="900" fill="#FBFAFF"/>
+
+  <g filter="url(#softBlur)">
+    <path d="M180 120 C 340 40, 520 100, 560 260 C 600 420, 440 480, 300 460 C 160 440, 20 320, 40 220 C 55 145, 100 155, 180 120 Z"
+          fill="#7F77DD" opacity="0.16"/>
+    <path d="M1120 560 C 1300 500, 1440 600, 1420 740 C 1400 880, 1220 900, 1100 840 C 980 780, 960 660, 1000 600 C 1030 555, 1060 585, 1120 560 Z"
+          fill="#1D9E75" opacity="0.14"/>
+    <path d="M900 60 C 1020 20, 1160 90, 1140 190 C 1120 290, 990 300, 900 260 C 810 220, 800 130, 850 90 C 865 78, 880 68, 900 60 Z"
+          fill="#5DCAA5" opacity="0.15"/>
+    <path d="M240 640 C 360 600, 480 660, 460 760 C 440 860, 300 880, 210 830 C 120 780, 110 700, 160 660 C 185 640, 210 648, 240 640 Z"
+          fill="#AFA9EC" opacity="0.18"/>
+  </g>
+</svg>
+

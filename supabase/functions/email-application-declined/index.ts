@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { sendBrevoEmail } from "../_shared/brevo.ts";
 
@@ -26,7 +26,7 @@ serve(async (req: Request) => {
     
     // Extract first name
     const firstName = volunteer_name ? volunteer_name.split(' ')[0] : 'there';
-    const displayUrl = browse_gigs_url || 'https://sabihands.vercel.app/dashboard/volunteer/gigs';
+    const displayUrl = browse_gigs_url || 'https://Gigway.vercel.app/dashboard/volunteer/gigs';
 
     const htmlContent = `<!DOCTYPE html>
 <html lang="en">
@@ -52,7 +52,7 @@ serve(async (req: Request) => {
 </style>
 </head>
 <body style="margin:0; padding:0; background:#F3F1FA;">
-<div style="display:none; max-height:0; overflow:hidden; opacity:0; mso-hide:all;">This one didn't work out — here's what's next.&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;</div>
+<div style="display:none; max-height:0; overflow:hidden; opacity:0; mso-hide:all;">This one didn't work out â€” here's what's next.&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;</div>
 
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F3F1FA;">
 <tr>
@@ -74,7 +74,7 @@ serve(async (req: Request) => {
     <td class="stack-pad" style="padding:32px 48px 0; text-align:left;">
       <p style="margin:0 0 8px; font-family:Arial,Helvetica,sans-serif; font-size:12px; font-weight:bold; letter-spacing:1px; text-transform:uppercase; color:#8B87B0;">Application update</p>
       <h1 class="h1" style="margin:0; font-family:Georgia,'Times New Roman',serif; font-size:28px; line-height:36px; font-weight:bold; color:#26215C;">Not this time, ${firstName}.</h1>
-      <p style="margin:18px 0 0; font-family:Arial,Helvetica,sans-serif; font-size:15px; line-height:24px; color:#4A4770;"><strong>${org_name}</strong> went with other volunteers for <strong>${gig_title}</strong>. It happens — gigs often get more applicants than spots, and this isn't a reflection of you.</p>
+      <p style="margin:18px 0 0; font-family:Arial,Helvetica,sans-serif; font-size:15px; line-height:24px; color:#4A4770;"><strong>${org_name}</strong> went with other volunteers for <strong>${gig_title}</strong>. It happens â€” gigs often get more applicants than spots, and this isn't a reflection of you.</p>
       <p style="margin:14px 0 0; font-family:Arial,Helvetica,sans-serif; font-size:15px; line-height:24px; color:#4A4770;">There are other gigs open right now that could be a better fit.</p>
     </td>
   </tr>
@@ -93,11 +93,11 @@ serve(async (req: Request) => {
 
   <tr>
     <td class="stack-pad" style="padding:28px 48px 40px; border-top:1px solid #EDEBF7; margin-top:24px; text-align:left;">
-      <p style="margin:0 0 6px; font-family:Arial,Helvetica,sans-serif; font-size:12px; color:#8B87B0;">SabiHands · Lagos, Nigeria</p>
+      <p style="margin:0 0 6px; font-family:Arial,Helvetica,sans-serif; font-size:12px; color:#8B87B0;">Gigway Â· Lagos, Nigeria</p>
       <p style="margin:0; font-family:Arial,Helvetica,sans-serif; font-size:12px; color:#8B87B0;">
-        <a href="https://sabihands.vercel.app/settings" style="color:#8B87B0; text-decoration:underline;">Notification settings</a>
-        &nbsp;·&nbsp;
-        <a href="https://sabihands.vercel.app/help" style="color:#8B87B0; text-decoration:underline;">Help</a>
+        <a href="https://Gigway.vercel.app/settings" style="color:#8B87B0; text-decoration:underline;">Notification settings</a>
+        &nbsp;Â·&nbsp;
+        <a href="https://Gigway.vercel.app/help" style="color:#8B87B0; text-decoration:underline;">Help</a>
       </p>
     </td>
   </tr>
@@ -125,3 +125,4 @@ serve(async (req: Request) => {
     });
   }
 });
+

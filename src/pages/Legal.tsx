@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { motion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import './Legal.css';
@@ -43,7 +43,7 @@ const Legal: React.FC<LegalProps> = ({ type }) => {
         >
           {isTerms ? (
             <>
-              <p>Welcome to SabiHands. These Terms of Service govern your use of the SabiHands platform, including both the volunteer application and the organization dashboard.</p>
+              <p>Welcome to Gigway. These Terms of Service govern your use of the Gigway platform, including both the volunteer application and the organization dashboard.</p>
               
               <h2>1. Acceptance of Terms</h2>
               <p>By creating an account, whether as a Volunteer or an Organization, you agree to these terms. If you do not agree, do not use the platform.</p>
@@ -66,7 +66,7 @@ const Legal: React.FC<LegalProps> = ({ type }) => {
             </>
           ) : (
             <>
-              <p>Your privacy is important to us. This Privacy Policy explains how SabiHands collects, uses, and shares your personal information.</p>
+              <p>Your privacy is important to us. This Privacy Policy explains how Gigway collects, uses, and shares your personal information.</p>
               
               <h2>1. Information We Collect</h2>
               <p>We collect information you provide directly to us when you create an account, apply for a gig, or issue a certificate.</p>
@@ -89,3 +89,4 @@ const Legal: React.FC<LegalProps> = ({ type }) => {
 };
 
 export default Legal;
+

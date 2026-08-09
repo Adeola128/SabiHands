@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 
 const OrgVerificationQueue: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'pending' | 'reviewed'>('pending');
@@ -14,7 +14,7 @@ const OrgVerificationQueue: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '32px' }}>
         <div>
           <h1 style={{ fontSize: '28px', fontWeight: 700, color: '#0F172A', margin: '0 0 8px 0', fontFamily: 'var(--display)' }}>Verification Queue</h1>
-          <p style={{ color: '#64748B', margin: 0, fontSize: '15px' }}>Review and approve new organizations joining SabiHands.</p>
+          <p style={{ color: '#64748B', margin: 0, fontSize: '15px' }}>Review and approve new organizations joining Gigway.</p>
         </div>
       </div>
 

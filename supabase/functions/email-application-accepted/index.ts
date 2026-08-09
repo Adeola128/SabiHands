@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { sendBrevoEmail } from "../_shared/brevo.ts";
 
@@ -22,7 +22,7 @@ serve(async (req: Request) => {
       throw new Error("Missing required fields in payload");
     }
 
-    const subject = `You're in — ${gig_title} is yours`;
+    const subject = `You're in â€” ${gig_title} is yours`;
     
     // Extract first name
     const firstName = volunteer_name ? volunteer_name.split(' ')[0] : 'there';
@@ -30,7 +30,7 @@ serve(async (req: Request) => {
     // Provide fallbacks for date and location if not in payload
     const displayDate = gig_date || 'TBD';
     const displayLocation = gig_location || 'Remote';
-    const displayUrl = gig_url || 'https://sabihands.vercel.app/dashboard/volunteer/gigs';
+    const displayUrl = gig_url || 'https://Gigway.vercel.app/dashboard/volunteer/gigs';
 
     const htmlContent = `<!DOCTYPE html>
 <html lang="en">
@@ -39,7 +39,7 @@ serve(async (req: Request) => {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="color-scheme" content="light">
-<title>You're in — ${gig_title} is yours</title>
+<title>You're in â€” ${gig_title} is yours</title>
 <!--[if mso]>
 <style>table {border-collapse:collapse;}</style>
 <![endif]-->
@@ -121,17 +121,17 @@ serve(async (req: Request) => {
 
   <tr>
     <td class="stack-pad" style="padding:24px 48px 36px; text-align:left;">
-      <p style="margin:0; font-family:Arial,Helvetica,sans-serif; font-size:13px; line-height:20px; color:#8B87B0;">Show up, get the gig confirmed by ${org_name}, and your certificate is issued automatically — no extra steps.</p>
+      <p style="margin:0; font-family:Arial,Helvetica,sans-serif; font-size:13px; line-height:20px; color:#8B87B0;">Show up, get the gig confirmed by ${org_name}, and your certificate is issued automatically â€” no extra steps.</p>
     </td>
   </tr>
 
   <tr>
     <td class="stack-pad" style="padding:28px 48px 40px; border-top:1px solid #EDEBF7; text-align:left;">
-      <p style="margin:0 0 6px; font-family:Arial,Helvetica,sans-serif; font-size:12px; color:#8B87B0;">SabiHands · Lagos, Nigeria</p>
+      <p style="margin:0 0 6px; font-family:Arial,Helvetica,sans-serif; font-size:12px; color:#8B87B0;">Gigway Â· Lagos, Nigeria</p>
       <p style="margin:0; font-family:Arial,Helvetica,sans-serif; font-size:12px; color:#8B87B0;">
-        <a href="https://sabihands.vercel.app/settings" style="color:#8B87B0; text-decoration:underline;">Notification settings</a>
-        &nbsp;·&nbsp;
-        <a href="https://sabihands.vercel.app/help" style="color:#8B87B0; text-decoration:underline;">Help</a>
+        <a href="https://Gigway.vercel.app/settings" style="color:#8B87B0; text-decoration:underline;">Notification settings</a>
+        &nbsp;Â·&nbsp;
+        <a href="https://Gigway.vercel.app/help" style="color:#8B87B0; text-decoration:underline;">Help</a>
       </p>
     </td>
   </tr>
@@ -159,3 +159,4 @@ serve(async (req: Request) => {
     });
   }
 });
+

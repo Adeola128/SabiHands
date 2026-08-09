@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
@@ -89,14 +89,14 @@ const VolunteerProfile: React.FC = () => {
   return (
     <div className="vol-profile-container">
       
-      {/* ── PROFILE COMPLETENESS PROMPT ── */}
+      {/* â”€â”€ PROFILE COMPLETENESS PROMPT â”€â”€ */}
       <ProfileCompletenessPrompt 
         score={completeness.score} 
         nextStep={completeness.nextStep || null} 
         editLink="/dashboard/volunteer/settings" 
       />
 
-      {/* ── HERO SECTION ── */}
+      {/* â”€â”€ HERO SECTION â”€â”€ */}
       <div className="vol-profile-hero">
         <div className="vol-profile-cover" style={{ backgroundImage: profile?.cover_url ? `url(${profile.cover_url})` : undefined }} />
         
@@ -118,8 +118,8 @@ const VolunteerProfile: React.FC = () => {
                 {profile?.full_name || 'Anonymous Volunteer'}
               </h1>
               <div className="vol-profile-headline">
-                <span>{profile?.headline || 'Volunteer at SabiHands'}</span>
-                <span style={{ color: '#D1CEDF' }}>•</span>
+                <span>{profile?.headline || 'Volunteer at Gigway'}</span>
+                <span style={{ color: '#D1CEDF' }}>â€¢</span>
                 <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
                   {profile?.location || 'Location Not Set'}
@@ -172,7 +172,7 @@ const VolunteerProfile: React.FC = () => {
       </div>
 
       <div className="vol-profile-grid">
-        {/* ── LEFT COLUMN ── */}
+        {/* â”€â”€ LEFT COLUMN â”€â”€ */}
         <div>
           {/* About */}
           <div className="vol-card">
@@ -228,7 +228,7 @@ const VolunteerProfile: React.FC = () => {
           </div>
         </div>
 
-        {/* ── RIGHT COLUMN ── */}
+        {/* â”€â”€ RIGHT COLUMN â”€â”€ */}
         <div>
           {/* Certificates & Badges */}
           <div className="vol-card">
@@ -262,3 +262,4 @@ const VolunteerProfile: React.FC = () => {
 };
 
 export default VolunteerProfile;
+

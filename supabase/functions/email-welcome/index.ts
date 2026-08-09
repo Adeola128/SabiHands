@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { sendBrevoEmail } from "../_shared/brevo.ts";
@@ -46,18 +46,18 @@ serve(async (req: Request) => {
     const email = userData.email;
 
     // Send Welcome Email
-    const subject = "Welcome to SabiHands! You're a Sabi Hand now.";
+    const subject = "Welcome to Gigway! You're a Sabi Hand now.";
     
     const bodyText = `
       <p>Welcome, ${full_name}!</p>
-      <p>We are thrilled to have you join the SabiHands community as a volunteer. You're not just volunteering. You're a Sabi Hand.</p>
+      <p>We are thrilled to have you join the Gigway community as a volunteer. You're not just volunteering. You're a Sabi Hand.</p>
       <p>Start exploring opportunities to make a real impact today. Remember to complete your profile so we can match you with the best gigs!</p>
-      <a href="https://sabihands.com/dashboard" class="button">Go to Dashboard</a>
-      <p>Happy Volunteering,<br/>The SabiHands Team</p>
+      <a href="https://Gigway.com/dashboard" class="button">Go to Dashboard</a>
+      <p>Happy Volunteering,<br/>The Gigway Team</p>
     `;
 
     const htmlContent = buildEmailTemplate(
-      "Welcome to SabiHands!",
+      "Welcome to Gigway!",
       "Welcome, Sabi Hand!",
       bodyText
     );
@@ -77,3 +77,4 @@ serve(async (req: Request) => {
     });
   }
 });
+

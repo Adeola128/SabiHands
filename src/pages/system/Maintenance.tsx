@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 
 const Maintenance: React.FC = () => {
   return (
@@ -38,7 +38,7 @@ const Maintenance: React.FC = () => {
         </h1>
         
         <p style={{ fontSize: '16px', color: 'var(--body)', margin: '0 0 32px 0', lineHeight: 1.6 }}>
-          SabiHands is currently undergoing scheduled maintenance to improve our platform. We expect to be back online shortly. Thank you for your patience!
+          Gigway is currently undergoing scheduled maintenance to improve our platform. We expect to be back online shortly. Thank you for your patience!
         </p>
 
         <div style={{ padding: '16px', backgroundColor: '#F1F5F9', borderRadius: '12px', color: '#475569', fontSize: '14px', fontWeight: 600 }}>
@@ -50,3 +50,4 @@ const Maintenance: React.FC = () => {
 };
 
 export default Maintenance;
+

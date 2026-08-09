@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { sendBrevoEmail } from "../_shared/brevo.ts";
@@ -69,7 +69,7 @@ serve(async (req: Request) => {
       <p>Please review their submission as soon as possible to approve or reject their work.</p>
       
       <div class="button-wrap">
-        <a href="https://sabihands.vercel.app/dashboard/organization/submissions" class="button">Review Submission</a>
+        <a href="https://Gigway.vercel.app/dashboard/organization/submissions" class="button">Review Submission</a>
       </div>
     `;
 
@@ -94,3 +94,4 @@ serve(async (req: Request) => {
     });
   }
 });
+

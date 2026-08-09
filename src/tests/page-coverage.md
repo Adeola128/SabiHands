@@ -1,4 +1,4 @@
-﻿# SabiHands — Page Coverage Checklist
+﻿# Gigway — Page Coverage Checklist
 
 **Lens 3.3** of the QA & Testing Roadmap. Updated every time a page ships.
 
@@ -130,3 +130,4 @@
 | ⬜ Not yet started | 0 |
 
 > The roadmap document stated "2 of ~40 pages built." That was accurate at the time of the HTML prototype — the React migration has since built all planned pages. The honest current count is **57 of 57 routes registered and component-filed**.
+

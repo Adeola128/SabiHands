@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
@@ -57,9 +58,19 @@ const PublicGigDetail: React.FC = () => {
 
   return (
     <div style={{ backgroundColor: '#F8F9FA', minHeight: '100vh', padding: '40px 24px', fontFamily: 'var(--sans)' }}>
+      <Helmet>
+        <title>{gig.title} &mdash; Gigway</title>
+        <meta name="description" content={`Apply for ${gig.title} with ${gig.organizations?.name || 'an NGO'} on Gigway.`} />
+        <meta property="og:title" content={`${gig.title} &mdash; Gigway`} />
+        <meta property="og:description" content={`Apply for ${gig.title} with ${gig.organizations?.name || 'an NGO'} on Gigway.`} />
+        <meta property="og:image" content={gig.image_url || "https://Gigway.vercel.app/og-image.png"} />
+        <meta name="twitter:title" content={`${gig.title} &mdash; Gigway`} />
+        <meta name="twitter:description" content={`Apply for ${gig.title} with ${gig.organizations?.name || 'an NGO'} on Gigway.`} />
+        <meta name="twitter:image" content={gig.image_url || "https://Gigway.vercel.app/og-image.png"} />
+      </Helmet>
       <div style={{ maxWidth: '1000px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 340px', gap: '32px' }}>
         
-        {/* ── MAIN CONTENT ── */}
+        {/* â”€â”€ MAIN CONTENT â”€â”€ */}
         <div className="main-content">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -103,7 +114,7 @@ const PublicGigDetail: React.FC = () => {
           </motion.div>
         </div>
         
-        {/* ── SIDEBAR ── */}
+        {/* â”€â”€ SIDEBAR â”€â”€ */}
         <aside className="context-col">
           {/* Apply CTA */}
           <div style={{ backgroundColor: 'white', borderRadius: '16px', border: '1px solid #E4E1F5', padding: '24px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', textAlign: 'center', marginBottom: '24px' }}>
@@ -111,7 +122,7 @@ const PublicGigDetail: React.FC = () => {
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--teal-600)" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             </div>
             <h3 style={{ fontSize: '20px', color: 'var(--ink)', fontWeight: 700, marginBottom: '8px', fontFamily: 'var(--display)' }}>Ready to make an impact?</h3>
-            <p style={{ fontSize: '14px', color: 'var(--body)', marginBottom: '24px', lineHeight: 1.5 }}>Join SabiHands to apply for this gig and start building your volunteer portfolio.</p>
+            <p style={{ fontSize: '14px', color: 'var(--body)', marginBottom: '24px', lineHeight: 1.5 }}>Join Gigway to apply for this gig and start building your volunteer portfolio.</p>
 
             <Link
               to="/signup"
@@ -124,7 +135,7 @@ const PublicGigDetail: React.FC = () => {
             </p>
           </div>
 
-          <ShareGigButton gigId={gig.id} title={gig.title} text={`Check out this volunteering opportunity on SabiHands: ${gig.title}`} />
+          <ShareGigButton gigId={gig.id} title={gig.title} text={`Check out this volunteering opportunity on Gigway: ${gig.title}`} />
 
           {/* Date & Time */}
           <div style={{ backgroundColor: 'white', borderRadius: '16px', border: '1px solid #E4E1F5', padding: '24px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', marginBottom: '24px' }}>
@@ -180,3 +191,4 @@ const PublicGigDetail: React.FC = () => {
 };
 
 export default PublicGigDetail;
+

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 600" preserveAspectRatio="xMidYMid slice">
+<style>
+  @keyframes wave {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(15px); }
+  }
+  @keyframes dash {
+    from { stroke-dashoffset: 200; }
+    to { stroke-dashoffset: 0; }
+  }
+  path:nth-of-type(1) { animation: wave 8s ease-in-out infinite; transform-origin: bottom; }
+  path:nth-of-type(2) { animation: wave 11s ease-in-out infinite 1s; transform-origin: bottom; }
+  path:nth-of-type(3) { animation: wave 14s ease-in-out infinite 2s; transform-origin: bottom; }
+  path[stroke] { animation: dash 30s linear infinite; stroke-dasharray: 8 12; }
+</style>
+  <rect width="1440" height="600" fill="#FBFAFF"/>
+
+  <path d="M0,420 C240,480 480,360 720,400 C960,440 1200,340 1440,390 L1440,600 L0,600 Z"
+        fill="#EEEDFE"/>
+  <path d="M0,470 C220,520 460,430 700,460 C960,492 1180,410 1440,450 L1440,600 L0,600 Z"
+        fill="#E1F5EE"/>
+  <path d="M0,520 C260,560 500,500 760,520 C1000,540 1220,490 1440,510 L1440,600 L0,600 Z"
+        fill="#DAD5F7"/>
+
+  <path d="M-40 340 C 200 300, 300 400, 520 360 C 740 320, 800 220, 1040 250 C 1220 274, 1280 160, 1480 120"
+        fill="none" stroke="#5DCAA5" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 14" opacity="0.45"/>
+</svg>
+

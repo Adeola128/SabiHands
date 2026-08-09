@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { sendBrevoEmail } from "../_shared/brevo.ts";
@@ -55,7 +55,7 @@ serve(async (req: Request) => {
         <h3 style="margin-top:0; color: #26215C; font-family: 'Fraunces', serif;">${gig.title}</h3>
         <p style="margin: 5px 0; font-size: 14px;"><strong>${gig.organizations?.name || 'Organization'}</strong> &bull; ${gig.location || 'Remote'}</p>
         <p style="margin: 5px 0; font-size: 14px;">${gig.type === 'skilled' ? 'Skilled Role' : 'Physical Role'}</p>
-        <a href="https://sabihands.com/dashboard/volunteer/gigs/${gig.id}" style="display: inline-block; margin-top: 10px; color: #534AB7; text-decoration: none; font-weight: bold;">View Details &rarr;</a>
+        <a href="https://Gigway.com/dashboard/volunteer/gigs/${gig.id}" style="display: inline-block; margin-top: 10px; color: #534AB7; text-decoration: none; font-weight: bold;">View Details &rarr;</a>
       </div>
     `).join('');
 
@@ -66,7 +66,7 @@ serve(async (req: Request) => {
       const profile = Array.isArray(vol.volunteer_profiles) ? vol.volunteer_profiles[0] : vol.volunteer_profiles;
       const name = profile?.full_name || "Volunteer";
 
-      const subject = "Your Weekly SabiHands Recommendations";
+      const subject = "Your Weekly Gigway Recommendations";
       
       const bodyText = `
         <p>Hi ${name},</p>
@@ -74,7 +74,7 @@ serve(async (req: Request) => {
         <br/>
         ${gigHtml}
         <br/>
-        <a href="https://sabihands.com/dashboard/volunteer/gigs" class="button">View All Gigs</a>
+        <a href="https://Gigway.com/dashboard/volunteer/gigs" class="button">View All Gigs</a>
       `;
 
       const htmlContent = buildEmailTemplate(
@@ -105,3 +105,4 @@ serve(async (req: Request) => {
     });
   }
 });
+

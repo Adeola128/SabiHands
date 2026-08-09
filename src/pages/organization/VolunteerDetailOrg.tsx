@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
@@ -141,7 +141,7 @@ const VolunteerDetailOrg: React.FC = () => {
 
   return (
     <>
-      {/* ── SIDEBAR ── */}
+      {/* â”€â”€ SIDEBAR â”€â”€ */}
       <aside className="context-col">
         <div className="dash-card">
           <div className="dash-card-padding">
@@ -170,7 +170,7 @@ const VolunteerDetailOrg: React.FC = () => {
         </button>
       </aside>
 
-      {/* ── MAIN CONTENT ── */}
+      {/* â”€â”€ MAIN CONTENT â”€â”€ */}
       <div className="main-content">
         <div className="dash-card" style={{ marginBottom: '24px', position: 'relative' }}>
           <div style={{ height: '140px', backgroundColor: 'var(--purple-900)', borderRadius: '16px 16px 0 0', position: 'relative', overflow: 'hidden' }}>
@@ -239,14 +239,14 @@ const VolunteerDetailOrg: React.FC = () => {
         {/* Track Record - Empty State for now */}
         <div className="dash-card">
           <div className="dash-card-header">
-            <h2 className="dash-card-title">SabiHands Track Record</h2>
+            <h2 className="dash-card-title">Gigway Track Record</h2>
           </div>
           
           <div style={{ padding: '32px' }}>
             <EmptyState 
               icon={<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>}
               title="No Track Record Yet"
-              description="This volunteer has not completed any gigs on SabiHands yet."
+              description="This volunteer has not completed any gigs on Gigway yet."
             />
           </div>
         </div>
@@ -302,3 +302,4 @@ const VolunteerDetailOrg: React.FC = () => {
 };
 
 export default VolunteerDetailOrg;
+

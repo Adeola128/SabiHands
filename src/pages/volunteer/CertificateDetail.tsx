@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
@@ -13,7 +13,7 @@ const CertificateDetail: React.FC = () => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(`https://sabihands.com/verify/${id}`);
+    navigator.clipboard.writeText(`https://Gigway.com/verify/${id}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -25,7 +25,7 @@ const CertificateDetail: React.FC = () => {
         .from('certificates')
         .select(`
           *,
-          gigs(title, type, organizations(name)),
+          gigs(title, type, organizations(name, logo_url)),
           users(volunteer_profiles(full_name)),
           attendance(hours)
         `)
@@ -37,7 +37,8 @@ const CertificateDetail: React.FC = () => {
           name: data.recipient_name || (data.users?.volunteer_profiles && data.users.volunteer_profiles.length > 0 ? data.users.volunteer_profiles[0].full_name : 'Volunteer'),
           gig: data.gigs?.title,
           org: data.gigs?.organizations?.name,
-          date: new Date(data.issued_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+          org_logo: data.gigs?.organizations?.logo_url,
+          date: new Date(data.issued_at).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase(),
           type: data.gigs?.type,
           hours: data.attendance?.hours || 0,
         });
@@ -52,7 +53,7 @@ const CertificateDetail: React.FC = () => {
 
   return (
     <>
-      {/* ── SIDEBAR ── */}
+      {/* â”€â”€ SIDEBAR â”€â”€ */}
       <aside className="context-col">
         <div className="dash-card">
           <div className="dash-card-padding">
@@ -81,7 +82,7 @@ const CertificateDetail: React.FC = () => {
               Verified
             </div>
             <p style={{ fontSize: '13px', color: 'var(--body)', lineHeight: 1.6, marginBottom: '0' }}>
-              This certificate is cryptographically signed and publicly verifiable on the SabiHands platform.
+              This certificate is cryptographically signed and publicly verifiable on the Gigway platform.
             </p>
           </div>
         </div>
@@ -119,7 +120,7 @@ const CertificateDetail: React.FC = () => {
         </Link>
       </aside>
 
-      {/* ── MAIN CONTENT: The Certificate ── */}
+      {/* â”€â”€ MAIN CONTENT: The Certificate â”€â”€ */}
       <div className="main-content">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -127,81 +128,78 @@ const CertificateDetail: React.FC = () => {
           transition={{ type: 'spring', stiffness: 50 }}
         >
           {/* Outer certificate frame */}
-          <div style={{ backgroundColor: '#F8F9FB', position: 'relative', border: '1px solid #E4E1F5', boxShadow: '0 24px 64px -24px rgba(38,33,92,0.15)', overflow: 'hidden', aspectRatio: '1.414 / 1', display: 'flex' }}>
+          <div style={{ backgroundColor: '#ffffff', position: 'relative', border: '1px solid #E4E1F5', borderRadius: '8px', boxShadow: '0 30px 60px -15px rgba(83,74,183,0.15)', overflow: 'hidden', aspectRatio: '1.414 / 1', display: 'flex', flexDirection: 'column' }}>
             
-            {/* Top Left Big Blue Block */}
-            <div style={{ position: 'absolute', top: 0, left: 0, width: '60%', height: '35%', backgroundColor: '#2E358A', zIndex: 1, padding: '40px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
-               <div style={{ color: 'white', fontSize: 'clamp(24px, 4vw, 56px)', fontWeight: 800, fontFamily: 'var(--display)', lineHeight: 1.1, letterSpacing: '-0.02em' }}>
-                 Certificate of <br/><span style={{ color: '#4CC5DE' }}>Completion</span>
-               </div>
+            {/* Top-left Geometric Banner */}
+            <div style={{ position: 'absolute', top: 0, left: '5%', width: '15%', height: '45%', zIndex: 0 }}>
+               <svg viewBox="0 0 100 200" preserveAspectRatio="none" style={{ width: '100%', height: '100%' }}>
+                 <polygon points="0,0 100,0 100,160 50,200 0,160" fill="var(--purple-900)" />
+                 <polygon points="100,140 100,180 80,160" fill="var(--teal-500)" />
+               </svg>
             </div>
-
-            {/* Top Left Abstract Circles inside the Blue Block */}
-            <div style={{ position: 'absolute', top: '-15%', left: '10%', width: '40%', height: '40%', borderRadius: '50%', border: '25px solid #4CC5DE', zIndex: 2, opacity: 0.9 }}></div>
-            <div style={{ position: 'absolute', top: '-5%', left: '20%', width: '20%', height: '20%', borderRadius: '50%', border: '15px solid rgba(255,255,255,0.2)', zIndex: 2 }}></div>
-
-            {/* Top Right Date */}
-            <div style={{ position: 'absolute', top: '40px', right: '40px', zIndex: 3, fontSize: '14px', fontWeight: 600, color: 'var(--ink)' }}>
-              Issued on : {cert.date}
+            {/* Bottom-right Geometric Shape */}
+            <div style={{ position: 'absolute', bottom: 0, right: 0, width: '20%', height: '25%', zIndex: 0 }}>
+               <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{ width: '100%', height: '100%' }}>
+                 <polygon points="100,0 100,100 0,100" fill="var(--purple-900)" />
+               </svg>
             </div>
-
-            {/* Top Right Lines */}
-            <div style={{ position: 'absolute', top: '25%', right: '-20px', zIndex: 1, display: 'flex', flexDirection: 'column', gap: '8px', transform: 'rotate(-45deg)' }}>
-               {[...Array(6)].map((_, i) => (
-                 <div key={i} style={{ width: '80px', height: '3px', backgroundColor: '#4CC5DE' }}></div>
-               ))}
-            </div>
-
-            {/* Bottom Left Lines */}
-            <div style={{ position: 'absolute', bottom: '15%', left: '-30px', zIndex: 1, display: 'flex', flexDirection: 'column', gap: '8px', transform: 'rotate(-45deg)' }}>
-               {[...Array(6)].map((_, i) => (
-                 <div key={i} style={{ width: '80px', height: '3px', backgroundColor: '#4CC5DE' }}></div>
-               ))}
-            </div>
-
-            {/* Bottom Right Abstract Shape ('t' looking object) */}
-            <div style={{ position: 'absolute', bottom: '-5%', right: '5%', zIndex: 2, color: '#2E358A', fontSize: '300px', fontWeight: 900, fontFamily: 'var(--display)', lineHeight: 0.8 }}>
-              t
-            </div>
-
-            {/* Inner Content Wrapper */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 10%', zIndex: 5, marginTop: '15%' }}>
-              
-              <div style={{ fontSize: '14px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--ink)', marginBottom: '16px' }}>
-                THIS CERTIFICATE IS PRESENTED TO
+            
+            {/* Header: Logos */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', zIndex: 1, padding: '5% 5% 2% 22%', marginBottom: 'auto', position: 'relative' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                 {cert.org_logo ? (
+                   <img src={cert.org_logo} alt="Org Logo" style={{ maxWidth: '60px', maxHeight: '60px', objectFit: 'contain' }} />
+                 ) : (
+                   <div style={{ width: '60px', height: '60px', backgroundColor: 'var(--purple-50)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--purple-700)', fontWeight: 700, fontSize: '18px' }}>
+                     {cert.org?.substring(0,2).toUpperCase()}
+                   </div>
+                 )}
+                 <span style={{ fontSize: '1.2rem', fontWeight: 600, color: 'var(--ink)' }}>{cert.org || 'Organization Name'}</span>
               </div>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
+                 <img src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://Gigway.com/verify/${id}`} alt="QR Code" style={{ width: '80px', height: '80px' }} />
+              </div>
+            </div>
 
-              <div style={{ fontFamily: 'var(--display)', fontSize: 'clamp(32px, 5vw, 64px)', fontWeight: 800, color: 'var(--ink)', letterSpacing: '-0.02em', borderBottom: '4px solid #4CC5DE', paddingBottom: '16px', display: 'inline-block', width: 'fit-content', paddingRight: '20px' }}>
+            {/* Title Section */}
+            <div style={{ padding: '0 5% 0 22%', zIndex: 1, position: 'relative' }}>
+              <h1 style={{ fontFamily: 'var(--display)', fontSize: '1.8rem', color: 'var(--purple-900)', margin: '0 0 8px', letterSpacing: '0.05em', fontWeight: 600, textTransform: 'uppercase' }}>CERTIFICATE OF VOLUNTEER SERVICE</h1>
+            </div>
+
+            {/* Body Content */}
+            <div style={{ zIndex: 1, display: 'flex', flexDirection: 'column', padding: '2% 5% 2% 22%', position: 'relative' }}>
+              <p style={{ color: 'var(--muted)', fontSize: '1.1rem', margin: '0 0 8px', fontWeight: 500 }}>This is to acknowledge</p>
+              
+              <div style={{ fontFamily: 'var(--display)', fontSize: '3.2rem', color: 'var(--ink)', fontWeight: 600, paddingBottom: '8px', marginBottom: '16px', borderBottom: '2px solid #E4E1F5', textAlign: 'left' }}>
                 {cert.name}
               </div>
-
-              <div style={{ marginTop: '24px', fontSize: '16px', fontWeight: 600, color: 'var(--ink)', maxWidth: '60%', lineHeight: 1.5 }}>
-                For Completing The {cert.gig} in {cert.org}
+              
+              <p style={{ color: 'var(--muted)', fontSize: '1.1rem', margin: '0 0 4px', fontWeight: 500 }}>has successfully completed</p>
+              <div style={{ fontSize: '1.5rem', color: 'var(--ink)', fontWeight: 600, marginBottom: '4px', textTransform: 'uppercase' }}>{cert.gig}</div>
+              <p style={{ color: 'var(--muted)', fontSize: '0.9rem', margin: '0 0 16px', fontWeight: 500 }}>by completing all required volunteer service hours with {cert.org}.</p>
+              
+              <div style={{ borderBottom: '2px solid #E4E1F5', paddingBottom: '8px', marginBottom: '16px', display: 'flex', alignItems: 'center' }}>
+                 <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--ink)' }}>SERVICE HOURS: {cert.hours} HOURS.</span>
               </div>
+            </div>
 
-              {/* Signatures */}
-              <div style={{ display: 'flex', gap: '64px', marginTop: '48px' }}>
-                <div>
-                   <div style={{ width: '120px', borderBottom: '1.5px solid var(--ink)', paddingBottom: '8px', marginBottom: '8px' }}>
-                     <svg viewBox="0 0 100 40" style={{ width: '100%', height: '40px' }}>
-                       <path d="M10 30 Q25 10 40 30 T70 20 T90 35" fill="none" stroke="var(--ink)" strokeWidth="2" strokeLinecap="round" />
-                     </svg>
-                   </div>
-                   <div style={{ fontSize: '14px', fontWeight: 800, color: 'var(--ink)' }}>Pablo Walker</div>
-                   <div style={{ fontSize: '12px', color: 'var(--ink)', fontWeight: 500 }}>Master of Content Writing</div>
-                </div>
-
-                <div>
-                   <div style={{ width: '120px', borderBottom: '1.5px solid var(--ink)', paddingBottom: '8px', marginBottom: '8px' }}>
-                     <svg viewBox="0 0 100 40" style={{ width: '100%', height: '40px' }}>
-                       <path d="M20 30 Q30 5 40 30 T60 15 Q75 10 70 35" fill="none" stroke="var(--ink)" strokeWidth="2" strokeLinecap="round" />
-                     </svg>
-                   </div>
-                   <div style={{ fontSize: '14px', fontWeight: 800, color: 'var(--ink)' }}>Leira Swan</div>
-                   <div style={{ fontSize: '12px', color: 'var(--ink)', fontWeight: 500 }}>Senior of Content Writing</div>
-                </div>
+            {/* Footer */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', zIndex: 1, padding: '0 5% 5% 22%', marginTop: 'auto', position: 'relative' }}>
+              <div style={{ flex: 1, textAlign: 'left' }}>
+                <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--ink)' }}>Authorized by Gigway</div>
+                <div style={{ fontSize: '0.9rem', color: 'var(--muted)' }}>Verification Partner</div>
               </div>
-
+              
+              <div style={{ flex: 1, textAlign: 'center' }}>
+                <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--ink)' }}>{cert.date}</div>
+                <div style={{ fontSize: '0.9rem', color: 'var(--muted)' }}>Issue Date</div>
+              </div>
+              
+              <div style={{ flex: 1, textAlign: 'right' }}>
+                <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--ink)' }}>{certIdDisplay}</div>
+                <div style={{ fontSize: '0.9rem', color: 'var(--muted)' }}>Certificate ID</div>
+              </div>
             </div>
           </div>
         </motion.div>
@@ -211,3 +209,4 @@ const CertificateDetail: React.FC = () => {
 };
 
 export default CertificateDetail;
+

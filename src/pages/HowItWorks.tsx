@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Link } from 'react-router-dom';
 import './HowItWorks.css';
 
@@ -7,7 +7,7 @@ const HowItWorks: React.FC = () => {
     <div className="how-it-works">
       <header className="page-header">
         <div className="wrap">
-          <h1 className="text-display">How SabiHands Works</h1>
+          <h1 className="text-display">How Gigway Works</h1>
           <p className="page-lede">Three simple steps. No endless WhatsApp messages. No fake certificates.</p>
         </div>
       </header>
@@ -50,7 +50,7 @@ const HowItWorks: React.FC = () => {
             <div className="hiw-text">
               <div className="step-badge">3</div>
               <h2>Confirm & Certify</h2>
-              <p>The work happens. Once the organization marks the gig as complete and confirms attendance, a verifiable SabiHands certificate is automatically generated.</p>
+              <p>The work happens. Once the organization marks the gig as complete and confirms attendance, a verifiable Gigway certificate is automatically generated.</p>
               <ul>
                 <li>No manual certificate creation</li>
                 <li>Shareable link for resumes and LinkedIn</li>
@@ -78,3 +78,4 @@ const HowItWorks: React.FC = () => {
 };
 
 export default HowItWorks;
+

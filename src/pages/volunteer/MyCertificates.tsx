@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
@@ -25,7 +25,7 @@ const MyCertificates: React.FC = () => {
         .from('certificates')
         .select(`
           *,
-          gigs(title, type, description, organizations(name)),
+          gigs(title, type, description, organizations(name, logo_url)),
           attendance(hours)
         `)
         .eq('volunteer_id', user.id)
@@ -45,7 +45,7 @@ const MyCertificates: React.FC = () => {
 
   return (
     <>
-      {/* ── LEFT SIDEBAR ── */}
+      {/* â”€â”€ LEFT SIDEBAR â”€â”€ */}
       <aside className="context-col">
         <div className="dash-card">
           <div className="dash-card-padding">
@@ -81,7 +81,7 @@ const MyCertificates: React.FC = () => {
           <div className="dash-card-padding">
             <h2 className="dash-card-title" style={{ fontSize: '15px', marginBottom: '12px' }}>Share your achievements</h2>
             <p style={{ fontSize: '13px', color: 'var(--body)', lineHeight: 1.5, marginBottom: '16px' }}>
-              All SabiHands certificates are publicly verifiable. Add them to your LinkedIn or share a link directly.
+              All Gigway certificates are publicly verifiable. Add them to your LinkedIn or share a link directly.
             </p>
             <Link to="/dashboard/volunteer/profile" style={{ display: 'block', textAlign: 'center', width: '100%', padding: '10px 16px', backgroundColor: 'var(--white)', border: '1.5px solid #E4E1F5', borderRadius: '8px', color: 'var(--ink)', fontWeight: 600, fontSize: '14px', textDecoration: 'none' }}>
               View Public Profile
@@ -90,7 +90,7 @@ const MyCertificates: React.FC = () => {
         </div>
       </aside>
 
-      {/* ── MAIN CONTENT ── */}
+      {/* â”€â”€ MAIN CONTENT â”€â”€ */}
       <div className="main-content">
         <div className="dash-card">
           <div className="dash-card-header">
@@ -117,7 +117,13 @@ const MyCertificates: React.FC = () => {
                   <div>
                     <h3 className="gig-media-title">{cert.gigs?.title}</h3>
                     <div className="gig-media-org">
-                      <img src="/images/hero_illustration.png" alt={orgName} />
+                      {cert.gigs?.organizations?.logo_url ? (
+                        <img src={cert.gigs.organizations.logo_url} alt={orgName} style={{ objectFit: 'contain' }} />
+                      ) : (
+                        <div style={{ width: '20px', height: '20px', borderRadius: '4px', backgroundColor: 'var(--purple-100)', color: 'var(--purple-700)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '10px', flexShrink: 0 }}>
+                          {orgName.substring(0, 2).toUpperCase()}
+                        </div>
+                      )}
                       <strong>{orgName}</strong>
                     </div>
                   </div>
@@ -144,13 +150,13 @@ const MyCertificates: React.FC = () => {
                   <button
                     className="gig-action"
                     style={{ background: 'none', border: '1.5px solid #E4E1F5', color: 'var(--body)' }}
-                    onClick={() => navigator.clipboard.writeText(`https://sabihands.com/verify/${cert.verification_code}`)}
+                    onClick={() => navigator.clipboard.writeText(`https://Gigway.com/verify/${cert.verification_code}`)}
                   >
                     Copy Link
                   </button>
                   <span style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '13px', color: 'var(--teal-600)', fontWeight: 600, marginLeft: 'auto' }}>
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                    Verified on SabiHands
+                    Verified on Gigway
                   </span>
                 </div>
               </div>
@@ -173,3 +179,4 @@ const MyCertificates: React.FC = () => {
 };
 
 export default MyCertificates;
+

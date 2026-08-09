@@ -283,3 +283,20 @@
       padding: 80px 0;
     }
   }
+
+/* ANIMATED SVG BACKGROUNDS */
+.bg-dot-scatter {
+  background-image: url('/illustrations/bg-dot-scatter.svg');
+  background-size: cover;
+  background-position: center;
+}
+.bg-organic-blobs {
+  background-image: url('/illustrations/bg-organic-blobs.svg');
+  background-size: cover;
+  background-position: center;
+}
+.bg-wave-layers {
+  background-image: url('/illustrations/bg-wave-layers.svg');
+  background-size: cover;
+  background-position: bottom;
+}

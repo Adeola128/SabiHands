@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -7,7 +7,7 @@ const GigCheckIn: React.FC = () => {
 
   return (
     <>
-      {/* ── SIDEBAR ── */}
+      {/* â”€â”€ SIDEBAR â”€â”€ */}
       <aside className="context-col">
 
         {/* Gig summary card */}
@@ -39,7 +39,7 @@ const GigCheckIn: React.FC = () => {
               {[
                 {
                   icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>,
-                  label: 'Date & Time', value: 'Sat, Aug 15 · 8:00 AM – 2:00 PM',
+                  label: 'Date & Time', value: 'Sat, Aug 15 Â· 8:00 AM â€“ 2:00 PM',
                 },
                 {
                   icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>,
@@ -70,7 +70,7 @@ const GigCheckIn: React.FC = () => {
         </Link>
       </aside>
 
-      {/* ── MAIN CONTENT ── */}
+      {/* â”€â”€ MAIN CONTENT â”€â”€ */}
       <div className="main-content">
         <AnimatePresence mode="wait">
           {!checkedIn ? (
@@ -103,7 +103,7 @@ const GigCheckIn: React.FC = () => {
                         <div style={{ position: 'relative', width: '10px', height: '10px', flexShrink: 0 }}>
                           <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: 'var(--teal-200)', boxShadow: '0 0 0 3px rgba(255,255,255,0.25)' }} />
                         </div>
-                        <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.88)', fontWeight: 600 }}>Location verified · 0.2 km away</span>
+                        <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.88)', fontWeight: 600 }}>Location verified Â· 0.2 km away</span>
                       </div>
                     </div>
                   </div>
@@ -127,7 +127,7 @@ const GigCheckIn: React.FC = () => {
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontWeight: 700, color: 'var(--ink)', fontSize: '15px' }}>Adeola Okonkwo</div>
-                      <div style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '2px' }}>General Volunteer · Accepted July 28</div>
+                      <div style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '2px' }}>General Volunteer Â· Accepted July 28</div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12px', color: 'var(--teal-600)', fontWeight: 700, flexShrink: 0, backgroundColor: 'var(--teal-50)', padding: '4px 10px', borderRadius: '99px' }}>
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
@@ -195,7 +195,7 @@ const GigCheckIn: React.FC = () => {
                   </motion.div>
 
                   <h1 style={{ fontSize: '30px', fontFamily: 'var(--display)', color: 'white', marginBottom: '10px', letterSpacing: '-0.02em', position: 'relative' }}>
-                    You're checked in! 🎉
+                    You're checked in! ðŸŽ‰
                   </h1>
                   <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, maxWidth: '380px', margin: '0 auto', position: 'relative' }}>
                     The organizer has been notified. Your hours will be confirmed at the end of the event.
@@ -209,7 +209,7 @@ const GigCheckIn: React.FC = () => {
                     {[
                       { step: '1', title: 'Attend the event', body: 'Show up, do great work, and enjoy making an impact.', done: true },
                       { step: '2', title: 'Hours confirmed', body: 'The organizer marks your hours complete after the event.', done: false },
-                      { step: '3', title: 'Certificate issued', body: 'Your SabiHands certificate is automatically generated and ready to share.', done: false },
+                      { step: '3', title: 'Certificate issued', body: 'Your Gigway certificate is automatically generated and ready to share.', done: false },
                     ].map((item, idx, arr) => (
                       <div key={item.step} style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', position: 'relative', paddingBottom: idx < arr.length - 1 ? '24px' : '0' }}>
                         {/* Connecting line */}
@@ -249,3 +249,4 @@ const GigCheckIn: React.FC = () => {
 };
 
 export default GigCheckIn;
+

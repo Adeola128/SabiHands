@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './Login.css'; // Uses the same layout classes as Login
 
@@ -25,7 +25,7 @@ const ForgotPassword: React.FC = () => {
               <path d="M60 15 A35 35 0 1 0 60 85" fill="none" stroke="#AFA9EC" strokeWidth="16" strokeLinecap="round" />
               <path d="M40 15 A35 35 0 1 1 40 85" fill="none" stroke="#5DCAA5" strokeWidth="16" strokeLinecap="round" />
             </svg>
-            <span>SabiHands</span>
+            <span>Gigway</span>
           </Link>
           <div>
             <p className="visual-quote">"It happens to the best of us."</p>
@@ -84,3 +84,4 @@ const ForgotPassword: React.FC = () => {
 };
 
 export default ForgotPassword;
+

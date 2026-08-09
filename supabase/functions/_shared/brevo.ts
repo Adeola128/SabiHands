@@ -1,4 +1,4 @@
-export const sendBrevoEmail = async (
+﻿export const sendBrevoEmail = async (
   toEmail: string,
   toName: string,
   subject: string,
@@ -19,7 +19,7 @@ export const sendBrevoEmail = async (
     },
     body: JSON.stringify({
       sender: {
-        name: "Sabihands",
+        name: "Gigway",
         email: "partnership@oratora.com.ng",
       },
       to: [
@@ -40,3 +40,4 @@ export const sendBrevoEmail = async (
 
   return await response.json();
 };
+

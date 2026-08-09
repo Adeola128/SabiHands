@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import LoadingScreen from '../../components/LoadingScreen';
@@ -69,6 +70,16 @@ const PublicOrganizationProfile: React.FC = () => {
 
   return (
     <div className="org-profile-container" style={{ maxWidth: '1000px', margin: '0 auto', padding: '40px 24px' }}>
+      <Helmet>
+        <title>{org?.name || 'Organization'} &mdash; Gigway</title>
+        <meta name="description" content={`Check out volunteer opportunities with ${org?.name || 'this organization'} on Gigway.`} />
+        <meta property="og:title" content={`${org?.name || 'Organization'} &mdash; Gigway`} />
+        <meta property="og:description" content={`Check out volunteer opportunities with ${org?.name || 'this organization'} on Gigway.`} />
+        <meta property="og:image" content={org?.cover_url || org?.logo_url || "https://Gigway.vercel.app/og-image.png"} />
+        <meta name="twitter:title" content={`${org?.name || 'Organization'} &mdash; Gigway`} />
+        <meta name="twitter:description" content={`Check out volunteer opportunities with ${org?.name || 'this organization'} on Gigway.`} />
+        <meta name="twitter:image" content={org?.cover_url || org?.logo_url || "https://Gigway.vercel.app/og-image.png"} />
+      </Helmet>
       
       {/* ── HERO SECTION ── */}
       <div className="org-profile-hero">

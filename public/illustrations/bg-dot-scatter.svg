@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+<style>
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.1; transform: scale(0.9); }
+    50% { opacity: 0.8; transform: scale(1.1); }
+  }
+  circle {
+    transform-origin: center;
+    animation: twinkle 4s ease-in-out infinite alternate;
+  }
+  circle:nth-child(even) { animation-duration: 5s; animation-delay: 1s; }
+  circle:nth-child(3n) { animation-duration: 3.5s; animation-delay: 0.5s; }
+  circle:nth-child(5n) { animation-duration: 6s; animation-delay: 2s; }
+</style>
+  <!-- Transparent background: layer this over any panel color, light or dark -->
+<circle cx="915.2" cy="41.5" r="3.4" fill="#7F77DD" opacity="0.23"/>
+<circle cx="967.4" cy="787.3" r="2.4" fill="#7F77DD" opacity="0.3"/>
+<circle cx="151.2" cy="220.1" r="5.0" fill="#5DCAA5" opacity="0.35"/>
+<circle cx="328.6" cy="526.8" r="6.0" fill="#1D9E75" opacity="0.15"/>
+<circle cx="997.4" cy="312.6" r="2.8" fill="#AFA9EC" opacity="0.49"/>
+<circle cx="163.1" cy="346.7" r="3.8" fill="#AFA9EC" opacity="0.27"/>
+<circle cx="1150.0" cy="647.6" r="4.7" fill="#5DCAA5" opacity="0.49"/>
+<circle cx="130.3" cy="272.1" r="5.1" fill="#AFA9EC" opacity="0.46"/>
+<circle cx="828.3" cy="625.9" r="2.2" fill="#AFA9EC" opacity="0.23"/>
+<circle cx="1399.3" cy="755.6" r="6.3" fill="#5DCAA5" opacity="0.28"/>
+<circle cx="910.0" cy="333.8" r="3.9" fill="#AFA9EC" opacity="0.22"/>
+<circle cx="1002.5" cy="607.9" r="2.4" fill="#1D9E75" opacity="0.37"/>
+<circle cx="248.8" cy="346.3" r="6.9" fill="#1D9E75" opacity="0.37"/>
+<circle cx="978.5" cy="744.9" r="5.9" fill="#7F77DD" opacity="0.23"/>
+<circle cx="1147.1" cy="365.0" r="2.3" fill="#AFA9EC" opacity="0.47"/>
+<circle cx="317.7" cy="449.3" r="6.4" fill="#1D9E75" opacity="0.37"/>
+<circle cx="390.8" cy="232.1" r="4.8" fill="#5DCAA5" opacity="0.24"/>
+<circle cx="1277.0" cy="363.5" r="3.1" fill="#5DCAA5" opacity="0.5"/>
+<circle cx="147.3" cy="60.5" r="2.5" fill="#5DCAA5" opacity="0.37"/>
+<circle cx="855.0" cy="350.9" r="5.0" fill="#AFA9EC" opacity="0.31"/>
+<circle cx="1379.5" cy="760.3" r="2.1" fill="#AFA9EC" opacity="0.4"/>
+<circle cx="1096.0" cy="312.6" r="3.5" fill="#7F77DD" opacity="0.21"/>
+<circle cx="1355.3" cy="773.2" r="3.3" fill="#1D9E75" opacity="0.33"/>
+<circle cx="730.8" cy="111.5" r="5.1" fill="#1D9E75" opacity="0.44"/>
+<circle cx="234.0" cy="675.8" r="4.7" fill="#7F77DD" opacity="0.42"/>
+<circle cx="858.5" cy="440.2" r="2.6" fill="#AFA9EC" opacity="0.28"/>
+<circle cx="355.2" cy="227.1" r="4.8" fill="#5DCAA5" opacity="0.18"/>
+<circle cx="1162.4" cy="861.1" r="4.7" fill="#5DCAA5" opacity="0.19"/>
+<circle cx="1345.6" cy="162.0" r="4.6" fill="#1D9E75" opacity="0.36"/>
+<circle cx="1320.5" cy="669.5" r="5.4" fill="#5DCAA5" opacity="0.4"/>
+<circle cx="1413.2" cy="578.9" r="4.2" fill="#7F77DD" opacity="0.33"/>
+<circle cx="367.1" cy="75.1" r="2.1" fill="#1D9E75" opacity="0.34"/>
+<circle cx="30.1" cy="628.7" r="2.3" fill="#7F77DD" opacity="0.17"/>
+<circle cx="1223.5" cy="80.9" r="3.2" fill="#1D9E75" opacity="0.38"/>
+<circle cx="774.9" cy="642.1" r="6.4" fill="#1D9E75" opacity="0.35"/>
+<circle cx="1118.5" cy="714.4" r="3.0" fill="#5DCAA5" opacity="0.18"/>
+<circle cx="516.0" cy="373.5" r="6.3" fill="#7F77DD" opacity="0.17"/>
+<circle cx="104.9" cy="646.3" r="6.0" fill="#1D9E75" opacity="0.19"/>
+<circle cx="286.3" cy="405.8" r="4.1" fill="#1D9E75" opacity="0.25"/>
+<circle cx="1244.3" cy="84.8" r="6.0" fill="#7F77DD" opacity="0.45"/>
+<circle cx="90.8" cy="879.4" r="6.2" fill="#1D9E75" opacity="0.49"/>
+<circle cx="252.8" cy="437.7" r="3.1" fill="#7F77DD" opacity="0.29"/>
+<circle cx="250.5" cy="21.9" r="4.0" fill="#5DCAA5" opacity="0.47"/>
+<circle cx="419.3" cy="619.1" r="5.7" fill="#5DCAA5" opacity="0.42"/>
+<circle cx="236.7" cy="275.2" r="6.8" fill="#7F77DD" opacity="0.35"/>
+<circle cx="1067.2" cy="69.2" r="4.9" fill="#1D9E75" opacity="0.33"/>
+
+</svg>
+

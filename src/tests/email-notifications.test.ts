@@ -1,9 +1,9 @@
-/**
- * Email Notification System — Full Test Suite
+﻿/**
+ * Email Notification System â€” Full Test Suite
  *
  * Benchmark targets (all must pass):
  *  1.  Template renders valid HTML (<!DOCTYPE html> present)
- *  2.  Template contains SabiHands branding
+ *  2.  Template contains Gigway branding
  *  3.  Template injects dynamic values (name, gig title, org name)
  *  4.  No debug artifacts (dYZ% must be absent from all output)
  *  5.  CTA button href is a valid URL
@@ -19,10 +19,10 @@
 
 import { describe, it, expect, beforeAll } from 'vitest';
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Pure utility: replicate buildEmailTemplate logic
 // so we can unit-test it without Deno
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function buildEmailTemplate(preheader: string, headline: string, bodyContent: string): string {
   const logoSvg = encodeURIComponent(`
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
@@ -72,8 +72,8 @@ function buildEmailTemplate(preheader: string, headline: string, bodyContent: st
   <center style="width:100%;background:#FBFAFF;">
     <div class="email-container">
       <div class="header-banner">
-        <img class="header-logo" src="data:image/svg+xml;charset=UTF-8,${logoSvg}" alt="SabiHands Logo">
-        <div class="header-wordmark">SabiHands</div>
+        <img class="header-logo" src="data:image/svg+xml;charset=UTF-8,${logoSvg}" alt="Gigway Logo">
+        <div class="header-wordmark">Gigway</div>
         <div class="header-tagline">Making an impact, one sabi hand at a time.</div>
         <div class="header-event-badge">${headline}</div>
       </div>
@@ -82,7 +82,7 @@ function buildEmailTemplate(preheader: string, headline: string, bodyContent: st
       </div>
       <div class="footer">
         <p class="footer-tagline">"You're not just volunteering. You're a Sabi Hand."</p>
-        <p class="footer-copy">&copy; 2026 SabiHands, Lagos, Nigeria. &nbsp;|&nbsp; <a href="https://sabihands.vercel.app">Visit Website</a></p>
+        <p class="footer-copy">&copy; 2026 Gigway, Lagos, Nigeria. &nbsp;|&nbsp; <a href="https://Gigway.vercel.app">Visit Website</a></p>
       </div>
     </div>
   </center>
@@ -90,9 +90,9 @@ function buildEmailTemplate(preheader: string, headline: string, bodyContent: st
 </html>`;
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Payload schemas for all 9 edge functions
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface AppAcceptedPayload {
   volunteer_email: string;
   volunteer_name: string;
@@ -127,9 +127,9 @@ interface OrgApprovedPayload {
   type: 'UPDATE';
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Helpers
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const SERVICE_ROLE_KEY = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY as string | undefined;
 const canRunIntegration = !!(SUPABASE_URL && SERVICE_ROLE_KEY);
@@ -150,10 +150,10 @@ async function callEdgeFunction(fnName: string, payload: unknown) {
   return { status: res.status, data };
 }
 
-// ─────────────────────────────────────────────
-// BENCHMARK 1–10: Unit Tests on HTML Template
-// ─────────────────────────────────────────────
-describe('Email Template — Unit Tests', () => {
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// BENCHMARK 1â€“10: Unit Tests on HTML Template
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+describe('Email Template â€” Unit Tests', () => {
   const testPreheader = 'Your application has been accepted!';
   const testHeadline = 'Application Accepted';
   const testBody = `
@@ -164,7 +164,7 @@ describe('Email Template — Unit Tests', () => {
       <div class="info-card-value">Code Clinic Mentor</div>
       <div class="info-card-sub">Hosted by TechForGood NGO</div>
     </div>
-    <div class="button-wrap"><a href="https://sabihands.vercel.app/dashboard/volunteer/applications" class="button">View My Applications &rarr;</a></div>
+    <div class="button-wrap"><a href="https://Gigway.vercel.app/dashboard/volunteer/applications" class="button">View My Applications &rarr;</a></div>
   `;
   let html: string;
 
@@ -180,10 +180,10 @@ describe('Email Template — Unit Tests', () => {
   });
 
   // Benchmark 2
-  it('BENCHMARK 2: contains SabiHands branding', () => {
-    expect(html).toContain('SabiHands');
+  it('BENCHMARK 2: contains Gigway branding', () => {
+    expect(html).toContain('Gigway');
     expect(html).toContain('Sabi Hand');
-    expect(html.toLowerCase()).toContain('sabihands');
+    expect(html.toLowerCase()).toContain('Gigway');
   });
 
   // Benchmark 3
@@ -222,7 +222,7 @@ describe('Email Template — Unit Tests', () => {
 
   // Benchmark 7
   it('BENCHMARK 7: footer copyright is present', () => {
-    expect(html).toContain('SabiHands');
+    expect(html).toContain('Gigway');
     expect(html).toContain('2026');
     expect(html).toContain('Lagos');
   });
@@ -254,10 +254,10 @@ describe('Email Template — Unit Tests', () => {
   });
 });
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // BENCHMARK 11: Payload Schema Validation
-// ─────────────────────────────────────────────
-describe('Email Function Payloads — Schema Validation', () => {
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+describe('Email Function Payloads â€” Schema Validation', () => {
   it('BENCHMARK 11a: AppAcceptedPayload is valid', () => {
     const payload: AppAcceptedPayload = {
       volunteer_email: 'john@example.com',
@@ -323,10 +323,10 @@ describe('Email Function Payloads — Schema Validation', () => {
   });
 });
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // BENCHMARK 12: Integration Tests (Live HTTP)
-// ─────────────────────────────────────────────
-describe('Edge Functions — Integration Tests (requires env vars)', () => {
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+describe('Edge Functions â€” Integration Tests (requires env vars)', () => {
   if (!canRunIntegration) {
     it.skip('SKIPPED: VITE_SUPABASE_URL or VITE_SUPABASE_SERVICE_ROLE_KEY not set', () => {});
     return;
@@ -391,3 +391,4 @@ describe('Edge Functions — Integration Tests (requires env vars)', () => {
     expect([200, 500]).toContain(status);
   }, 15000);
 });
+

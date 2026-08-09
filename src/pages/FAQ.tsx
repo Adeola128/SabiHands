@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import './FAQ.css';
@@ -68,15 +68,15 @@ const FAQ: React.FC = () => {
           <h2>For Volunteers</h2>
           <FAQItem 
             question="Do I need a CV to apply for gigs?" 
-            answer="No! SabiHands is built so you can start without a CV. Organizations select you based on your profile and availability. Once you complete gigs, your verifiable SabiHands certificates become your track record." 
+            answer="No! Gigway is built so you can start without a CV. Organizations select you based on your profile and availability. Once you complete gigs, your verifiable Gigway certificates become your track record." 
           />
           <FAQItem 
             question="Are the gigs paid?" 
-            answer="SabiHands is a volunteering marketplace. Most gigs are unpaid, designed to give you real-world experience, networking opportunities, and verifiable proof of your skills. However, some organizations may offer a stipend for transport or lunch, which will be stated in the gig description." 
+            answer="Gigway is a volunteering marketplace. Most gigs are unpaid, designed to give you real-world experience, networking opportunities, and verifiable proof of your skills. However, some organizations may offer a stipend for transport or lunch, which will be stated in the gig description." 
           />
           <FAQItem 
             question="How do I get my certificate?" 
-            answer="Once you complete a gig, the organization confirms your attendance through their dashboard. As soon as they confirm, SabiHands automatically generates a verifiable digital certificate for you, which appears in your profile." 
+            answer="Once you complete a gig, the organization confirms your attendance through their dashboard. As soon as they confirm, Gigway automatically generates a verifiable digital certificate for you, which appears in your profile." 
           />
         </motion.div>
 
@@ -90,7 +90,7 @@ const FAQ: React.FC = () => {
           <h2>For Organizations</h2>
           <FAQItem 
             question="How much does it cost to post a gig?" 
-            answer="Our Community plan allows you to post up to 2 gigs per month completely free! If you need unlimited gig postings and automatic certificates, you can upgrade to Sabi Pro for ₦15,000/month." 
+            answer="Our Community plan allows you to post up to 2 gigs per month completely free! If you need unlimited gig postings and automatic certificates, you can upgrade to Sabi Pro for â‚¦15,000/month." 
           />
           <FAQItem 
             question="How do you verify volunteers?" 
@@ -103,3 +103,4 @@ const FAQ: React.FC = () => {
 };
 
 export default FAQ;
+

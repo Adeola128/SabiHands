@@ -60,7 +60,7 @@ const Home: React.FC = () => {
     <div className="home-page">
       
       {/* HERO */}
-      <header className="hero hero-premium">
+      <header className="hero hero-premium bg-dot-scatter">
         <div className="hero-inner-premium">
           <motion.div 
             className="hero-copy-premium"
@@ -97,7 +97,7 @@ const Home: React.FC = () => {
       </header>
 
       {/* FOR YOU */}
-      <section className="panel panel-light" id="for-you">
+      <section className="panel panel-light bg-wave-layers" id="for-you">
         <div className="wrap">
           <motion.div className="kicker" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={fadeUpVariant}>The problem</motion.div>
           <motion.h2 initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={fadeUpVariant}>You can't get hired without experience.<br/>You can't get experience without being hired.</motion.h2>
@@ -111,7 +111,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* THE SOLUTION */}
-      <section className="panel panel-white">
+      <section className="panel panel-white bg-organic-blobs">
         <div className="wrap">
           <motion.div className="kicker" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={fadeUpVariant}>The solution</motion.div>
           <motion.h2 initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={fadeUpVariant}>A marketplace where showing up counts</motion.h2>
@@ -300,7 +300,7 @@ const Home: React.FC = () => {
 
       {/* GET STARTED (Conversion Gateway Redesign) */}
       {/* GET STARTED (Conversion Gateway Redesign) */}
-      <section className="panel panel-dark get-started-panel" id="get-started">
+      <section className="panel panel-dark get-started-panel bg-dot-scatter" id="get-started">
         <div className="wrap" style={{ textAlign: 'center', position: 'relative' }}>
           <div className="bg-glow-teal" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 0, opacity: 0.3, width: '80%', height: '100%', filter: 'blur(120px)' }}></div>
           

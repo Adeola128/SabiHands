@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import './AdminLayout.css';
 
@@ -24,7 +24,7 @@ const AdminLayout: React.FC = () => {
       <aside className={`admin-sidebar ${mobileOpen ? 'mobile-open' : ''}`}>
         <div className="admin-sidebar-header">
           <Link to="/admin" className="admin-sidebar-logo">
-            SabiHands
+            Gigway
           </Link>
           <span className="admin-sidebar-badge">Internal</span>
         </div>
@@ -76,3 +76,4 @@ const AdminLayout: React.FC = () => {
 };
 
 export default AdminLayout;
+

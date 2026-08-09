@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import LoadingScreen from '../../components/LoadingScreen';
 import { formatDistanceToNow } from 'date-fns';
@@ -47,7 +47,7 @@ const AdminDashboard: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '32px' }}>
         <div>
           <h1 style={{ fontSize: '28px', fontWeight: 700, color: '#0F172A', margin: '0 0 8px 0', fontFamily: 'var(--display)' }}>Platform Overview</h1>
-          <p style={{ color: '#64748B', margin: 0, fontSize: '15px' }}>Key metrics and activity across SabiHands.</p>
+          <p style={{ color: '#64748B', margin: 0, fontSize: '15px' }}>Key metrics and activity across Gigway.</p>
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
           <select style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid #E2E8F0', outline: 'none', fontSize: '14px', fontWeight: 600, color: '#334155' }}>
@@ -78,7 +78,7 @@ const AdminDashboard: React.FC = () => {
 
         <div className="admin-card" style={{ padding: '24px', borderTop: '4px solid #8B5CF6' }}>
           <div style={{ fontSize: '13px', fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px' }}>MRR</div>
-          <div style={{ fontSize: '36px', fontWeight: 700, color: '#0F172A', fontFamily: 'var(--display)', lineHeight: 1 }}>₦0</div>
+          <div style={{ fontSize: '36px', fontWeight: 700, color: '#0F172A', fontFamily: 'var(--display)', lineHeight: 1 }}>â‚¦0</div>
           <div style={{ fontSize: '14px', color: '#64748B', fontWeight: 600, marginTop: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}>
             Payments not configured
           </div>
@@ -154,3 +154,4 @@ const AdminDashboard: React.FC = () => {
 };
 
 export default AdminDashboard;
+

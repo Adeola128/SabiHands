@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
@@ -122,7 +122,7 @@ const VolunteerDashboard: React.FC = () => {
         
         <div className="dash-card">
           <div className="dash-card-padding">
-            <h2 className="dash-card-title" style={{ fontSize: '15px', marginBottom: '12px', color: 'var(--ink)' }}>Show all your impact: Track your volunteering outside of SabiHands</h2>
+            <h2 className="dash-card-title" style={{ fontSize: '15px', marginBottom: '12px', color: 'var(--ink)' }}>Show all your impact: Track your volunteering outside of Gigway</h2>
             <button style={{ width: '100%', padding: '10px 16px', backgroundColor: 'var(--white)', border: '1.5px solid #E4E1F5', borderRadius: '8px', color: 'var(--ink)', fontWeight: 600, fontSize: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
               Submit hours
@@ -222,3 +222,4 @@ const VolunteerDashboard: React.FC = () => {
 };
 
 export default VolunteerDashboard;
+

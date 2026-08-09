@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 const PermissionDenied: React.FC = () => {
@@ -41,7 +41,7 @@ const PermissionDenied: React.FC = () => {
         </h1>
         
         <p style={{ fontSize: '16px', color: 'var(--body)', margin: '0 0 32px 0', lineHeight: 1.6 }}>
-          You do not have the necessary permissions to view this page. If you believe this is an error, please contact SabiHands support.
+          You do not have the necessary permissions to view this page. If you believe this is an error, please contact Gigway support.
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -61,3 +61,4 @@ const PermissionDenied: React.FC = () => {
 };
 
 export default PermissionDenied;
+

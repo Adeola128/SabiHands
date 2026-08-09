@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { sendBrevoEmail } from "../_shared/brevo.ts";
 
@@ -32,18 +32,18 @@ serve(async (req: Request) => {
     let htmlContent = "";
 
     if (actionType === "signup") {
-      subject = "Confirm your SabiHands account";
+      subject = "Confirm your Gigway account";
       htmlContent = getSignupHtml(token);
     } else if (actionType === "recovery") {
-      subject = "Reset Your SabiHands Password";
+      subject = "Reset Your Gigway Password";
       htmlContent = getResetPasswordHtml(token);
     } else if (actionType === "magiclink") {
-      subject = "Your Magic Link to SabiHands";
+      subject = "Your Magic Link to Gigway";
       htmlContent = getMagicLinkHtml(token);
     } else {
       // For any other types like email_change or invite, use a generic template or log it
       console.log(`Unhandled email type: ${actionType}. Using fallback.`);
-      subject = "SabiHands Notification";
+      subject = "Gigway Notification";
       htmlContent = getFallbackHtml(token, actionType);
     }
 
@@ -245,9 +245,10 @@ function getFallbackHtml(token: string, actionType: string) {
   return `<!DOCTYPE html>
 <html>
 <body>
-  <h2>SabiHands Notification</h2>
+  <h2>Gigway Notification</h2>
   <p>Action requested: ${actionType}</p>
   <p>Your code is: <strong>${token}</strong></p>
 </body>
 </html>`;
 }
+
