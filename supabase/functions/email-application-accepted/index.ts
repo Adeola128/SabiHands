@@ -30,7 +30,7 @@ serve(async (req: Request) => {
     // Provide fallbacks for date and location if not in payload
     const displayDate = gig_date || 'TBD';
     const displayLocation = gig_location || 'Remote';
-    const displayUrl = gig_url || 'https://Ralvo.vercel.app/dashboard/volunteer/gigs';
+    const displayUrl = gig_url || 'https://www.ralvo.com.ng/dashboard/volunteer/gigs';
 
     const htmlContent = `<!DOCTYPE html>
 <html lang="en">
@@ -69,7 +69,7 @@ serve(async (req: Request) => {
   <tr>
     <td class="stack-pad" style="padding:36px 48px 0; text-align:left;">
       <span style="font-family:Georgia,'Times New Roman',serif; font-size:20px; font-weight:bold;">
-        <span style="color:#534AB7;">Sabi</span><span style="color:#0F6E56;">Hands</span>
+        <span style="color:#26215C;">Ralvo</span>
       </span>
     </td>
   </tr>
@@ -129,9 +129,9 @@ serve(async (req: Request) => {
     <td class="stack-pad" style="padding:28px 48px 40px; border-top:1px solid #EDEBF7; text-align:left;">
       <p style="margin:0 0 6px; font-family:Arial,Helvetica,sans-serif; font-size:12px; color:#8B87B0;">Ralvo Â· Lagos, Nigeria</p>
       <p style="margin:0; font-family:Arial,Helvetica,sans-serif; font-size:12px; color:#8B87B0;">
-        <a href="https://Ralvo.vercel.app/settings" style="color:#8B87B0; text-decoration:underline;">Notification settings</a>
+        <a href="https://www.ralvo.com.ng/settings" style="color:#8B87B0; text-decoration:underline;">Notification settings</a>
         &nbsp;Â·&nbsp;
-        <a href="https://Ralvo.vercel.app/help" style="color:#8B87B0; text-decoration:underline;">Help</a>
+        <a href="https://www.ralvo.com.ng/help" style="color:#8B87B0; text-decoration:underline;">Help</a>
       </p>
     </td>
   </tr>

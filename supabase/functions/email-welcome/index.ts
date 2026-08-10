@@ -46,19 +46,19 @@ serve(async (req: Request) => {
     const email = userData.email;
 
     // Send Welcome Email
-    const subject = "Welcome to Ralvo! You're a Sabi Hand now.";
+    const subject = "Welcome to Ralvo!";
     
     const bodyText = `
       <p>Welcome, ${full_name}!</p>
-      <p>We are thrilled to have you join the Ralvo community as a volunteer. You're not just volunteering. You're a Sabi Hand.</p>
+      <p>We are thrilled to have you join the Ralvo community as a volunteer. You're not just volunteering; you're building a verified track record.</p>
       <p>Start exploring opportunities to make a real impact today. Remember to complete your profile so we can match you with the best gigs!</p>
-      <a href="https://Ralvo.com/dashboard" class="button">Go to Dashboard</a>
+      <a href="https://www.ralvo.com.ng/dashboard" class="button">Go to Dashboard</a>
       <p>Happy Volunteering,<br/>The Ralvo Team</p>
     `;
 
     const htmlContent = buildEmailTemplate(
       "Welcome to Ralvo!",
-      "Welcome, Sabi Hand!",
+      "Welcome to the movement!",
       bodyText
     );
 

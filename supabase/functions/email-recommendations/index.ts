@@ -19,15 +19,15 @@ serve(async (req: Request) => {
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Fetch gigs published in the last 7 days
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    // Fetch gigs published in the last 3 days
+    const recentDate = new Date();
+    recentDate.setDate(recentDate.getDate() - 3);
 
     const { data: recentGigs, error: gigsError } = await supabase
       .from('gigs')
       .select('*, organizations(name)')
       .eq('status', 'published')
-      .gte('date_start', sevenDaysAgo.toISOString())
+      .gte('date_start', recentDate.toISOString())
       .limit(5);
 
     if (gigsError || !recentGigs || recentGigs.length === 0) {
@@ -55,7 +55,7 @@ serve(async (req: Request) => {
         <h3 style="margin-top:0; color: #26215C; font-family: 'Fraunces', serif;">${gig.title}</h3>
         <p style="margin: 5px 0; font-size: 14px;"><strong>${gig.organizations?.name || 'Organization'}</strong> &bull; ${gig.location || 'Remote'}</p>
         <p style="margin: 5px 0; font-size: 14px;">${gig.type === 'skilled' ? 'Skilled Role' : 'Physical Role'}</p>
-        <a href="https://Ralvo.com/dashboard/volunteer/gigs/${gig.id}" style="display: inline-block; margin-top: 10px; color: #534AB7; text-decoration: none; font-weight: bold;">View Details &rarr;</a>
+        <a href="https://www.ralvo.com.ng/dashboard/volunteer/gigs/${gig.id}" style="display: inline-block; margin-top: 10px; color: #534AB7; text-decoration: none; font-weight: bold;">View Details &rarr;</a>
       </div>
     `).join('');
 
@@ -66,20 +66,20 @@ serve(async (req: Request) => {
       const profile = Array.isArray(vol.volunteer_profiles) ? vol.volunteer_profiles[0] : vol.volunteer_profiles;
       const name = profile?.full_name || "Volunteer";
 
-      const subject = "Your Weekly Ralvo Recommendations";
+      const subject = "Your Latest Ralvo Recommendations";
       
       const bodyText = `
         <p>Hi ${name},</p>
-        <p>Here are some gigs we think you'll absolutely crush this week. Time to show up and get sabi.</p>
+        <p>Here are some recent gigs we think you'll crush. Time to show up and get verified experience.</p>
         <br/>
         ${gigHtml}
         <br/>
-        <a href="https://Ralvo.com/dashboard/volunteer/gigs" class="button">View All Gigs</a>
+        <a href="https://www.ralvo.com.ng/dashboard/volunteer/gigs" class="button">View All Gigs</a>
       `;
 
       const htmlContent = buildEmailTemplate(
         "Recommended Gigs",
-        "Your Weekly Sabi Gigs",
+        "Your Latest Recommended Gigs",
         bodyText
       );
 

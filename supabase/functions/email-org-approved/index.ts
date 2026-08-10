@@ -47,10 +47,10 @@ serve(async (req: Request) => {
       <h2 class="headline">Congratulations, ${name}!</h2>
       <p>We are delighted to inform you that your organization has been <strong>approved</strong> by the Ralvo review board.</p>
       
-      <p>You can now start posting volunteer gigs, recruiting Sabi Hands, reviewing submissions, and issuing certificates to impact makers.</p>
+      <p>You can now start posting volunteer gigs, recruiting volunteers, reviewing submissions, and issuing certificates to impact makers.</p>
       
       <div class="button-wrap">
-        <a href="https://Ralvo.vercel.app/dashboard/organization/gigs/new" class="button">Create Your First Gig</a>
+        <a href="https://www.ralvo.com.ng/dashboard/organization/gigs/new" class="button">Create Your First Gig</a>
       </div>
       
       <p>Thank you for partnering with us to build a stronger community.</p>

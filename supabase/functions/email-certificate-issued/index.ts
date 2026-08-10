@@ -62,7 +62,7 @@ serve(async (req: Request) => {
     // Format completion date
     const completionDate = record.created_at ? new Date(record.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
-    const certificate_url = `https://Ralvo.vercel.app/dashboard/volunteer/certificates/${certificate_id}`;
+    const certificate_url = `https://www.ralvo.com.ng/dashboard/volunteer/certificates/${certificate_id}`;
 
     const subject = `You showed up. Here's your certificate.`;
 
@@ -92,7 +92,7 @@ serve(async (req: Request) => {
 </style>
 </head>
 <body style="margin:0; padding:0; background:#F3F1FA;">
-<div style="display:none; max-height:0; overflow:hidden; opacity:0; mso-hide:all;">Your Sabi Hand certificate for ${gigData.title} is ready to view and share.&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;</div>
+<div style="display:none; max-height:0; overflow:hidden; opacity:0; mso-hide:all;">Your verified certificate for ${gigData.title} is ready to view and share.&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;</div>
 
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F3F1FA;">
 <tr>
@@ -105,7 +105,7 @@ serve(async (req: Request) => {
   <tr>
     <td class="stack-pad" style="padding:36px 48px 0; text-align:left;">
       <span style="font-family:Georgia,'Times New Roman',serif; font-size:20px; font-weight:bold;">
-        <span style="color:#534AB7;">Sabi</span><span style="color:#0F6E56;">Hands</span>
+        <span style="color:#26215C;">Ralvo</span>
       </span>
     </td>
   </tr>
@@ -125,7 +125,7 @@ serve(async (req: Request) => {
           <td class="cert-pad" style="padding:32px 36px;">
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
               <tr>
-                <td style="font-family:Arial,Helvetica,sans-serif; font-size:11px; font-weight:bold; letter-spacing:1px; text-transform:uppercase; color:#AFA9EC;">Certified Sabi Hand</td>
+                <td style="font-family:Arial,Helvetica,sans-serif; font-size:11px; font-weight:bold; letter-spacing:1px; text-transform:uppercase; color:#AFA9EC;">Certified Volunteer</td>
               </tr>
               <tr>
                 <td class="cert-name" style="padding-top:14px; font-family:Georgia,'Times New Roman',serif; font-size:28px; font-weight:bold; color:#FFFFFF;">${volunteerName}</td>
@@ -171,9 +171,9 @@ serve(async (req: Request) => {
     <td class="stack-pad" style="padding:28px 48px 40px; border-top:1px solid #EDEBF7; text-align:left;">
       <p style="margin:0 0 6px; font-family:Arial,Helvetica,sans-serif; font-size:12px; color:#8B87B0;">Ralvo Â· Lagos, Nigeria</p>
       <p style="margin:0; font-family:Arial,Helvetica,sans-serif; font-size:12px; color:#8B87B0;">
-        <a href="https://Ralvo.vercel.app/settings" style="color:#8B87B0; text-decoration:underline;">Notification settings</a>
+        <a href="https://www.ralvo.com.ng/settings" style="color:#8B87B0; text-decoration:underline;">Notification settings</a>
         &nbsp;Â·&nbsp;
-        <a href="https://Ralvo.vercel.app/help" style="color:#8B87B0; text-decoration:underline;">Help</a>
+        <a href="https://www.ralvo.com.ng/help" style="color:#8B87B0; text-decoration:underline;">Help</a>
       </p>
     </td>
   </tr>

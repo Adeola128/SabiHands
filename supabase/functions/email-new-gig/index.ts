@@ -67,7 +67,7 @@ serve(async (req: Request) => {
       <p><strong>Location:</strong> ${record.location || 'Remote'}</p>
       <p><strong>Type:</strong> ${record.type}</p>
       <p>A new gig just dropped that perfectly matches your skills. Check it out and be the first to apply.</p>
-      <a href="https://Ralvo.com/dashboard/volunteer/gigs/${record.id}" class="button">View Gig</a>
+      <a href="https://www.ralvo.com.ng/dashboard/volunteer/gigs/${record.id}" class="button">View Gig</a>
     `;
 
     const htmlContent = buildEmailTemplate(

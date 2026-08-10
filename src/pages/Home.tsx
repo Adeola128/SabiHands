@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
@@ -58,6 +59,26 @@ const Home: React.FC = () => {
 
   return (
     <div className="home-page">
+      <Helmet>
+        <title>Ralvo &mdash; Find Volunteer Opportunities &amp; NGO Gigs in Nigeria</title>
+        <meta name="description" content="Find verified volunteer opportunities and NGO gigs across Nigeria. Connect with local non-profits, build your track record, and earn verifiable certificates on Ralvo." />
+        <link rel="canonical" href="https://www.ralvo.com.ng/" />
+        <script type="application/ld+json">
+          {`
+            {
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "Ralvo",
+              "url": "https://www.ralvo.com.ng/",
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": "https://www.ralvo.com.ng/volunteers?q={search_term_string}",
+                "query-input": "required name=search_term_string"
+              }
+            }
+          `}
+        </script>
+      </Helmet>
       
       {/* HERO */}
       <header className="hero hero-premium bg-dot-scatter">

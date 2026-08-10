@@ -1,10 +1,16 @@
 import React from 'react';
+import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import './RolePages.css'; // Shared CSS for role landing pages
 
 const ForVolunteers: React.FC = () => {
   return (
     <div className="role-page">
+      <Helmet>
+        <title>For Volunteers &mdash; Build Your Track Record in Nigeria | Ralvo</title>
+        <meta name="description" content="Find verified volunteer opportunities and NGO gigs across Nigeria. Complete gigs, get verified certificates, and build a track record employers can't ignore." />
+        <link rel="canonical" href="https://www.ralvo.com.ng/volunteers" />
+      </Helmet>
       <header className="hero hero-volunteer">
         <div className="wrap hero-content text-center">
           <div className="eyebrow" style={{ color: 'var(--teal-200)' }}>For Volunteers</div>

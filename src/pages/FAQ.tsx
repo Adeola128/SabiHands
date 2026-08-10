@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import './FAQ.css';
@@ -45,6 +46,45 @@ const FAQItem: React.FC<{ question: string; answer: string }> = ({ question, ans
 const FAQ: React.FC = () => {
   return (
     <div className="faq-page">
+      <Helmet>
+        <title>Frequently Asked Questions | Ralvo</title>
+        <meta name="description" content="Got questions about volunteering in Nigeria or posting gigs on Ralvo? Read our FAQs on verification, certificates, and more." />
+        <link rel="canonical" href="https://www.ralvo.com.ng/faq" />
+        <script type="application/ld+json">
+          {`
+            {
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              "mainEntity": [
+                {
+                  "@type": "Question",
+                  "name": "Do I need a CV to apply for gigs?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "No! Ralvo is built so you can start without a CV. Organizations select you based on your profile and availability. Once you complete gigs, your verifiable Ralvo certificates become your track record."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "Are the gigs paid?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Ralvo is a volunteering marketplace. Most gigs are unpaid, designed to give you real-world experience, networking opportunities, and verifiable proof of your skills. However, some organizations may offer a stipend for transport or lunch, which will be stated in the gig description."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "How do I get my certificate?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Once you complete a gig, the organization confirms your attendance through their dashboard. As soon as they confirm, Ralvo automatically generates a verifiable digital certificate for you, which appears in your profile."
+                  }
+                }
+              ]
+            }
+          `}
+        </script>
+      </Helmet>
       <header className="faq-hero">
         <motion.div 
           className="wrap"

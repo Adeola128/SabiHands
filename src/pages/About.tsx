@@ -1,4 +1,5 @@
 import React from 'react';
+import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import './About.css';
@@ -15,6 +16,22 @@ const fadeUpVariant: Variants = {
 const About: React.FC = () => {
   return (
     <div className="about-page">
+      <Helmet>
+        <title>About Us &mdash; Built for the Lagos Hustle | Ralvo</title>
+        <meta name="description" content="Ralvo is Nigeria's premier volunteer matching and verification platform. We turn real gigs into verifiable proof to help young Nigerians build a track record employers trust." />
+        <link rel="canonical" href="https://www.ralvo.com.ng/about" />
+        <script type="application/ld+json">
+          {`
+            {
+              "@context": "https://schema.org",
+              "@type": "AboutPage",
+              "name": "About Ralvo",
+              "description": "Ralvo is Nigeria's premier volunteer matching and verification platform.",
+              "url": "https://www.ralvo.com.ng/about"
+            }
+          `}
+        </script>
+      </Helmet>
       <header className="about-hero">
         <motion.div 
           className="wrap"

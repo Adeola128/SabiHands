@@ -64,7 +64,7 @@ serve(async (req: Request) => {
       : '<span class="chip-rejected">Rejected</span>';
 
     const reviewMessage = status === 'approved'
-      ? `<p>Excellent work! Your submission has been <strong>approved</strong> by the organization. You've earned another milestone as a Sabi Hand.</p>`
+      ? `<p>Excellent work! Your submission has been <strong>approved</strong> by the organization. You've earned another milestone as a verified volunteer.</p>`
       : `<p>Your submission was not approved by the organization. Please check their feedback and revise your submission if needed.</p>`;
 
     const bodyText = `
@@ -80,7 +80,7 @@ serve(async (req: Request) => {
       ${reviewMessage}
       
       <div class="button-wrap">
-        <a href="https://Ralvo.vercel.app/dashboard/volunteer/my-gigs" class="button">View Submission details</a>
+        <a href="https://www.ralvo.com.ng/dashboard/volunteer/my-gigs" class="button">View Submission details</a>
       </div>
     `;
 

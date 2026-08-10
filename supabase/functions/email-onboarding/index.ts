@@ -65,12 +65,12 @@ serve(async (req: Request) => {
         <p>Hi ${name},</p>
         <p>We noticed you haven't completed your volunteer profile on Ralvo yet.</p>
         <p>Complete your profile to unlock the best gigs. NGOs and companies are looking for real hands like you. Adding your interests and a short bio helps us match you with opportunities you'll actually care about.</p>
-        <a href="https://Ralvo.com/dashboard/volunteer/settings" class="button">Complete Profile</a>
+        <a href="https://www.ralvo.com.ng/dashboard/volunteer/settings" class="button">Complete Profile</a>
       `;
 
       const htmlContent = buildEmailTemplate(
         "Complete Your Profile",
-        "We need your details, Sabi Hand!",
+        "We need your details, verified volunteer!",
         bodyText
       );
 

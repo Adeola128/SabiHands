@@ -1,4 +1,5 @@
 import React from 'react';
+import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
@@ -16,6 +17,11 @@ const fadeUpVariant: Variants = {
 const ForOrganizations: React.FC = () => {
   return (
     <div className="role-page org-theme">
+      <Helmet>
+        <title>For NGOs &amp; Companies &mdash; Find Verified Volunteers in Nigeria | Ralvo</title>
+        <meta name="description" content="Post a gig and find verified local talent instantly. Stop managing volunteers through messy WhatsApp groups. Let Ralvo handle the certificates automatically." />
+        <link rel="canonical" href="https://www.ralvo.com.ng/organizations" />
+      </Helmet>
       <header className="role-hero">
         <motion.div 
           className="wrap"

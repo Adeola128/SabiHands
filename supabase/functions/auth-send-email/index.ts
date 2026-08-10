@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { sendBrevoEmail } from "../_shared/brevo.ts";
+import { buildEmailTemplate } from "../_shared/emailTemplate.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -70,175 +71,55 @@ serve(async (req: Request) => {
 // ------------- TEMPLATES -------------
 
 function getSignupHtml(token: string) {
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-  body, table, td { -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
-  body { margin:0; padding:0; width:100% !important; background:#F3F1FA; }
-  a { text-decoration:none; }
-  @media screen and (max-width:600px){
-    .email-container{ width:100% !important; }
-    .stack-pad{ padding-left:24px !important; padding-right:24px !important; }
-    .h1{ font-size:24px !important; line-height:32px !important; }
-  }
-</style>
-</head>
-<body style="margin:0; padding:0; background:#F3F1FA;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F3F1FA;">
-<tr>
-<td align="center" style="padding:40px 16px;">
-<table role="presentation" class="email-container" width="600" cellpadding="0" cellspacing="0" style="width:600px; max-width:600px; background:#FFFFFF; border-radius:16px; overflow:hidden;">
-  <tr><td style="background:#534AB7; height:6px; line-height:6px; font-size:6px;">&nbsp;</td></tr>
-  <tr>
-    <td class="stack-pad" style="padding:36px 48px 0; text-align:left;">
-      <span style="font-family:Georgia,'Times New Roman',serif; font-size:20px; font-weight:bold;">
-        <span style="color:#534AB7;">Sabi</span><span style="color:#0F6E56;">Hands</span>
-      </span>
-    </td>
-  </tr>
-  <tr>
-    <td class="stack-pad" style="padding:32px 48px 0; text-align:left;">
-      <p style="margin:0 0 8px; font-family:Arial,Helvetica,sans-serif; font-size:12px; font-weight:bold; letter-spacing:1px; text-transform:uppercase; color:#534AB7;">Welcome</p>
-      <h1 class="h1" style="margin:0; font-family:Georgia,'Times New Roman',serif; font-size:30px; line-height:38px; font-weight:bold; color:#26215C;">Confirm your email.</h1>
-      <p style="margin:18px 0 0; font-family:Arial,Helvetica,sans-serif; font-size:15px; line-height:24px; color:#4A4770;">We are excited to have you join us. Show up. Get sabi. But first, you need to verify your email address to get full access to the platform.</p>
-    </td>
-  </tr>
-  <tr>
-    <td class="stack-pad" align="left" style="padding:28px 48px 0;">
-      <div style="background:#EEEDFE; padding:16px 24px; border-radius:8px; display:inline-block; font-family:Courier, monospace; font-size:28px; font-weight:bold; color:#26215C; letter-spacing:4px;">
-        ${token}
-      </div>
-      <p style="margin:16px 0 0; font-family:Arial,Helvetica,sans-serif; font-size:14px; color:#4A4770;">Enter this 6-digit code on the verification page.</p>
-    </td>
-  </tr>
-  <tr>
-    <td class="stack-pad" style="padding:24px 48px 36px; text-align:left; margin-top: 24px; display: block;">
-      <p style="margin:0; font-family:Arial,Helvetica,sans-serif; font-size:13px; line-height:20px; color:#8B87B0;">If you didn't request this, you can safely ignore this email.</p>
-    </td>
-  </tr>
-</table>
-</td>
-</tr>
-</table>
-</body>
-</html>`;
+  const bodyText = `
+    <p>We are excited to have you join us. Get verified experience. But first, you need to verify your email address to get full access to the platform.</p>
+    <div style="background:#EEEDFE; padding:16px 24px; border-radius:12px; display:inline-block; font-family:Courier, monospace; font-size:28px; font-weight:bold; color:#26215C; letter-spacing:4px; margin-top:24px;">
+      ${token}
+    </div>
+    <p style="font-size:14px; margin-top:12px;">Enter this 6-digit code on the verification page.</p>
+    <p style="font-size:13px; color:#8B87B0; margin-top:32px;">If you didn't request this, you can safely ignore this email.</p>
+  `;
+  return buildEmailTemplate(
+    "Confirm your email.",
+    "Confirm your email.",
+    bodyText,
+    "Welcome",
+    "#1D9E75"
+  );
 }
 
 function getMagicLinkHtml(token: string) {
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-  body, table, td { -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
-  body { margin:0; padding:0; width:100% !important; background:#F3F1FA; }
-  a { text-decoration:none; }
-  @media screen and (max-width:600px){
-    .email-container{ width:100% !important; }
-    .stack-pad{ padding-left:24px !important; padding-right:24px !important; }
-    .h1{ font-size:24px !important; line-height:32px !important; }
-  }
-</style>
-</head>
-<body style="margin:0; padding:0; background:#F3F1FA;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F3F1FA;">
-<tr>
-<td align="center" style="padding:40px 16px;">
-<table role="presentation" class="email-container" width="600" cellpadding="0" cellspacing="0" style="width:600px; max-width:600px; background:#FFFFFF; border-radius:16px; overflow:hidden;">
-  <tr><td style="background:#1D9E75; height:6px; line-height:6px; font-size:6px;">&nbsp;</td></tr>
-  <tr>
-    <td class="stack-pad" style="padding:36px 48px 0; text-align:left;">
-      <span style="font-family:Georgia,'Times New Roman',serif; font-size:20px; font-weight:bold;">
-        <span style="color:#534AB7;">Sabi</span><span style="color:#0F6E56;">Hands</span>
-      </span>
-    </td>
-  </tr>
-  <tr>
-    <td class="stack-pad" style="padding:32px 48px 0; text-align:left;">
-      <p style="margin:0 0 8px; font-family:Arial,Helvetica,sans-serif; font-size:12px; font-weight:bold; letter-spacing:1px; text-transform:uppercase; color:#1D9E75;">Login</p>
-      <h1 class="h1" style="margin:0; font-family:Georgia,'Times New Roman',serif; font-size:30px; line-height:38px; font-weight:bold; color:#26215C;">Sign in instantly.</h1>
-      <p style="margin:18px 0 0; font-family:Arial,Helvetica,sans-serif; font-size:15px; line-height:24px; color:#4A4770;">Ready to jump back in? Enter the code below to log in instantly. No passwords needed.</p>
-    </td>
-  </tr>
-  <tr>
-    <td class="stack-pad" align="left" style="padding:28px 48px 0;">
-      <div style="background:#EEEDFE; padding:16px 24px; border-radius:8px; display:inline-block; font-family:Courier, monospace; font-size:28px; font-weight:bold; color:#26215C; letter-spacing:4px;">
-        ${token}
-      </div>
-    </td>
-  </tr>
-  <tr>
-    <td class="stack-pad" style="padding:24px 48px 36px; text-align:left; margin-top: 24px; display: block;">
-      <p style="margin:0; font-family:Arial,Helvetica,sans-serif; font-size:13px; line-height:20px; color:#8B87B0;">If you didn't request this link, you can safely ignore this email.</p>
-    </td>
-  </tr>
-</table>
-</td>
-</tr>
-</table>
-</body>
-</html>`;
+  const bodyText = `
+    <p>Ready to jump back in? Enter the code below to log in instantly. No passwords needed.</p>
+    <div style="background:#EEEDFE; padding:16px 24px; border-radius:12px; display:inline-block; font-family:Courier, monospace; font-size:28px; font-weight:bold; color:#26215C; letter-spacing:4px; margin-top:24px;">
+      ${token}
+    </div>
+    <p style="font-size:13px; color:#8B87B0; margin-top:32px;">If you didn't request this link, you can safely ignore this email.</p>
+  `;
+  return buildEmailTemplate(
+    "Sign in instantly.",
+    "Sign in instantly.",
+    bodyText,
+    "Login",
+    "#26215C"
+  );
 }
 
 function getResetPasswordHtml(token: string) {
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-  body, table, td { -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
-  body { margin:0; padding:0; width:100% !important; background:#F3F1FA; }
-  a { text-decoration:none; }
-  @media screen and (max-width:600px){
-    .email-container{ width:100% !important; }
-    .stack-pad{ padding-left:24px !important; padding-right:24px !important; }
-    .h1{ font-size:24px !important; line-height:32px !important; }
-  }
-</style>
-</head>
-<body style="margin:0; padding:0; background:#F3F1FA;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F3F1FA;">
-<tr>
-<td align="center" style="padding:40px 16px;">
-<table role="presentation" class="email-container" width="600" cellpadding="0" cellspacing="0" style="width:600px; max-width:600px; background:#FFFFFF; border-radius:16px; overflow:hidden;">
-  <tr><td style="background:#534AB7; height:6px; line-height:6px; font-size:6px;">&nbsp;</td></tr>
-  <tr>
-    <td class="stack-pad" style="padding:36px 48px 0; text-align:left;">
-      <span style="font-family:Georgia,'Times New Roman',serif; font-size:20px; font-weight:bold;">
-        <span style="color:#534AB7;">Sabi</span><span style="color:#0F6E56;">Hands</span>
-      </span>
-    </td>
-  </tr>
-  <tr>
-    <td class="stack-pad" style="padding:32px 48px 0; text-align:left;">
-      <p style="margin:0 0 8px; font-family:Arial,Helvetica,sans-serif; font-size:12px; font-weight:bold; letter-spacing:1px; text-transform:uppercase; color:#534AB7;">Security</p>
-      <h1 class="h1" style="margin:0; font-family:Georgia,'Times New Roman',serif; font-size:30px; line-height:38px; font-weight:bold; color:#26215C;">Reset your password.</h1>
-      <p style="margin:18px 0 0; font-family:Arial,Helvetica,sans-serif; font-size:15px; line-height:24px; color:#4A4770;">Forgot your password? No wahala. Enter the code below to securely set a new password and get back to finding gigs.</p>
-    </td>
-  </tr>
-  <tr>
-    <td class="stack-pad" align="left" style="padding:28px 48px 0;">
-      <div style="background:#EEEDFE; padding:16px 24px; border-radius:8px; display:inline-block; font-family:Courier, monospace; font-size:28px; font-weight:bold; color:#26215C; letter-spacing:4px;">
-        ${token}
-      </div>
-    </td>
-  </tr>
-  <tr>
-    <td class="stack-pad" style="padding:24px 48px 36px; text-align:left; margin-top: 24px; display: block;">
-      <p style="margin:0; font-family:Arial,Helvetica,sans-serif; font-size:13px; line-height:20px; color:#8B87B0;">If you didn't ask to reset your password, you can safely ignore this email.</p>
-    </td>
-  </tr>
-</table>
-</td>
-</tr>
-</table>
-</body>
-</html>`;
+  const bodyText = `
+    <p>Forgot your password? No problem. Enter the code below to securely set a new password and get back to finding gigs.</p>
+    <div style="background:#EEEDFE; padding:16px 24px; border-radius:12px; display:inline-block; font-family:Courier, monospace; font-size:28px; font-weight:bold; color:#26215C; letter-spacing:4px; margin-top:24px;">
+      ${token}
+    </div>
+    <p style="font-size:13px; color:#8B87B0; margin-top:32px;">If you didn't ask to reset your password, you can safely ignore this email.</p>
+  `;
+  return buildEmailTemplate(
+    "Reset your password.",
+    "Reset your password.",
+    bodyText,
+    "Security",
+    "#E53E3E"
+  );
 }
 
 function getFallbackHtml(token: string, actionType: string) {
