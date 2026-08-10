@@ -90,7 +90,19 @@ const Signup: React.FC = () => {
     } catch (err: any) {
       console.error("Full signup error:", err);
       if (err.message === 'User already registered') {
-        setError('This email is already registered. Please log in instead.');
+        // Attempt to resend verification to see if they are unverified
+        const { error: resendError } = await supabase.auth.resend({
+          type: 'signup',
+          email,
+        });
+
+        if (!resendError) {
+          // If no error, they were unverified and a new code was sent
+          navigate('/verify-contact', { state: { email, role } });
+        } else {
+          // Likely already verified or another error
+          setError('This email is already registered and verified. Please log in instead.');
+        }
       } else {
         setError(err.message || 'An unexpected error occurred during sign up.');
       }

@@ -6,6 +6,8 @@ import './Login.css';
 const VerifyContact: React.FC = () => {
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendMessage, setResendMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -13,7 +15,25 @@ const VerifyContact: React.FC = () => {
   const email = location.state?.email;
   const role = location.state?.role || 'volunteer';
 
-
+  const handleResend = async () => {
+    if (!email) return;
+    setResendLoading(true);
+    setResendMessage(null);
+    setError(null);
+    
+    try {
+      const { error: resendErr } = await supabase.auth.resend({
+        type: 'signup',
+        email,
+      });
+      if (resendErr) throw resendErr;
+      setResendMessage("Verification code resent successfully!");
+    } catch (err: any) {
+      setError(err.message || 'Failed to resend code. Please try again.');
+    } finally {
+      setResendLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,8 +129,17 @@ const VerifyContact: React.FC = () => {
               {loading ? 'Verifying...' : 'Verify & Continue'}
             </button>
             <div className="foot-note" style={{ marginTop: '16px' }}>
-              Didn't receive the code? <button type="button" onClick={() => navigate('/signup')} style={{ background: 'none', border: 'none', color: 'var(--purple-600)', fontWeight: 600, cursor: 'pointer' }}>Go back to Sign Up</button>
+              Didn't receive the code?{' '}
+              <button 
+                type="button" 
+                onClick={handleResend}
+                disabled={resendLoading}
+                style={{ background: 'none', border: 'none', color: 'var(--purple-600)', fontWeight: 600, cursor: 'pointer' }}
+              >
+                {resendLoading ? 'Resending...' : 'Resend Code'}
+              </button>
             </div>
+            {resendMessage && <div style={{ color: 'var(--teal-600)', fontSize: '13px', marginTop: '8px', textAlign: 'center', fontWeight: 500 }}>{resendMessage}</div>}
           </form>
 
         </div>
