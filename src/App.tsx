@@ -61,6 +61,7 @@ import PublicVolunteerProfile from './pages/public/PublicVolunteerProfile';
 import PublicOrganizationProfile from './pages/public/PublicOrganizationProfile';
 import PublicGigDetail from './pages/public/PublicGigDetail';
 
+import AdminLogin from './pages/auth/AdminLogin';
 import AdminLayout from './layouts/AdminLayout';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import OrgVerificationQueue from './pages/admin/OrgVerificationQueue';
@@ -153,7 +154,8 @@ const App: React.FC = () => {
         </Route>
 
         {/* Dashboard Routes - Internal Admin */}
-        <Route path="/admin" element={<AdminLayout />}>
+        <Route path="/hq-login" element={<AdminLogin />} />
+        <Route path="/hq" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
           <Route path="org-verification" element={<OrgVerificationQueue />} />
           <Route path="users" element={<UserManagement />} />
