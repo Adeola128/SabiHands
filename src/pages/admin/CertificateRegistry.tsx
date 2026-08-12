@@ -14,7 +14,7 @@ const CertificateRegistry: React.FC = () => {
   const fetchCertificates = async () => {
     try {
       const [certsRes, profilesRes, gigsRes, orgsRes] = await Promise.all([
-        supabase.from('certificates').select('*').order('created_at', { ascending: false }),
+        supabase.from('certificates').select('*').order('issued_at', { ascending: false }),
         supabase.from('volunteer_profiles').select('user_id, full_name'),
         supabase.from('gigs').select('id, title, organization_id'),
         supabase.from('organizations').select('id, name')
@@ -86,7 +86,7 @@ const CertificateRegistry: React.FC = () => {
                 const volName = cert.users?.volunteer_profiles?.[0]?.full_name || 'Unknown Volunteer';
                 const orgName = cert.gigs?.organizations?.name || 'Unknown Organization';
                 const gigTitle = cert.gigs?.title || 'Unknown Gig';
-                const date = new Date(cert.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                const date = new Date(cert.issued_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
                 return (
                   <tr key={cert.id}>
