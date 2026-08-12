@@ -6,11 +6,11 @@ import './AdminLayout.css';
 const AdminLayout: React.FC = () => {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { user, profile, loading } = useAuth();
+  const { user, role, loading } = useAuth();
 
   if (loading) return <div>Loading admin portal...</div>;
   if (!user) return <Navigate to="/login" replace />;
-  if (profile?.role !== 'admin') return <Navigate to="/dashboard" replace />;
+  if (role !== 'admin') return <Navigate to="/dashboard" replace />;
 
   const navItems = [
     { path: '/admin', label: 'Dashboard', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg> },
