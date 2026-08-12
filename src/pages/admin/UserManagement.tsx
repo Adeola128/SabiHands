@@ -89,8 +89,8 @@ const UserManagement: React.FC = () => {
             organizations: (orgsRes.data || []).filter(o => o.user_id === u.id)
           }));
 
-          setVolunteers(mergedData.filter(u => u.role === 'volunteer'));
-          setOrganizations(mergedData.filter(u => u.role === 'organization'));
+          setVolunteers(mergedData.filter(u => u.role === 'volunteer' || (u.volunteer_profiles.length > 0 && u.organizations.length === 0)));
+          setOrganizations(mergedData.filter(u => u.role === 'organization' || u.organizations.length > 0));
           setAdmins(mergedData.filter(u => u.role === 'admin'));
         }
       } catch (err: any) {

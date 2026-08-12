@@ -18,26 +18,29 @@ const OrgVerificationQueue: React.FC = () => {
   useEffect(() => {
     const fetchOrgs = async () => {
       try {
-        const { data: usersData, error: usersErr } = await supabase
-          .from('users')
-          .select('id, email, role, created_at')
-          .eq('role', 'organization')
-          .order('created_at', { ascending: false });
-        
-        if (usersErr) throw usersErr;
-
-        const { data: orgsData } = await supabase
+        const { data: orgsData, error: orgsErr } = await supabase
           .from('organizations')
-          .select('user_id, name, verification_status, rejection_reason');
+          .select(`
+            user_id, name, verification_status, rejection_reason,
+            users ( id, email, created_at )
+          `);
 
-        if (usersData && orgsData) {
-          const merged = usersData.map(u => {
-            const orgProfile = orgsData.find(o => o.user_id === u.id);
+        if (orgsErr) throw orgsErr;
+
+        if (orgsData) {
+          const merged = orgsData.map((o: any) => {
+            const user = Array.isArray(o.users) ? o.users[0] : o.users;
             return {
-              ...u,
-              organizations: orgProfile ? [orgProfile] : []
+              id: o.user_id,
+              email: user?.email || 'No email',
+              created_at: user?.created_at || new Date().toISOString(),
+              organizations: [o]
             };
           });
+          
+          // Sort by created_at descending
+          merged.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+          
           setOrganizations(merged);
         }
       } catch (err: any) {
