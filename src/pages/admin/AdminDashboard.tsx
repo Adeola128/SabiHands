@@ -24,17 +24,20 @@ const AdminDashboard: React.FC = () => {
       });
 
       // Fetch recent signups
-      const { data: recent } = await supabase
-        .from('users')
-        .select(`
-          id, email, role, created_at,
-          volunteer_profiles(full_name),
-          organizations(name, verification_status)
-        `)
-        .order('created_at', { ascending: false })
-        .limit(5);
-        
-      if (recent) setRecentUsers(recent);
+      const [recentUsersRes, profilesRes, orgsRes] = await Promise.all([
+        supabase.from('users').select('id, email, role, created_at').order('created_at', { ascending: false }).limit(5),
+        supabase.from('volunteer_profiles').select('user_id, full_name'),
+        supabase.from('organizations').select('user_id, name, verification_status')
+      ]);
+
+      if (recentUsersRes.data) {
+        const mergedData = recentUsersRes.data.map(u => ({
+          ...u,
+          volunteer_profiles: (profilesRes.data || []).filter(p => p.user_id === u.id),
+          organizations: (orgsRes.data || []).filter(o => o.user_id === u.id)
+        }));
+        setRecentUsers(mergedData);
+      }
 
       // Generate Last 7 Days Chart Data
       const sevenDaysAgo = subDays(new Date(), 6); // 6 days ago + today = 7 days
