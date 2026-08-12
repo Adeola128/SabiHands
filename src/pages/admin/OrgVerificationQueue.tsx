@@ -49,7 +49,10 @@ const OrgVerificationQueue: React.FC = () => {
     fetchOrgs();
   }, []);
 
-  const pendingOrgs = organizations.filter(o => o.organizations?.[0]?.verification_status === 'pending');
+  const pendingOrgs = organizations.filter(o => {
+    const status = o.organizations?.[0]?.verification_status;
+    return !status || status === 'pending';
+  });
   const reviewedOrgs = organizations.filter(o => o.organizations?.[0]?.verification_status !== 'pending' && o.organizations?.[0]?.verification_status);
 
   const openReviewModal = async (org: any) => {
@@ -151,7 +154,7 @@ const OrgVerificationQueue: React.FC = () => {
             <tbody>
               {displayOrgs.map(org => {
                 const name = org.organizations?.[0]?.name || 'Unknown Organization';
-                const status = org.organizations?.[0]?.verification_status;
+                const status = org.organizations?.[0]?.verification_status || 'pending';
                 return (
                   <tr key={org.id}>
                     <td>
@@ -223,7 +226,7 @@ const OrgVerificationQueue: React.FC = () => {
               <p style={{ color: '#64748B', fontStyle: 'italic', marginBottom: '24px' }}>No documents uploaded yet.</p>
             )}
 
-            {reviewOrg.organizations?.[0]?.verification_status === 'pending' && (
+            {(!reviewOrg.organizations?.[0]?.verification_status || reviewOrg.organizations?.[0]?.verification_status === 'pending') && (
               <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '24px', display: 'flex', gap: '12px', flexDirection: 'column' }}>
                 {!showRejectForm ? (
                   <div style={{ display: 'flex', gap: '12px' }}>
