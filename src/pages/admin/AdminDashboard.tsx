@@ -1,23 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import LoadingScreen from '../../components/LoadingScreen';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, subDays, format, isAfter } from 'date-fns';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-
-// Mock data for the chart - in a real app, this would be fetched from Supabase grouping by date
-const mockChartData = [
-  { name: 'Mon', users: 4, gigs: 1 },
-  { name: 'Tue', users: 7, gigs: 2 },
-  { name: 'Wed', users: 5, gigs: 4 },
-  { name: 'Thu', users: 12, gigs: 3 },
-  { name: 'Fri', users: 18, gigs: 7 },
-  { name: 'Sat', users: 24, gigs: 5 },
-  { name: 'Sun', users: 31, gigs: 8 },
-];
 
 const AdminDashboard: React.FC = () => {
   const [stats, setStats] = useState({ users: 0, gigs: 0, certs: 0 });
   const [recentUsers, setRecentUsers] = useState<any[]>([]);
+  const [chartData, setChartData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -46,6 +36,44 @@ const AdminDashboard: React.FC = () => {
         
       if (recent) setRecentUsers(recent);
 
+      // Generate Last 7 Days Chart Data
+      const sevenDaysAgo = subDays(new Date(), 6); // 6 days ago + today = 7 days
+      
+      const { data: recentUsersForChart } = await supabase
+        .from('users')
+        .select('created_at')
+        .gte('created_at', sevenDaysAgo.toISOString());
+        
+      const { data: recentGigsForChart } = await supabase
+        .from('gigs')
+        .select('created_at')
+        .gte('created_at', sevenDaysAgo.toISOString());
+
+      // Initialize empty array for the last 7 days
+      const daysData: Record<string, { name: string, users: number, gigs: number }> = {};
+      for (let i = 6; i >= 0; i--) {
+        const d = subDays(new Date(), i);
+        const dayStr = format(d, 'MMM dd');
+        daysData[dayStr] = { name: dayStr, users: 0, gigs: 0 };
+      }
+
+      // Group users
+      if (recentUsersForChart) {
+        recentUsersForChart.forEach(u => {
+          const dayStr = format(new Date(u.created_at), 'MMM dd');
+          if (daysData[dayStr]) daysData[dayStr].users += 1;
+        });
+      }
+
+      // Group gigs
+      if (recentGigsForChart) {
+        recentGigsForChart.forEach(g => {
+          const dayStr = format(new Date(g.created_at), 'MMM dd');
+          if (daysData[dayStr]) daysData[dayStr].gigs += 1;
+        });
+      }
+
+      setChartData(Object.values(daysData));
       setLoading(false);
     };
 
@@ -75,7 +103,7 @@ const AdminDashboard: React.FC = () => {
         <h3 style={{ margin: '0 0 20px 0', fontSize: '16px', fontWeight: 600, color: '#0F172A' }}>Growth Overview</h3>
         <div style={{ width: '100%', height: 300 }}>
           <ResponsiveContainer>
-            <LineChart data={mockChartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+            <LineChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
               <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748B', fontSize: 12 }} dy={10} />
               <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748B', fontSize: 12 }} />
