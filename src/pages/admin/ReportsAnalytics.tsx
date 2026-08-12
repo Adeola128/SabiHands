@@ -76,7 +76,7 @@ const ReportsAnalytics: React.FC = () => {
                   dataKey="value"
                   label
                 >
-                  {gigCategoryData.map((entry, index) => (
+                  {gigCategoryData.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
