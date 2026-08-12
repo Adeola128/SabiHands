@@ -2,6 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import LoadingScreen from '../../components/LoadingScreen';
 import { formatDistanceToNow } from 'date-fns';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
+// Mock data for the chart - in a real app, this would be fetched from Supabase grouping by date
+const mockChartData = [
+  { name: 'Mon', users: 4, gigs: 1 },
+  { name: 'Tue', users: 7, gigs: 2 },
+  { name: 'Wed', users: 5, gigs: 4 },
+  { name: 'Thu', users: 12, gigs: 3 },
+  { name: 'Fri', users: 18, gigs: 7 },
+  { name: 'Sat', users: 24, gigs: 5 },
+  { name: 'Sun', users: 31, gigs: 8 },
+];
 
 const AdminDashboard: React.FC = () => {
   const [stats, setStats] = useState({ users: 0, gigs: 0, certs: 0 });
@@ -55,6 +67,25 @@ const AdminDashboard: React.FC = () => {
             <option>Last 30 Days</option>
             <option>Last 7 Days</option>
           </select>
+        </div>
+      </div>
+
+      {/* Chart Section */}
+      <div className="admin-card" style={{ marginBottom: '32px', padding: '24px' }}>
+        <h3 style={{ margin: '0 0 20px 0', fontSize: '16px', fontWeight: 600, color: '#0F172A' }}>Growth Overview</h3>
+        <div style={{ width: '100%', height: 300 }}>
+          <ResponsiveContainer>
+            <LineChart data={mockChartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748B', fontSize: 12 }} dy={10} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748B', fontSize: 12 }} />
+              <Tooltip 
+                contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)' }}
+              />
+              <Line type="monotone" dataKey="users" stroke="#3B82F6" strokeWidth={3} dot={{ r: 4, fill: '#3B82F6', strokeWidth: 0 }} activeDot={{ r: 6 }} name="New Users" />
+              <Line type="monotone" dataKey="gigs" stroke="#F59E0B" strokeWidth={3} dot={{ r: 4, fill: '#F59E0B', strokeWidth: 0 }} activeDot={{ r: 6 }} name="New Gigs" />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
       </div>
 
