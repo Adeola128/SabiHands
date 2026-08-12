@@ -1,11 +1,45 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { supabase } from '../../lib/supabase';
+import LoadingScreen from '../../components/LoadingScreen';
 
 const CertificateRegistry: React.FC = () => {
-  const certificates = [
-    { id: 'SH-8241', volunteer: 'Adeola Okonkwo', org: 'CodeLagos NGO', gig: 'Tech For Kids Mentorship', date: 'July 10, 2026', hours: 4 },
-    { id: 'SH-6022', volunteer: 'Adeola Okonkwo', org: 'Lagos Food Bank', gig: 'Food Drive Packaging', date: 'March 5, 2026', hours: 5 },
-    { id: 'SH-5921', volunteer: 'Chidi Okeke', org: 'Tech for Good Nigeria', gig: 'Website Audit', date: 'Feb 28, 2026', hours: 12 },
-  ];
+  const [certificates, setCertificates] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchCertificates();
+  }, []);
+
+  const fetchCertificates = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('certificates')
+        .select(`
+          id, verification_code, created_at,
+          users!certificates_volunteer_id_fkey (
+            volunteer_profiles(full_name)
+          ),
+          gigs (
+            title,
+            organizations(name)
+          )
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      if (data) {
+        setCertificates(data);
+      }
+    } catch (err: any) {
+      console.error("Error fetching certificates:", err);
+      setError(err.message || 'Failed to load certificates');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) return <LoadingScreen message="Loading certificates..." />;
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
@@ -23,6 +57,12 @@ const CertificateRegistry: React.FC = () => {
         </div>
       </div>
 
+      {error && (
+        <div style={{ padding: '16px', backgroundColor: '#FEE2E2', border: '1px solid #DC2626', color: '#DC2626', borderRadius: '8px', marginBottom: '24px', fontWeight: 500 }}>
+          Error: {error}
+        </div>
+      )}
+
       <div className="admin-card" style={{ padding: 0, overflow: 'hidden' }}>
         <div className="admin-table-container">
           <table className="admin-table">
@@ -37,36 +77,50 @@ const CertificateRegistry: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {certificates.map(cert => (
-                <tr key={cert.id}>
-                  <td>
-                    <div style={{ fontWeight: 700, color: '#3B82F6', fontSize: '14px', fontFamily: 'monospace', letterSpacing: '0.05em' }}>
-                      {cert.id}
-                    </div>
-                  </td>
-                  <td>
-                    <div style={{ fontWeight: 600, color: '#0F172A', fontSize: '14px' }}>{cert.volunteer}</div>
-                  </td>
-                  <td>
-                    <div style={{ fontWeight: 600, color: '#334155', fontSize: '14px' }}>{cert.org}</div>
-                    <div style={{ fontSize: '13px', color: '#64748B', marginTop: '4px' }}>{cert.gig}</div>
-                  </td>
-                  <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', fontWeight: 600, color: '#10B981' }}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                      {cert.hours} hrs
-                    </div>
-                  </td>
-                  <td>
-                    <div style={{ fontSize: '14px', color: '#64748B' }}>{cert.date}</div>
-                  </td>
+              {certificates.map(cert => {
+                const volName = cert.users?.volunteer_profiles?.[0]?.full_name || 'Unknown Volunteer';
+                const orgName = cert.gigs?.organizations?.name || 'Unknown Organization';
+                const gigTitle = cert.gigs?.title || 'Unknown Gig';
+                const date = new Date(cert.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+
+                return (
+                  <tr key={cert.id}>
+                    <td>
+                      <div style={{ fontWeight: 700, color: '#3B82F6', fontSize: '14px', fontFamily: 'monospace', letterSpacing: '0.05em' }}>
+                        {cert.verification_code}
+                      </div>
+                    </td>
+                    <td>
+                      <div style={{ fontWeight: 600, color: '#0F172A', fontSize: '14px' }}>{volName}</div>
+                    </td>
+                    <td>
+                      <div style={{ fontWeight: 600, color: '#334155', fontSize: '14px' }}>{orgName}</div>
+                      <div style={{ fontSize: '13px', color: '#64748B', marginTop: '4px' }}>{gigTitle}</div>
+                    </td>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', fontWeight: 600, color: '#10B981' }}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        -- hrs
+                      </div>
+                    </td>
+                    <td>
+                      <div style={{ fontSize: '14px', color: '#64748B' }}>{date}</div>
+                    </td>
                   <td style={{ textAlign: 'right' }}>
                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
                       <button style={{ background: 'none', border: 'none', color: '#3B82F6', fontWeight: 600, cursor: 'pointer' }}>View Ledger</button>
                     </div>
                   </td>
+                  </tr>
+                );
+              })}
+              {certificates.length === 0 && (
+                <tr>
+                  <td colSpan={6} style={{ textAlign: 'center', padding: '48px', color: '#64748B' }}>
+                    No certificates have been issued yet.
+                  </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

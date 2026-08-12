@@ -68,7 +68,6 @@ import OrgVerificationQueue from './pages/admin/OrgVerificationQueue';
 import UserManagement from './pages/admin/UserManagement';
 import GigModeration from './pages/admin/GigModeration';
 import CertificateRegistry from './pages/admin/CertificateRegistry';
-import BillingAdmin from './pages/admin/BillingAdmin';
 import SponsoredPlacement from './pages/admin/SponsoredPlacement';
 import SupportDisputes from './pages/admin/SupportDisputes';
 import ReportsAnalytics from './pages/admin/ReportsAnalytics';
@@ -161,7 +160,6 @@ const App: React.FC = () => {
           <Route path="users" element={<UserManagement />} />
           <Route path="gig-moderation" element={<GigModeration />} />
           <Route path="certificates" element={<CertificateRegistry />} />
-          <Route path="billing" element={<BillingAdmin />} />
           <Route path="sponsored" element={<SponsoredPlacement />} />
           <Route path="support" element={<SupportDisputes />} />
           <Route path="reports" element={<ReportsAnalytics />} />

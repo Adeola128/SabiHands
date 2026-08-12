@@ -9,24 +9,33 @@ const UserManagement: React.FC = () => {
   const [organizations, setOrganizations] = useState<any[]>([]);
   const [admins, setAdmins] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const { data } = await supabase
-        .from('users')
-        .select(`
-          id, email, role, created_at,
-          volunteer_profiles(full_name),
-          organizations(name, verification_status)
-        `)
-        .order('created_at', { ascending: false });
+      try {
+        const { data, error: fetchError } = await supabase
+          .from('users')
+          .select(`
+            id, email, role, created_at,
+            volunteer_profiles(full_name),
+            organizations(name, verification_status)
+          `)
+          .order('created_at', { ascending: false });
 
-      if (data) {
-        setVolunteers(data.filter(u => u.role === 'volunteer'));
-        setOrganizations(data.filter(u => u.role === 'organization'));
-        setAdmins(data.filter(u => u.role === 'admin'));
+        if (fetchError) throw fetchError;
+
+        if (data) {
+          setVolunteers(data.filter(u => u.role === 'volunteer'));
+          setOrganizations(data.filter(u => u.role === 'organization'));
+          setAdmins(data.filter(u => u.role === 'admin'));
+        }
+      } catch (err: any) {
+        console.error("Error fetching users:", err);
+        setError(err.message || 'Failed to load users. Ensure you have admin privileges and RLS policies allow access.');
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
     fetchUsers();
   }, []);
@@ -48,6 +57,12 @@ const UserManagement: React.FC = () => {
           <button style={{ padding: '8px 16px', backgroundColor: '#3B82F6', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>+ Add User</button>
         </div>
       </div>
+
+      {error && (
+        <div style={{ padding: '16px', backgroundColor: '#FEE2E2', border: '1px solid #DC2626', color: '#DC2626', borderRadius: '8px', marginBottom: '24px', fontWeight: 500 }}>
+          Error: {error}
+        </div>
+      )}
 
       <div className="admin-card" style={{ padding: 0, overflow: 'hidden' }}>
         {/* Tabs */}
