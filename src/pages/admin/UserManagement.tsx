@@ -11,6 +11,27 @@ const UserManagement: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const handleVerification = async (orgUserId: string, newStatus: 'verified' | 'rejected') => {
+    try {
+      const { error } = await supabase
+        .from('organizations')
+        .update({ verification_status: newStatus })
+        .eq('user_id', orgUserId);
+
+      if (error) throw error;
+
+      setOrganizations(prev => prev.map(org => {
+        if (org.id === orgUserId) {
+          const updatedOrgs = (org.organizations || []).map((o: any) => ({ ...o, verification_status: newStatus }));
+          return { ...org, organizations: updatedOrgs };
+        }
+        return org;
+      }));
+    } catch (err: any) {
+      alert("Failed to update status: " + err.message);
+    }
+  };
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -138,7 +159,14 @@ const UserManagement: React.FC = () => {
                       </span>
                     </td>
                     <td style={{ textAlign: 'right' }}>
-                      <button style={{ background: 'none', border: 'none', color: '#3B82F6', fontWeight: 600, cursor: 'pointer' }}>View</button>
+                      {status === 'pending' ? (
+                        <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                          <button onClick={() => handleVerification(org.id, 'rejected')} style={{ padding: '6px 12px', backgroundColor: '#FEE2E2', color: '#DC2626', border: 'none', borderRadius: '6px', fontWeight: 600, fontSize: '12px', cursor: 'pointer' }}>Reject</button>
+                          <button onClick={() => handleVerification(org.id, 'verified')} style={{ padding: '6px 12px', backgroundColor: '#ECFCCB', color: '#4D7C0F', border: 'none', borderRadius: '6px', fontWeight: 600, fontSize: '12px', cursor: 'pointer' }}>Approve</button>
+                        </div>
+                      ) : (
+                        <button style={{ background: 'none', border: 'none', color: '#3B82F6', fontWeight: 600, cursor: 'pointer' }}>View</button>
+                      )}
                     </td>
                   </tr>
                 );

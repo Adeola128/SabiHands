@@ -204,7 +204,7 @@ const AdminDashboard: React.FC = () => {
               <div>
                 <div style={{ fontWeight: 600, color: '#0F172A', fontSize: '14px', marginBottom: '4px' }}>Org Verifications</div>
                 <div style={{ fontSize: '13px', color: '#64748B', marginBottom: '8px' }}>Pending document reviews</div>
-                <button style={{ background: '#F1F5F9', border: 'none', padding: '6px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, color: '#334155', cursor: 'pointer' }}>Review Queue</button>
+                <button onClick={() => window.location.href = '/hq/users'} style={{ background: '#F1F5F9', border: 'none', padding: '6px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, color: '#334155', cursor: 'pointer' }}>Review Queue</button>
               </div>
             </div>
           </div>
