@@ -14,21 +14,24 @@ const UserManagement: React.FC = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const { data, error: fetchError } = await supabase
-          .from('users')
-          .select(`
-            id, email, role, created_at,
-            volunteer_profiles(full_name),
-            organizations(name, verification_status)
-          `)
-          .order('created_at', { ascending: false });
+        const [usersRes, profilesRes, orgsRes] = await Promise.all([
+          supabase.from('users').select('id, email, role, created_at').order('created_at', { ascending: false }),
+          supabase.from('volunteer_profiles').select('user_id, full_name'),
+          supabase.from('organizations').select('user_id, name, verification_status')
+        ]);
 
-        if (fetchError) throw fetchError;
+        if (usersRes.error) throw usersRes.error;
 
-        if (data) {
-          setVolunteers(data.filter(u => u.role === 'volunteer'));
-          setOrganizations(data.filter(u => u.role === 'organization'));
-          setAdmins(data.filter(u => u.role === 'admin'));
+        if (usersRes.data) {
+          const mergedData = usersRes.data.map(u => ({
+            ...u,
+            volunteer_profiles: (profilesRes.data || []).filter(p => p.user_id === u.id),
+            organizations: (orgsRes.data || []).filter(o => o.user_id === u.id)
+          }));
+
+          setVolunteers(mergedData.filter(u => u.role === 'volunteer'));
+          setOrganizations(mergedData.filter(u => u.role === 'organization'));
+          setAdmins(mergedData.filter(u => u.role === 'admin'));
         }
       } catch (err: any) {
         console.error("Error fetching users:", err);

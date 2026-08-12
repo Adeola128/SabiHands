@@ -13,17 +13,22 @@ const GigModeration: React.FC = () => {
 
   const fetchGigs = async () => {
     try {
-      const { data, error } = await supabase
-        .from('gigs')
-        .select(`
-          id, title, status, created_at,
-          organizations(name)
-        `)
-        .order('created_at', { ascending: false });
+      const [gigsRes, orgsRes] = await Promise.all([
+        supabase.from('gigs').select('id, title, status, created_at, organization_id').order('created_at', { ascending: false }),
+        supabase.from('organizations').select('id, name')
+      ]);
 
-      if (error) throw error;
-      if (data) {
-        setGigs(data);
+      if (gigsRes.error) throw gigsRes.error;
+
+      if (gigsRes.data) {
+        const mergedData = gigsRes.data.map(gig => {
+          const org = (orgsRes.data || []).find(o => o.id === gig.organization_id);
+          return {
+            ...gig,
+            organizations: { name: org?.name }
+          };
+        });
+        setGigs(mergedData);
       }
     } catch (err: any) {
       console.error("Error fetching gigs:", err);

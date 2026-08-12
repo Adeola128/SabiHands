@@ -13,23 +13,29 @@ const CertificateRegistry: React.FC = () => {
 
   const fetchCertificates = async () => {
     try {
-      const { data, error } = await supabase
-        .from('certificates')
-        .select(`
-          id, verification_code, created_at,
-          users!certificates_volunteer_id_fkey (
-            volunteer_profiles(full_name)
-          ),
-          gigs (
-            title,
-            organizations(name)
-          )
-        `)
-        .order('created_at', { ascending: false });
+      const [certsRes, usersRes, profilesRes, gigsRes, orgsRes] = await Promise.all([
+        supabase.from('certificates').select('*').order('created_at', { ascending: false }),
+        supabase.from('users').select('id'),
+        supabase.from('volunteer_profiles').select('user_id, full_name'),
+        supabase.from('gigs').select('id, title, organization_id'),
+        supabase.from('organizations').select('id, name')
+      ]);
 
-      if (error) throw error;
-      if (data) {
-        setCertificates(data);
+      if (certsRes.error) throw certsRes.error;
+
+      if (certsRes.data) {
+        const mergedData = certsRes.data.map(cert => {
+          const profile = (profilesRes.data || []).find(p => p.user_id === cert.volunteer_id);
+          const gig = (gigsRes.data || []).find(g => g.id === cert.gig_id);
+          const org = (orgsRes.data || []).find(o => o.id === gig?.organization_id);
+
+          return {
+            ...cert,
+            users: { volunteer_profiles: [profile] },
+            gigs: { title: gig?.title, organizations: { name: org?.name } }
+          };
+        });
+        setCertificates(mergedData);
       }
     } catch (err: any) {
       console.error("Error fetching certificates:", err);
