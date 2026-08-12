@@ -11,22 +11,61 @@ const UserManagement: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const handleVerification = async (orgUserId: string, newStatus: 'verified' | 'rejected') => {
+  // Review Modal State
+  const [reviewOrg, setReviewOrg] = useState<any | null>(null);
+  const [orgDocs, setOrgDocs] = useState<any[]>([]);
+  const [loadingDocs, setLoadingDocs] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState('');
+  const [showRejectForm, setShowRejectForm] = useState(false);
+
+  const openReviewModal = async (org: any) => {
+    setReviewOrg(org);
+    setLoadingDocs(true);
+    setShowRejectForm(false);
+    setRejectionReason('');
     try {
+      const { data, error } = await supabase.storage
+        .from('verification_documents')
+        .list(org.id);
+      
+      if (error) throw error;
+      setOrgDocs(data || []);
+    } catch (err: any) {
+      console.error("Error fetching docs:", err);
+    } finally {
+      setLoadingDocs(false);
+    }
+  };
+
+  const handleVerification = async (orgUserId: string, newStatus: 'verified' | 'rejected', reason?: string) => {
+    try {
+      const updatePayload: any = { verification_status: newStatus };
+      if (newStatus === 'rejected' && reason) {
+        updatePayload.rejection_reason = reason;
+      }
+
       const { error } = await supabase
         .from('organizations')
-        .update({ verification_status: newStatus })
+        .update(updatePayload)
         .eq('user_id', orgUserId);
 
       if (error) throw error;
 
       setOrganizations(prev => prev.map(org => {
         if (org.id === orgUserId) {
-          const updatedOrgs = (org.organizations || []).map((o: any) => ({ ...o, verification_status: newStatus }));
+          const updatedOrgs = (org.organizations || []).map((o: any) => ({ 
+            ...o, 
+            verification_status: newStatus,
+            rejection_reason: reason || o.rejection_reason
+          }));
           return { ...org, organizations: updatedOrgs };
         }
         return org;
       }));
+
+      if (reviewOrg && reviewOrg.id === orgUserId) {
+        setReviewOrg(null);
+      }
     } catch (err: any) {
       alert("Failed to update status: " + err.message);
     }
@@ -159,14 +198,11 @@ const UserManagement: React.FC = () => {
                       </span>
                     </td>
                     <td style={{ textAlign: 'right' }}>
-                      {status === 'pending' ? (
-                        <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                          <button onClick={() => handleVerification(org.id, 'rejected')} style={{ padding: '6px 12px', backgroundColor: '#FEE2E2', color: '#DC2626', border: 'none', borderRadius: '6px', fontWeight: 600, fontSize: '12px', cursor: 'pointer' }}>Reject</button>
-                          <button onClick={() => handleVerification(org.id, 'verified')} style={{ padding: '6px 12px', backgroundColor: '#ECFCCB', color: '#4D7C0F', border: 'none', borderRadius: '6px', fontWeight: 600, fontSize: '12px', cursor: 'pointer' }}>Approve</button>
-                        </div>
-                      ) : (
-                        <button style={{ background: 'none', border: 'none', color: '#3B82F6', fontWeight: 600, cursor: 'pointer' }}>View</button>
-                      )}
+                      <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                        <button onClick={() => openReviewModal(org)} style={{ padding: '6px 12px', backgroundColor: '#F1F5F9', color: '#334155', border: 'none', borderRadius: '6px', fontWeight: 600, fontSize: '12px', cursor: 'pointer' }}>
+                          Review Documents
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );
@@ -199,6 +235,73 @@ const UserManagement: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {/* Review Modal */}
+      {reviewOrg && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div style={{ backgroundColor: 'white', padding: '32px', borderRadius: '16px', width: '90%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+              <div>
+                <h2 style={{ margin: '0 0 8px 0', fontSize: '20px' }}>Review Organization</h2>
+                <div style={{ color: '#64748B', fontSize: '14px' }}>{reviewOrg.organizations?.[0]?.name} ({reviewOrg.email})</div>
+              </div>
+              <button onClick={() => setReviewOrg(null)} style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer' }}>&times;</button>
+            </div>
+
+            <h3 style={{ fontSize: '16px', marginBottom: '16px' }}>Uploaded Documents & Video</h3>
+            {loadingDocs ? (
+              <p>Loading files...</p>
+            ) : orgDocs.length > 0 ? (
+              <div style={{ display: 'grid', gap: '16px', marginBottom: '24px' }}>
+                {orgDocs.map(doc => {
+                  const fileUrl = supabase.storage.from('verification_documents').getPublicUrl(`${reviewOrg.id}/${doc.name}`).data.publicUrl;
+                  const isVideo = doc.name.endsWith('.mp4') || doc.name.endsWith('.webm') || doc.name.endsWith('.mov');
+                  return (
+                    <div key={doc.name} style={{ border: '1px solid #E2E8F0', padding: '16px', borderRadius: '8px' }}>
+                      <div style={{ fontWeight: 600, marginBottom: '8px', fontSize: '14px' }}>{doc.name}</div>
+                      {isVideo ? (
+                        <video controls style={{ width: '100%', borderRadius: '4px' }}>
+                          <source src={fileUrl} type="video/mp4" />
+                          Your browser does not support the video tag.
+                        </video>
+                      ) : (
+                        <a href={fileUrl} target="_blank" rel="noreferrer" style={{ color: '#3B82F6', fontSize: '14px', textDecoration: 'none' }}>View File &rarr;</a>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p style={{ color: '#64748B', fontStyle: 'italic', marginBottom: '24px' }}>No documents uploaded yet.</p>
+            )}
+
+            {reviewOrg.organizations?.[0]?.verification_status === 'pending' && (
+              <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '24px', display: 'flex', gap: '12px', flexDirection: 'column' }}>
+                {!showRejectForm ? (
+                  <div style={{ display: 'flex', gap: '12px' }}>
+                    <button onClick={() => setShowRejectForm(true)} style={{ flex: 1, padding: '12px', backgroundColor: '#FEE2E2', color: '#DC2626', border: 'none', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>Reject Organization</button>
+                    <button onClick={() => handleVerification(reviewOrg.id, 'verified')} style={{ flex: 1, padding: '12px', backgroundColor: '#10B981', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>Approve Organization</button>
+                  </div>
+                ) : (
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: '14px' }}>Reason for Rejection</label>
+                    <textarea 
+                      value={rejectionReason}
+                      onChange={e => setRejectionReason(e.target.value)}
+                      placeholder="Please upload a clearer video explaining your mission..."
+                      style={{ width: '100%', padding: '12px', border: '1px solid #E2E8F0', borderRadius: '8px', minHeight: '100px', marginBottom: '16px', boxSizing: 'border-box' }}
+                    />
+                    <div style={{ display: 'flex', gap: '12px' }}>
+                      <button onClick={() => setShowRejectForm(false)} style={{ flex: 1, padding: '12px', backgroundColor: '#F1F5F9', color: '#334155', border: 'none', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+                      <button onClick={() => handleVerification(reviewOrg.id, 'rejected', rejectionReason)} disabled={!rejectionReason.trim()} style={{ flex: 1, padding: '12px', backgroundColor: '#DC2626', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', opacity: !rejectionReason.trim() ? 0.5 : 1 }}>Confirm Rejection</button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
