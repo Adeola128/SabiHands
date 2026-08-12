@@ -13,9 +13,8 @@ const CertificateRegistry: React.FC = () => {
 
   const fetchCertificates = async () => {
     try {
-      const [certsRes, usersRes, profilesRes, gigsRes, orgsRes] = await Promise.all([
+      const [certsRes, profilesRes, gigsRes, orgsRes] = await Promise.all([
         supabase.from('certificates').select('*').order('created_at', { ascending: false }),
-        supabase.from('users').select('id'),
         supabase.from('volunteer_profiles').select('user_id, full_name'),
         supabase.from('gigs').select('id, title, organization_id'),
         supabase.from('organizations').select('id, name')
