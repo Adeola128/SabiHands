@@ -34,6 +34,7 @@ const IssueCertificates: React.FC = () => {
   const [attendees, setAttendees] = useState<any[]>([]);
   const [allIssued, setAllIssued] = useState(false);
   const [ratings, setRatings] = useState<Record<string, number>>({});
+  const [comments, setComments] = useState<Record<string, string>>({});
   const [names, setNames] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [previewId, setPreviewId] = useState<string | null>(null);
@@ -147,20 +148,20 @@ const IssueCertificates: React.FC = () => {
       return;
     }
 
-    // Insert Ratings
+    // Insert Reviews
     if (user && gig.organizations?.id) {
-      const ratingRecords = attendees
+      const reviewRecords = attendees
         .filter(a => ratings[a.applications.volunteer_id])
         .map(a => ({
-          rater_id: gig.organizations.id,
-          ratee_id: a.applications.volunteer_id,
+          reviewer_id: user.id, // Orgs use user_id to write reviews? Wait, auth.users(id) is the reviewer. We'll use user.id.
+          reviewee_id: a.applications.volunteer_id,
           gig_id: gig.id,
-          score: ratings[a.applications.volunteer_id],
-          review: ''
+          rating: ratings[a.applications.volunteer_id],
+          comment: comments[a.applications.volunteer_id] || ''
         }));
 
-      if (ratingRecords.length > 0) {
-        await supabase.from('ratings').insert(ratingRecords);
+      if (reviewRecords.length > 0) {
+        await supabase.from('reviews').insert(reviewRecords);
       }
     }
 
@@ -294,6 +295,15 @@ const IssueCertificates: React.FC = () => {
                                   />
                                 </div>
                               </div>
+                              {ratings[a.applications.volunteer_id] ? (
+                                <textarea
+                                  placeholder="Leave a short review (optional)"
+                                  value={comments[a.applications.volunteer_id] || ''}
+                                  onChange={(e) => setComments(prev => ({ ...prev, [a.applications.volunteer_id]: e.target.value }))}
+                                  onClick={(e) => e.stopPropagation()}
+                                  style={{ marginTop: '8px', padding: '8px', fontSize: '12px', border: '1px solid #D1CEDF', borderRadius: '4px', resize: 'vertical', minHeight: '40px', width: '100%', fontFamily: 'var(--sans)' }}
+                                />
+                              ) : null}
                             </div>
                             <div style={{ marginLeft: 'auto', color: 'var(--teal-600)' }}>
                               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>

@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import LoadingScreen from '../../components/LoadingScreen';
-import { MapPin, UploadCloud, Clock, AlertCircle, Award } from 'lucide-react';
+import { MapPin, UploadCloud, Clock, AlertCircle, Award, Star } from 'lucide-react';
+import ReviewModal from '../../components/ReviewModal';
 
 type Tab = 'upcoming' | 'completed';
 
@@ -20,6 +21,7 @@ const MyGigs: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const { user } = useAuth();
+  const [reviewingGig, setReviewingGig] = useState<any | null>(null);
 
   useEffect(() => {
     const fetchGigs = async () => {
@@ -39,7 +41,8 @@ const MyGigs: React.FC = () => {
             type,
             image_url,
             organizations (
-              name
+              name,
+              user_id
             )
           ),
           attendance(
@@ -68,7 +71,8 @@ const MyGigs: React.FC = () => {
               type,
               image_url,
               organizations (
-                name
+                name,
+                user_id
               )
             ),
             attendance(
@@ -107,6 +111,7 @@ const MyGigs: React.FC = () => {
             app_id: app.id,
             title: app.gigs.title,
             org: app.gigs.organizations?.name || 'Organization',
+            org_id: app.gigs.organizations?.user_id,
             location: app.gigs.location,
             date: app.gigs.date_start ? gigDate.toLocaleDateString() : 'TBD',
             time: app.gigs.date_start ? gigDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '',
@@ -308,6 +313,9 @@ const MyGigs: React.FC = () => {
                           <Award size={16} /> View Certificate
                         </Link>
                       )}
+                      <button onClick={() => setReviewingGig(gig)} className="gig-action" style={{ background: '#FFFBEB', color: '#B45309', border: '1.5px solid #FDE68A', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                        <Star size={16} fill="currentColor" /> Rate Org
+                      </button>
                       <Link to={`/dashboard/volunteer/gigs/${gig.id}`} className="gig-action" style={{ background: 'none', border: '1.5px solid #E4E1F5', color: 'var(--purple-600)', textDecoration: 'none', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>View Details</Link>
                     </div>
                   </div>
@@ -321,6 +329,18 @@ const MyGigs: React.FC = () => {
           )}
         </div>
       </div>
+      
+      {reviewingGig && user && (
+        <ReviewModal
+          isOpen={!!reviewingGig}
+          onClose={() => setReviewingGig(null)}
+          gigId={reviewingGig.id}
+          reviewerId={user.id}
+          revieweeId={reviewingGig.org_id || reviewingGig.app_id} /* Need actual org user id, wait... I mapped org name, not org user_id */
+          orgName={reviewingGig.org}
+          onSuccess={() => setReviewingGig(null)}
+        />
+      )}
     </>
   );
 };

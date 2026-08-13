@@ -13,6 +13,7 @@ const PublicVolunteerProfile: React.FC = () => {
 
   const [stats, setStats] = useState({ hours: 0, completed: 0, rating: 0.0 });
   const [certificates, setCertificates] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<any[]>([]);
 
   useEffect(() => {
     if (!id) return;
@@ -33,15 +34,26 @@ const PublicVolunteerProfile: React.FC = () => {
         
         setProfile(data);
         
-        // Fetch ratings for volunteer
+        // Fetch reviews for volunteer
         const { data: ratingData } = await supabase
-          .from('ratings')
-          .select('score')
-          .eq('ratee_id', id);
+          .from('reviews')
+          .select(`
+            id,
+            rating,
+            comment,
+            created_at,
+            gigs(
+              title,
+              organizations(name, logo_url)
+            )
+          `)
+          .eq('reviewee_id', id)
+          .order('created_at', { ascending: false });
           
         let avgRating = 0;
         if (ratingData && ratingData.length > 0) {
-          avgRating = ratingData.reduce((acc, curr) => acc + curr.score, 0) / ratingData.length;
+          avgRating = ratingData.reduce((acc, curr) => acc + curr.rating, 0) / ratingData.length;
+          setReviews(ratingData);
         }
 
         // Fetch completed gigs (applications with status 'accepted')
@@ -239,6 +251,47 @@ const PublicVolunteerProfile: React.FC = () => {
             ) : (
               <div style={{ padding: '24px 0', textAlign: 'center', color: 'var(--muted)', fontSize: '14px' }}>
                 No certificates earned yet.
+              </div>
+            )}
+          </div>
+
+          {/* Reviews */}
+          <div className="vol-card">
+            <h2 className="vol-card-title">Reviews</h2>
+            {reviews.length > 0 ? (
+              reviews.map((rev) => {
+                const orgName = rev.gigs?.organizations?.name || 'Organization';
+                const orgLogo = rev.gigs?.organizations?.logo_url;
+                return (
+                  <div key={rev.id} style={{ marginBottom: '16px', paddingBottom: '16px', borderBottom: '1px solid #E4E1F5' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                      {orgLogo ? (
+                        <img src={orgLogo} alt={orgName} style={{ width: '32px', height: '32px', borderRadius: '4px', objectFit: 'contain' }} />
+                      ) : (
+                        <div style={{ width: '32px', height: '32px', backgroundColor: 'var(--purple-50)', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--purple-700)', fontWeight: 700, fontSize: '12px' }}>
+                          {orgName.substring(0, 2).toUpperCase()}
+                        </div>
+                      )}
+                      <div>
+                        <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--ink)' }}>{orgName}</div>
+                        <div style={{ fontSize: '12px', color: 'var(--muted)' }}>{rev.gigs?.title}</div>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', gap: '2px', marginBottom: '8px' }}>
+                      {[1, 2, 3, 4, 5].map(star => (
+                        <svg key={star} width="14" height="14" viewBox="0 0 24 24" fill={star <= rev.rating ? "#FFC107" : "none"} stroke={star <= rev.rating ? "#FFC107" : "var(--muted)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                      ))}
+                    </div>
+                    {rev.comment && <p style={{ fontSize: '14px', color: 'var(--body)', margin: 0, lineHeight: 1.5 }}>"{rev.comment}"</p>}
+                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '8px' }}>{new Date(rev.created_at).toLocaleDateString()}</div>
+                  </div>
+                );
+              })
+            ) : (
+              <div style={{ padding: '24px 0', textAlign: 'center', color: 'var(--muted)', fontSize: '14px' }}>
+                No reviews yet.
               </div>
             )}
           </div>

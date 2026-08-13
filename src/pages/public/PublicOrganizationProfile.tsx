@@ -10,6 +10,8 @@ const PublicOrganizationProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [org, setOrg] = useState<any>(null);
   const [gigs, setGigs] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [rating, setRating] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,6 +46,26 @@ const PublicOrganizationProfile: React.FC = () => {
           .order('created_at', { ascending: false });
           
         setGigs(gigsData || []);
+        
+        // Fetch reviews
+        if (data.user_id) {
+          const { data: reviewsData } = await supabase
+            .from('reviews')
+            .select(`
+              id, rating, comment, created_at,
+              gigs(title)
+            `)
+            .eq('reviewee_id', data.user_id)
+            .order('created_at', { ascending: false });
+            
+          if (reviewsData) {
+            setReviews(reviewsData);
+            if (reviewsData.length > 0) {
+              const avg = reviewsData.reduce((acc, r) => acc + r.rating, 0) / reviewsData.length;
+              setRating(Number(avg.toFixed(1)));
+            }
+          }
+        }
 
       } catch (err: any) {
         console.error(err);
@@ -105,7 +127,15 @@ const PublicOrganizationProfile: React.FC = () => {
           
           <div className="profile-header-details">
             <div className="profile-title-block">
-              <h1 className="profile-name">{org?.name || 'Unnamed Organization'}</h1>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <h1 className="profile-name">{org?.name || 'Unnamed Organization'}</h1>
+                {rating > 0 && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', backgroundColor: '#FFFBEB', color: '#B45309', padding: '4px 10px', borderRadius: '20px', fontSize: '13px', fontWeight: 700 }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="#FFC107" stroke="#FFC107" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                    {rating} ({reviews.length} reviews)
+                  </div>
+                )}
+              </div>
               <div className="profile-headline">
                 {org?.bio ? (org.bio.length > 80 ? org.bio.substring(0, 80) + '...' : org.bio) : 'Organization bio not provided.'}
               </div>
@@ -225,6 +255,35 @@ const PublicOrganizationProfile: React.FC = () => {
               </div>
 
             </div>
+          </div>
+          
+          {/* Reviews List */}
+          <div className="profile-content-card">
+            <h2 className="profile-section-title">Volunteer Reviews</h2>
+            {reviews.length > 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {reviews.map((rev) => (
+                  <div key={rev.id} style={{ paddingBottom: '16px', borderBottom: '1px solid #E4E1F5' }}>
+                    <div style={{ display: 'flex', gap: '2px', marginBottom: '8px' }}>
+                      {[1, 2, 3, 4, 5].map(star => (
+                        <svg key={star} width="14" height="14" viewBox="0 0 24 24" fill={star <= rev.rating ? "#FFC107" : "none"} stroke={star <= rev.rating ? "#FFC107" : "var(--muted)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                      ))}
+                    </div>
+                    {rev.comment && <p style={{ fontSize: '13px', color: 'var(--body)', margin: '0 0 8px 0', lineHeight: 1.5 }}>"{rev.comment}"</p>}
+                    <div style={{ fontSize: '11px', color: 'var(--muted)', display: 'flex', justifyContent: 'space-between' }}>
+                      <span>Volunteer • {rev.gigs?.title}</span>
+                      <span>{new Date(rev.created_at).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div style={{ padding: '24px 0', textAlign: 'center', color: 'var(--muted)', fontSize: '13px' }}>
+                No reviews yet.
+              </div>
+            )}
           </div>
           
         </div>
