@@ -26,10 +26,11 @@ const PublicGigDetail: React.FC = () => {
               name,
               org_type,
               logo_url,
-              verification_status
+              verification_status,
+              slug
             )
           `)
-          .eq('id', id)
+          .or(`id.eq.${id},slug.eq.${id}`)
           .eq('status', 'published')
           .single();
           

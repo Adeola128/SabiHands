@@ -22,7 +22,7 @@ const PublicVolunteerProfile: React.FC = () => {
         const { data, error: fetchError } = await supabase
           .from('volunteer_profiles')
           .select('*')
-          .eq('user_id', id)
+          .or(`id.eq.${id},user_id.eq.${id}`)
           .single();
           
         if (fetchError || !data) {

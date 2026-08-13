@@ -24,7 +24,7 @@ const PublicOrganizationProfile: React.FC = () => {
         const { data, error: fetchError } = await supabase
           .from('organizations')
           .select('*')
-          .eq('user_id', id)
+          .or(`id.eq.${id},user_id.eq.${id},slug.eq.${id}`)
           .single();
           
         if (fetchError || !data) {
