@@ -38,13 +38,23 @@ const MarkAttendance: React.FC = () => {
         .eq('status', 'accepted');
 
       if (appsData) {
-        setApplications(appsData);
         // Initialize attendance state (true if already attended)
         const initialAttendance: Record<string, boolean> = {};
-        appsData.forEach(app => {
+        for (const app of appsData) {
+          // Resolve name with fallback
+          const profiles = app.volunteer_profiles;
+          const profile = Array.isArray(profiles) ? profiles[0] : profiles;
+          let name = profile?.full_name;
+          if (!name && app.volunteer_id) {
+             const { data: vp } = await supabase.from('volunteer_profiles').select('full_name').eq('user_id', app.volunteer_id).maybeSingle();
+             if (vp?.full_name) name = vp.full_name;
+          }
+          app.resolved_name = name || 'Volunteer';
+          
           initialAttendance[app.id] = app.attendance && app.attendance.length > 0 ? app.attendance[0].attended : true; // Default to true if no record yet
-        });
+        }
         setAttendance(initialAttendance);
+        setApplications(appsData);
       }
       setLoading(false);
     };
@@ -143,9 +153,7 @@ const MarkAttendance: React.FC = () => {
               <div style={{ padding: '48px', textAlign: 'center', color: 'var(--muted)' }}>No accepted volunteers found.</div>
             )}
             {applications.map((app, i) => {
-              const profiles = app.volunteer_profiles;
-              const profile = Array.isArray(profiles) ? profiles[0] : profiles;
-              const name = profile?.full_name || 'Volunteer';
+              const name = app.resolved_name || 'Volunteer';
               const initials = name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase();
               return (
               <div key={app.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 0', borderBottom: i < applications.length - 1 ? '1px solid #E4E1F5' : 'none' }}>

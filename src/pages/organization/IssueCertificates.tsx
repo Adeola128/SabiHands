@@ -87,11 +87,18 @@ const IssueCertificates: React.FC = () => {
         }
 
         const initialNames: Record<string, string> = {};
-        eligibleAttendees.forEach((a: any) => {
-          const profiles = a.applications.volunteer_profiles;
+        for (const a of eligibleAttendees) {
+          const profiles = a.applications?.volunteer_profiles;
           const profile = Array.isArray(profiles) ? profiles[0] : profiles;
-          initialNames[a.applications.volunteer_id] = profile?.full_name || 'Volunteer';
-        });
+          let name = profile?.full_name;
+          
+          if (!name && a.applications?.volunteer_id) {
+            const { data: vp } = await supabase.from('volunteer_profiles').select('full_name').eq('user_id', a.applications.volunteer_id).maybeSingle();
+            if (vp?.full_name) name = vp.full_name;
+          }
+          
+          initialNames[a.applications?.volunteer_id] = name || 'Volunteer';
+        }
         setNames(initialNames);
         if (eligibleAttendees.length > 0) {
           setPreviewId(eligibleAttendees[0].applications.volunteer_id);
