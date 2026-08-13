@@ -2,7 +2,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { sendBrevoEmail } from "../_shared/brevo.ts";
-import { buildEmailTemplate } from "../_shared/emailTemplate.ts";
+import { buildGigAlertEmailTemplate } from "../_shared/gigAlertEmailTemplate.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -59,22 +59,30 @@ serve(async (req: Request) => {
 
     // Prepare email content
     const subject = `New Gig Alert: ${record.title} by ${orgName}`;
-    
-    const bodyText = `
-      <p><strong>${orgName}</strong> just posted a new gig:</p>
-      <h2 style="color: #26215C; margin-bottom: 8px;">${record.title}</h2>
-      <p>${record.description || ''}</p>
-      <p><strong>Location:</strong> ${record.location || 'Remote'}</p>
-      <p><strong>Type:</strong> ${record.type}</p>
-      <p>A new gig just dropped that perfectly matches your skills. Check it out and be the first to apply.</p>
-      <a href="https://www.ralvo.com.ng/dashboard/volunteer/gigs/${record.id}" class="button">View Gig</a>
-    `;
 
-    const htmlContent = buildEmailTemplate(
-      "New Opportunity Available!",
-      "New Gig Alert!",
-      bodyText
-    );
+    // Safely parse arrays if they are stored as JSON, otherwise fallback
+    const whatYouWillDo = Array.isArray(record.responsibilities) 
+      ? record.responsibilities 
+      : ["Review gig requirements and apply.", "Communicate with the organization.", "Complete tasks and earn a certificate."];
+      
+    const whatWeAreLookingFor = Array.isArray(record.requirements) 
+      ? record.requirements 
+      : ["Eagerness to learn.", "Strong communication skills.", "Commitment to deadlines."];
+    
+    const htmlContent = buildGigAlertEmailTemplate({
+      gigTitle: record.title,
+      organizationName: orgName,
+      gigType: record.type || "Skilled",
+      gigLocation: record.location || "Remote",
+      timeNeeded: record.time_commitment || "flexible",
+      description: record.description || "A new gig just dropped that perfectly matches your skills. Check it out and be the first to apply.",
+      whatYouWillDo,
+      whatWeAreLookingFor,
+      postedRelativeTime: "Just now",
+      viewGigUrl: `https://www.ralvo.com.ng/dashboard/volunteer/gigs/${record.id}`,
+      notificationSettingsUrl: "https://www.ralvo.com.ng/dashboard/settings",
+      helpUrl: "https://www.ralvo.com.ng/help"
+    });
 
     // Send emails (In production, use Brevo's bulk endpoint or BCC)
     const results = [];

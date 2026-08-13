@@ -3,73 +3,88 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="color-scheme" content="light">
-<title>Confirm your email.</title>
-<!--[if mso]>
-<style>table {border-collapse:collapse;}</style>
-<![endif]-->
+<title>Confirm your Ralvo account</title>
 <style>
-  body, table, td { -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
-  body { margin:0; padding:0; width:100% !important; background:#F8F9FA; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-  img { border:0; outline:none; text-decoration:none; }
-  a { text-decoration:none; color: #1D9E75; font-weight: 500; }
-  p { margin:18px 0 0; font-size:16px; line-height:26px; color:#4A4770; }
-  .button-wrap { margin-top:32px; display:inline-block; }
-  .button { display:inline-block; padding:16px 32px; background:#1D9E75; color:#FFFFFF !important; text-decoration:none; border-radius:12px; font-weight:600; font-size:16px; box-shadow: 0 4px 12px rgba(29, 158, 117, 0.2); }
-  @media screen and (max-width:600px){
-    .email-container{ width:100% !important; border-radius:0 !important; }
-    .stack-pad{ padding-left:24px !important; padding-right:24px !important; }
-    .h1{ font-size:26px !important; line-height:34px !important; }
+  /* Reset and base styles */
+  body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+  body { margin: 0; padding: 0; background-color: #F8F9FA; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; }
+  table { border-collapse: collapse !important; }
+  
+  /* Layout */
+  .wrapper { width: 100%; background-color: #F8F9FA; padding: 40px 0; }
+  .container { max-width: 600px; margin: 0 auto; background-color: #FFFFFF; border-radius: 20px; overflow: hidden; box-shadow: 0 8px 30px rgba(38, 33, 92, 0.05); }
+  
+  /* Header */
+  .header { text-align: center; padding: 40px 40px 20px; }
+  
+  /* The Logo built with HTML to avoid email client image blocking */
+  .logo-text { font-size: 32px; font-weight: 800; color: #26215C; letter-spacing: -1px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center;}
+  
+  /* Content */
+  .content { padding: 20px 48px 40px; text-align: center; }
+  .eyebrow { font-size: 14px; font-weight: 700; color: #7F77DD; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+  .title { font-size: 28px; font-weight: 800; color: #26215C; margin: 0 0 16px; line-height: 1.3; }
+  .text { font-size: 16px; line-height: 24px; color: #4A4770; margin: 0 0 32px; }
+  
+  /* Code Box */
+  .code-container { background: linear-gradient(145deg, #EEEDFE 0%, #F5F4FF 100%); border: 1px solid #E2E0FC; border-radius: 16px; padding: 32px 20px; margin-bottom: 32px; }
+  .code-text { font-family: "SF Mono", "Roboto Mono", Menlo, Courier, monospace; font-size: 42px; font-weight: 700; color: #26215C; letter-spacing: 12px; margin: 0; padding-left: 12px; }
+  
+  /* Footer */
+  .footer { padding: 32px 48px; background-color: #FDFDFD; border-top: 1px solid #F0F0F0; text-align: center; }
+  .footer-text { font-size: 13px; color: #8B87B0; margin: 0 0 12px; line-height: 1.5; }
+  .footer-links { margin: 0; }
+  .footer-link { color: #1D9E75; text-decoration: none; font-weight: 500; font-size: 13px; }
+  
+  /* Responsive */
+  @media screen and (max-width: 600px) {
+    .container { border-radius: 0; margin: 0 16px; width: auto; }
+    .content { padding: 20px 24px 32px; }
+    .title { font-size: 24px; }
+    .code-text { font-size: 36px; letter-spacing: 8px; }
   }
 </style>
 </head>
-<body style="margin:0; padding:0; background:#F8F9FA;">
-<div style="display:none; max-height:0; overflow:hidden; opacity:0; mso-hide:all;">Confirm your email.&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;</div>
-
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F8F9FA;">
-<tr>
-<td align="center" style="padding:40px 16px;">
-
-<table role="presentation" class="email-container" width="600" cellpadding="0" cellspacing="0" style="width:600px; max-width:600px; background:#FFFFFF; border-radius:24px; overflow:hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.04);">
-
-  <tr>
-    <td style="background:#1D9E75; padding:32px 48px; text-align:left;">
-      <span style="font-size:24px; font-weight:800; color:#FFFFFF; letter-spacing:-0.5px;">
-        Ralvo
-      </span>
-    </td>
-  </tr>
-
-  <tr>
-    <td class="stack-pad" style="padding:40px 48px 0; text-align:left;">
-      <p style="margin:0 0 12px; font-size:13px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#1D9E75;">Welcome</p>
-      <h1 class="h1" style="margin:0; font-size:32px; line-height:40px; font-weight:800; color:#26215C; letter-spacing:-0.5px;">Confirm your email.</h1>
-      
-      <p>We are excited to have you join us. Get verified experience. But first, you need to verify your email address to get full access to the platform.</p>
-      <div style="background:#EEEDFE; padding:16px 24px; border-radius:12px; display:inline-block; font-family:Courier, monospace; font-size:28px; font-weight:bold; color:#26215C; letter-spacing:4px; margin-top:24px;">
-        {{ .Token }}
-      </div>
-      <p style="font-size:14px; margin-top:12px;">Enter this 6-digit code on the verification page.</p>
-      <p style="font-size:13px; color:#8B87B0; margin-top:32px;">If you didn't request this, you can safely ignore this email.</p>
-    </td>
-  </tr>
-
-  <tr>
-    <td class="stack-pad" style="padding:40px 48px 48px; border-top:1px solid #F0EEF7; margin-top:48px; text-align:left;">
-      <p style="margin:0 0 8px; font-size:13px; color:#8B87B0; line-height:1.6;">Ralvo &bull; Lagos, Nigeria</p>
-      <p style="margin:0; font-size:13px; color:#8B87B0; line-height:1.6;">
-        <a href="https://www.ralvo.com.ng/dashboard/settings" style="color:#8B87B0; text-decoration:underline;">Notification settings</a>
-        &nbsp;&bull;&nbsp;
-        <a href="https://www.ralvo.com.ng/faq" style="color:#8B87B0; text-decoration:underline;">Help &amp; FAQ</a>
-      </p>
-    </td>
-  </tr>
-
-</table>
-
-</td>
-</tr>
-</table>
+<body>
+  <div class="wrapper">
+    <table class="container" role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" align="center">
+      <tr>
+        <td class="header">
+          <!-- Logo built with HTML so it displays instantly on all devices without needing to download images -->
+          <a href="https://www.ralvo.com.ng" class="logo-text">
+            <span style="color:#7F77DD; font-size:40px; line-height:1; font-weight:900; margin-right:2px;">&lt;</span>
+            <span style="color:#1D9E75; font-size:40px; line-height:1; font-weight:900; margin-right:8px;">/</span>
+            Ralvo
+          </a>
+        </td>
+      </tr>
+      <tr>
+        <td class="content">
+          <div class="eyebrow">Verify your email</div>
+          <h1 class="title">You're almost there!</h1>
+          <p class="text">Welcome to Ralvo! We just need to verify your email address so you can get started. Please use the verification code below:</p>
+          
+          <div class="code-container">
+            <p class="code-text">{{ .Token }}</p>
+          </div>
+          
+          <p class="text" style="font-size: 14px; margin-bottom: 0;">If you didn't request this email, you can safely ignore it.</p>
+        </td>
+      </tr>
+      <tr>
+        <td class="footer">
+          <p class="footer-text">
+            Ralvo &bull; Lagos, Nigeria<br>
+            Connecting volunteers and organizations.
+          </p>
+          <p class="footer-links">
+            <a href="https://www.ralvo.com.ng/faq" class="footer-link">Help Center</a>
+            &nbsp;|&nbsp;
+            <a href="https://www.ralvo.com.ng/dashboard/settings" class="footer-link">Email Settings</a>
+          </p>
+        </td>
+      </tr>
+    </table>
+  </div>
 </body>
 </html>

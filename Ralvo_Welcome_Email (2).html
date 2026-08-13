@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome to Ralvo</title>
+<!--
+  NOTE ON SENDING THIS FOR REAL:
+  This file is built to show the exact visual design. Most email clients (especially
+  Outlook desktop) don't support modern CSS like flexbox, custom fonts, or border-radius
+  reliably — so before loading this into an ESP (Mailchimp, Customer.io, Resend, etc.),
+  it should be rebuilt as table-based HTML with inline styles. Happy to do that
+  conversion pass once the visual design here is approved.
+
+  ILLUSTRATIONS — drop files into "illustrations/" with these exact names:
+    illustrations/welcome-hero.png        (woman stepping onto the road — prompt 1)
+    illustrations/confirmation.png        (checkmark on phone — prompt 2, optional/unused below)
+    illustrations/certificate-teaser.png  (woman reaching for floating certificate — prompt 3)
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --purple-900:#26215C; --purple-600:#534AB7; --purple-400:#7F77DD; --purple-200:#AFA9EC; --purple-50:#EEEDFE; --lavender:#DAD5F7;
+    --teal-600:#0F6E56; --teal-400:#1D9E75; --teal-200:#5DCAA5; --teal-50:#E1F5EE;
+    --ink:#26215C; --body:#4A4770; --muted:#8B87B0; --white:#FFFFFF;
+    --display:'Fraunces', Georgia, serif; --sans:'Inter', Arial, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; padding:0; background:#F1EFFB; font-family:var(--sans); color:var(--body);}
+  h1,h2{font-family:var(--display); color:var(--ink); margin:0; font-weight:600;}
+  img{max-width:100%; display:block;}
+  a{color:inherit;}
+
+  .preheader{display:none; max-height:0; overflow:hidden; opacity:0;}
+
+  .email-shell{max-width:600px; margin:0 auto; padding:32px 16px;}
+  .card{background:var(--white); border-radius:20px; overflow:hidden; box-shadow:0 20px 50px -25px rgba(38,33,92,0.25);}
+
+  .header{padding:32px 40px 0; text-align:left;}
+  .logo{display:flex; align-items:center; gap:8px;}
+  .logo svg{width:22px; height:22px;}
+  .logo span{font-family:var(--display); font-weight:600; font-size:17px; color:var(--ink);}
+
+  .hero{background:var(--lavender); padding:8px 40px 0; text-align:left; position:relative; overflow:hidden;}
+  .hero h1{font-size:32px; line-height:1.18; margin-top:18px;}
+  .hero p{font-size:15px; margin-top:12px; color:var(--body); max-width:380px;}
+  .hero .illus-wrap{margin-top:24px; max-width:340px; margin-left:auto;}
+
+  .btn{display:inline-block; background:var(--purple-600); color:var(--white) !important; text-decoration:none; font-weight:600; font-size:14.5px; padding:14px 26px; border-radius:999px; margin-top:22px;}
+
+  .section{padding:36px 40px;}
+  .section h2{font-size:20px;}
+  .section .kicker{font-size:11.5px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--teal-600);}
+
+  .step{display:flex; gap:16px; padding:16px 0; border-bottom:1px solid #F0EEFA;}
+  .step:last-child{border-bottom:none;}
+  .step .num{width:30px; height:30px; border-radius:50%; background:var(--purple-50); color:var(--purple-600); font-family:var(--display); font-weight:600; font-size:13.5px; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .step h3{font-size:14.5px; font-weight:600; color:var(--ink); margin:0 0 4px; font-family:var(--sans);}
+  .step p{font-size:13px; margin:0; color:var(--body);}
+
+  .cert-band{background:var(--teal-50); padding:32px 40px; text-align:center;}
+  .cert-band .illus-wrap{max-width:220px; margin:0 auto;}
+  .cert-band h2{font-size:19px; margin-top:16px;}
+  .cert-band p{font-size:13.5px; color:var(--body); margin-top:8px; max-width:380px; margin-left:auto; margin-right:auto;}
+
+  .footer{padding:28px 40px 36px; text-align:center;}
+  .footer p{font-size:12px; color:var(--muted); margin:4px 0;}
+  .footer a{color:var(--purple-600); text-decoration:none;}
+  .footer .social{margin:14px 0;}
+  .footer .social a{display:inline-block; margin:0 6px; color:var(--muted);}
+
+  /* illustration placeholder — borderless, replaced automatically once real files exist */
+  .illus-wrap img{width:100%;}
+  .illus-fallback{display:none; flex-direction:column; align-items:center; justify-content:center; text-align:center; width:100%; aspect-ratio:4/3; border-radius:55% 45% 60% 40% / 50% 55% 45% 50%; background:radial-gradient(circle at 35% 30%, rgba(127,119,221,0.25), rgba(127,119,221,0.06) 70%); color:var(--purple-600); padding:10%;}
+  .illus-fallback.teal-tone{background:radial-gradient(circle at 35% 30%, rgba(29,158,117,0.22), rgba(29,158,117,0.06) 70%); color:var(--teal-600);}
+  .illus-fallback span{font-size:12px; font-weight:600;}
+  .illus-fallback small{display:block; margin-top:6px; font-size:10.5px; opacity:.75;}
+
+  @media (max-width:480px){
+    .header, .hero, .section, .cert-band, .footer{padding-left:24px; padding-right:24px;}
+    .hero h1{font-size:26px;}
+  }
+</style>
+</head>
+<body>
+<div class="preheader">Verified NGOs, real gigs, real proof — let's find your first one.</div>
+
+<div class="email-shell">
+  <div class="card">
+
+    <div class="header">
+      <div class="logo">
+        <svg viewBox="0 0 100 100"><path d="M20 15 L75 50" fill="none" stroke="#7F77DD" stroke-width="16" stroke-linecap="round"/><path d="M20 85 L75 50" fill="none" stroke="#1D9E75" stroke-width="16" stroke-linecap="round"/></svg>
+        <span>Ralvo</span>
+      </div>
+    </div>
+
+    <div class="hero">
+      <h1>Welcome, Amara.<br>You're on your way.</h1>
+      <p>Your account is live. Verified NGOs and companies across Lagos are already posting gigs — let's get you matched with your first one.</p>
+      <a class="btn" href="#">Browse open gigs →</a>
+      <div class="illus-wrap">
+        <img src="https://res.cloudinary.com/dohuj4mx9/image/upload/v1786579200/ralvo_benchmark_transparent_agtjny.png" alt="Illustration of a woman walking a winding road toward a certificate">
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="kicker">How it works</div>
+      <h2>Three steps to your first certificate</h2>
+      <div style="margin-top:8px;">
+        <div class="step">
+          <div class="num">1</div>
+          <div><h3>Find a gig</h3><p>Browse verified roles from NGOs and companies near you — skilled or physical.</p></div>
+        </div>
+        <div class="step">
+          <div class="num">2</div>
+          <div><h3>Show up</h3><p>Apply in a tap. No CV required. The organization picks who joins.</p></div>
+        </div>
+        <div class="step">
+          <div class="num">3</div>
+          <div><h3>Get certified</h3><p>The moment you're done, a verified certificate lands in your account.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cert-band">
+      <div class="illus-wrap">
+        <img src="https://res.cloudinary.com/dohuj4mx9/image/upload/v1786579224/ravlo_qejhad.png" alt="Illustration of a Ralvo team collaborating around a table">
+      </div>
+      <h2>This is what you're working toward</h2>
+      <p>Every completed gig earns a verified certificate — real proof, not just a line on a CV nobody can check.</p>
+    </div>
+
+    <div class="footer">
+      <p style="color:var(--ink); font-weight:600;">Questions? Just reply — a real person reads these.</p>
+      <div class="social">
+        <a href="#">Instagram</a> · <a href="#">LinkedIn</a> · <a href="#">X</a>
+      </div>
+      <p>Ralvo · Lagos, Nigeria</p>
+      <p><a href="#">Unsubscribe</a> · <a href="https://www.ralvo.com.ng">ralvo.com.ng</a></p>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>
