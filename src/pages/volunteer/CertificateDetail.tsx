@@ -13,9 +13,11 @@ const CertificateDetail: React.FC = () => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(`https://Ralvo.com/verify/${id}`);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    if (cert && cert.code) {
+      navigator.clipboard.writeText(`https://Ralvo.com/verify/${cert.code}`);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   useEffect(() => {
@@ -49,6 +51,7 @@ const CertificateDetail: React.FC = () => {
           date: new Date(data.issued_at).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase(),
           type: data.gigs?.type,
           hours: data.attendance?.hours || 0,
+          code: data.verification_code
         });
       }
       setLoading(false);
@@ -113,6 +116,7 @@ const CertificateDetail: React.FC = () => {
                 {copied ? 'Copied!' : 'Copy Verify Link'}
               </button>
               <button
+                onClick={() => window.print()}
                 style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 16px', backgroundColor: 'var(--paper)', color: 'var(--ink)', border: '1.5px solid #E4E1F5', borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: 'pointer', width: '100%' }}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
@@ -166,7 +170,7 @@ const CertificateDetail: React.FC = () => {
               </div>
               
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
-                 <img src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://Ralvo.com/verify/${id}`} alt="QR Code" style={{ width: '80px', height: '80px' }} />
+                 <img src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://Ralvo.com/verify/${cert.code}`} alt="QR Code" style={{ width: '80px', height: '80px' }} />
               </div>
             </div>
 

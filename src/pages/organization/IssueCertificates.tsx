@@ -282,13 +282,14 @@ const IssueCertificates: React.FC = () => {
                                 type="text" 
                                 value={names[a.applications.volunteer_id] || ''}
                                 onChange={(e) => setNames(prev => ({ ...prev, [a.applications.volunteer_id]: e.target.value }))}
-                                onClick={(e) => e.stopPropagation()}
+                                onClick={(e) => { e.stopPropagation(); setPreviewId(a.applications.volunteer_id); }}
+                                onFocus={() => setPreviewId(a.applications.volunteer_id)}
                                 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--ink)', border: '1px solid transparent', borderBottom: '1px solid #D1CEDF', outline: 'none', background: 'transparent', padding: '2px 0', width: '100%' }}
                                 placeholder="Certificate Name"
                               />
                               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
                                 <span style={{ fontSize: '11px', color: 'var(--muted)' }}>Rate volunteer:</span>
-                                <div onClick={(e) => e.stopPropagation()}>
+                                <div onClick={(e) => { e.stopPropagation(); setPreviewId(a.applications.volunteer_id); }}>
                                   <StarRating 
                                     rating={ratings[a.applications.volunteer_id] || 0} 
                                     onChange={(score) => setRatings(prev => ({ ...prev, [a.applications.volunteer_id]: score }))} 
@@ -300,7 +301,8 @@ const IssueCertificates: React.FC = () => {
                                   placeholder="Leave a short review (optional)"
                                   value={comments[a.applications.volunteer_id] || ''}
                                   onChange={(e) => setComments(prev => ({ ...prev, [a.applications.volunteer_id]: e.target.value }))}
-                                  onClick={(e) => e.stopPropagation()}
+                                  onClick={(e) => { e.stopPropagation(); setPreviewId(a.applications.volunteer_id); }}
+                                  onFocus={() => setPreviewId(a.applications.volunteer_id)}
                                   style={{ marginTop: '8px', padding: '8px', fontSize: '12px', border: '1px solid #D1CEDF', borderRadius: '4px', resize: 'vertical', minHeight: '40px', width: '100%', fontFamily: 'var(--sans)' }}
                                 />
                               ) : null}
