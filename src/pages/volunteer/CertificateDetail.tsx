@@ -21,16 +21,24 @@ const CertificateDetail: React.FC = () => {
   useEffect(() => {
     const fetchCert = async () => {
       if (!id) return;
-      const { data } = await supabase
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+      
+      let query = supabase
         .from('certificates')
         .select(`
           *,
           gigs(title, type, organizations(name, logo_url)),
           users(volunteer_profiles(full_name)),
           attendance(hours)
-        `)
-        .eq('verification_code', id)
-        .single();
+        `);
+        
+      if (isUuid) {
+        query = query.eq('id', id);
+      } else {
+        query = query.eq('verification_code', id);
+      }
+      
+      const { data } = await query.single();
       
       if (data) {
         setCert({

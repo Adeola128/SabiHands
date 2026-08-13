@@ -46,7 +46,7 @@ const MyGigs: React.FC = () => {
             )
           ),
           attendance(
-            certificates(id)
+            certificates(id, verification_code)
           ),
           submissions(id, status)
         `)
@@ -76,7 +76,7 @@ const MyGigs: React.FC = () => {
               )
             ),
             attendance(
-              certificates(id)
+              certificates(id, verification_code)
             )
           `)
           .eq('volunteer_id', user.id);
@@ -98,11 +98,13 @@ const MyGigs: React.FC = () => {
           // Check if there is a certificate via attendance
           let hasCert = false;
           let certId = null;
+          let certCode = null;
           if (app.attendance && app.attendance.length > 0) {
             const att = app.attendance[0];
             if (att.certificates && att.certificates.length > 0) {
               hasCert = true;
               certId = att.certificates[0].id;
+              certCode = att.certificates[0].verification_code;
             }
           }
           
@@ -121,7 +123,8 @@ const MyGigs: React.FC = () => {
             description: app.gigs.description,
             type: app.gigs.type,
             submission: app.submissions && app.submissions.length > 0 ? app.submissions[0] : null,
-            certId: certId
+            certId: certId,
+            certCode: certCode
           };
 
           if (hasCert || app.status === 'completed') {
@@ -308,8 +311,8 @@ const MyGigs: React.FC = () => {
                     </div>
                     <p style={{ color: 'var(--body)', fontSize: '14px', margin: '0 0 16px 0', lineHeight: 1.6, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}>{gig.description}</p>
                     <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                      {gig.certId && (
-                        <Link to={`/dashboard/volunteer/certificates/${gig.certId}`} className="gig-action" style={{ background: 'var(--purple-600)', color: 'white', border: 'none', boxShadow: '0 4px 12px rgba(124,58,237,0.25)', textDecoration: 'none', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      {gig.certCode && (
+                        <Link to={`/dashboard/volunteer/certificates/${gig.certCode}`} className="gig-action" style={{ background: 'var(--purple-600)', color: 'white', border: 'none', boxShadow: '0 4px 12px rgba(124,58,237,0.25)', textDecoration: 'none', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
                           <Award size={16} /> View Certificate
                         </Link>
                       )}
