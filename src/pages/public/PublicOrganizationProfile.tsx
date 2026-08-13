@@ -154,12 +154,12 @@ const PublicOrganizationProfile: React.FC = () => {
             ) : (
               <div className="org-gigs-grid">
                 {gigs.map(gig => (
-                  <Link key={gig.id} to={`/gig/${gig.id}`} className="gig-media-card-horizontal">
+                  <Link key={gig.id} to={`/gig/${gig.slug || gig.id}`} className="gig-media-card-horizontal">
                     <div className="gig-media-cover-horizontal" style={{ backgroundImage: `url(${gig.image_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(gig.title)}&background=random&size=400`})` }}></div>
                     <div className="gig-media-body-horizontal">
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <h3 className="gig-media-title">{gig.title}</h3>
-                        <ShareGigButton gigId={gig.id} title={gig.title} variant="icon" />
+                        <ShareGigButton gigId={gig.id} slug={gig.slug} title={gig.title} variant="icon" />
                       </div>
                       <div className="gig-tags" style={{ marginTop: '8px', marginBottom: '16px' }}>
                         <span className={`tag ${gig.type === 'skilled' ? 'skilled' : 'physical'}`}>

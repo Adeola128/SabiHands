@@ -69,7 +69,7 @@ const BrowseGigs: React.FC = () => {
     const fetchGigs = async () => {
       const { data } = await supabase
         .from('gigs')
-        .select(`*, organizations(name)`)
+        .select(`*, organizations(name, slug)`)
         .eq('status', 'published')
         .order('created_at', { ascending: false });
 
@@ -261,7 +261,7 @@ const BrowseGigs: React.FC = () => {
                   <div className="gig-media-header">
                     <div>
                       <h3 className="gig-media-title">{gig.title}</h3>
-                      <Link to={`/organization/${gig.organization_id}`} className="gig-media-org" style={{ textDecoration: 'none' }}>
+                      <Link to={`/organization/${gig.organizations?.slug || gig.organization_id}`} className="gig-media-org" style={{ textDecoration: 'none' }}>
                         <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(gig.organizations?.name || 'Org')}&background=random`} alt={gig.organizations?.name} />
                         <strong>{gig.organizations?.name || 'Organization'}</strong>
                         <span style={{ color: '#D1CEDF', margin: '0 4px' }}>•</span>

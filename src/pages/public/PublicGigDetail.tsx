@@ -140,7 +140,7 @@ const PublicGigDetail: React.FC = () => {
               Sign Up to Apply
             </Link>
             
-            <ShareGigButton gigId={gig.id} title={gig.title} text={`Check out this volunteering opportunity on Ralvo: ${gig.title}`} />
+            <ShareGigButton gigId={gig.id} slug={gig.slug} title={gig.title} text={`Check out this volunteering opportunity on Ralvo: ${gig.title}`} />
             
             <p style={{ fontSize: '13px', color: 'var(--muted)', margin: '16px 0 0 0' }}>
               Already have an account? <Link to="/login" style={{ color: 'var(--purple-600)', fontWeight: 600, textDecoration: 'none' }}>Log In</Link>

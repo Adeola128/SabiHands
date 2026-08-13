@@ -8,6 +8,7 @@ interface ShareGigButtonProps {
   text?: string;
   buttonText?: string;
   variant?: 'primary' | 'secondary' | 'icon' | 'outline';
+  slug?: string;
 }
 
 const ShareGigButton: React.FC<ShareGigButtonProps> = ({ 
@@ -15,10 +16,12 @@ const ShareGigButton: React.FC<ShareGigButtonProps> = ({
   title, 
   text = 'Check out this gig!', 
   buttonText = 'Share Gig',
-  variant = 'secondary'
+  variant = 'secondary',
+  slug
 }) => {
   const [copied, setCopied] = useState(false);
-  const shareUrl = `${window.location.origin}/gig/${gigId}`;
+  const identifier = slug || gigId;
+  const shareUrl = `${window.location.origin}/gig/${identifier}`;
 
   const handleShare = async (e: React.MouseEvent) => {
     e.preventDefault();

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { uploadImage } from '../../lib/uploadImage';
 import { toast } from 'react-hot-toast';
+import { generateSlug } from '../../utils/slug';
 import './PostGig.css';
 
 type Step = 1 | 2 | 3 | 4;
@@ -56,12 +57,29 @@ const PostGig: React.FC = () => {
         }
       }
 
-      // 3. Insert the gig
+      // 3. Generate a slug
+      let baseSlug = generateSlug(form.title || 'gig');
+      let slug = baseSlug;
+      let counter = 1;
+      let isUnique = false;
+  
+      while (!isUnique) {
+        const { data: existing } = await supabase.from('gigs').select('id').eq('slug', slug).maybeSingle();
+        if (!existing) {
+          isUnique = true;
+        } else {
+          slug = `${baseSlug}-${counter}`;
+          counter++;
+        }
+      }
+
+      // 4. Insert the gig
       const { data: gigData, error: insertError } = await supabase
         .from('gigs')
         .insert({
           organization_id: orgData.id,
           title: form.title,
+          slug: slug,
           description: form.description,
           type: form.type,
           location: form.remote ? 'Remote' : form.location,

@@ -5,6 +5,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { NIGERIA_STATES } from '../../utils/constants';
 import { uploadImage } from '../../lib/uploadImage';
+import { generateSlug } from '../../utils/slug';
 import './Signup.css';
 
 const OrganizationOnboarding: React.FC = () => {
@@ -61,11 +62,27 @@ const OrganizationOnboarding: React.FC = () => {
     setError(null);
 
     try {
+      let baseSlug = generateSlug(orgData.name || 'Organization');
+      let slug = baseSlug;
+      let counter = 1;
+      let isUnique = false;
+  
+      while (!isUnique) {
+        const { data: existing } = await supabase.from('organizations').select('user_id').eq('slug', slug).maybeSingle();
+        if (!existing || existing.user_id === user.id) {
+          isUnique = true;
+        } else {
+          slug = `${baseSlug}-${counter}`;
+          counter++;
+        }
+      }
+
       const { error: updateError } = await supabase
         .from('organizations')
         .upsert({
           user_id: user.id,
           name: orgData.name || 'Organization',
+          slug: slug,
           org_type: orgData.org_type,
           cac_number: orgData.cac_number,
           logo_url: orgData.logo_url,
