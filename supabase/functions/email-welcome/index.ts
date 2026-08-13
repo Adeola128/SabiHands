@@ -2,7 +2,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { sendBrevoEmail } from "../_shared/brevo.ts";
-import { buildEmailTemplate } from "../_shared/emailTemplate.ts";
+import { buildWelcomeEmailTemplate } from "../_shared/welcomeEmailTemplate.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -48,19 +48,9 @@ serve(async (req: Request) => {
     // Send Welcome Email
     const subject = "Welcome to Ralvo!";
     
-    const bodyText = `
-      <p>Welcome, ${full_name}!</p>
-      <p>We are thrilled to have you join the Ralvo community as a volunteer. You're not just volunteering; you're building a verified track record.</p>
-      <p>Start exploring opportunities to make a real impact today. Remember to complete your profile so we can match you with the best gigs!</p>
-      <a href="https://www.ralvo.com.ng/dashboard" class="button">Go to Dashboard</a>
-      <p>Happy Volunteering,<br/>The Ralvo Team</p>
-    `;
+    const firstName = full_name ? full_name.split(' ')[0] : 'there';
 
-    const htmlContent = buildEmailTemplate(
-      "Welcome to Ralvo!",
-      "Welcome to the movement!",
-      bodyText
-    );
+    const htmlContent = buildWelcomeEmailTemplate(firstName);
 
     const result = await sendBrevoEmail(email, full_name, subject, htmlContent);
 
