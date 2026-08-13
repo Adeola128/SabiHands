@@ -88,7 +88,9 @@ const IssueCertificates: React.FC = () => {
 
         const initialNames: Record<string, string> = {};
         eligibleAttendees.forEach((a: any) => {
-          initialNames[a.applications.volunteer_id] = a.applications.volunteer_profiles?.full_name || 'Volunteer';
+          const profiles = a.applications.volunteer_profiles;
+          const profile = Array.isArray(profiles) ? profiles[0] : profiles;
+          initialNames[a.applications.volunteer_id] = profile?.full_name || 'Volunteer';
         });
         setNames(initialNames);
         if (eligibleAttendees.length > 0) {

@@ -143,7 +143,9 @@ const MarkAttendance: React.FC = () => {
               <div style={{ padding: '48px', textAlign: 'center', color: 'var(--muted)' }}>No accepted volunteers found.</div>
             )}
             {applications.map((app, i) => {
-              const name = app.volunteer_profiles?.full_name || 'Volunteer';
+              const profiles = app.volunteer_profiles;
+              const profile = Array.isArray(profiles) ? profiles[0] : profiles;
+              const name = profile?.full_name || 'Volunteer';
               const initials = name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase();
               return (
               <div key={app.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 0', borderBottom: i < applications.length - 1 ? '1px solid #E4E1F5' : 'none' }}>
