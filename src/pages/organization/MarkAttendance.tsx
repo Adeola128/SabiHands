@@ -32,7 +32,7 @@ const MarkAttendance: React.FC = () => {
         .select(`
           *,
           volunteer_profiles(full_name),
-          attendance(attended)
+          attendance(id, attended)
         `)
         .eq('gig_id', id)
         .eq('status', 'accepted');
@@ -76,24 +76,28 @@ const MarkAttendance: React.FC = () => {
       return;
     }
 
-    const attendanceRecords = applications.map(app => ({
-      application_id: app.id,
-      confirmed_by: orgData.id,
-      attended: attendance[app.id] || false,
-      hours: 6, // Defaulting to 6 hours for MVP
-      confirmed_at: new Date().toISOString()
-    }));
+    const attendanceRecords = applications.map(app => {
+      const existingAttendance = app.attendance && app.attendance.length > 0 ? app.attendance[0] : null;
+      return {
+        ...(existingAttendance ? { id: existingAttendance.id } : {}),
+        application_id: app.id,
+        confirmed_by: orgData.id,
+        attended: attendance[app.id] || false,
+        hours: 6, // Defaulting to 6 hours for MVP
+        confirmed_at: new Date().toISOString()
+      };
+    });
 
     // Upsert attendance
     const { error } = await supabase
       .from('attendance')
-      .upsert(attendanceRecords, { onConflict: 'application_id' });
+      .upsert(attendanceRecords);
 
     setSaving(false);
     if (!error) {
       navigate(`/dashboard/org/gigs/${id}/certificates`);
     } else {
-      alert('Failed to save attendance.');
+      alert('Failed to save attendance: ' + error.message);
     }
   };
 
