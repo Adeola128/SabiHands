@@ -176,7 +176,7 @@ const IssueCertificates: React.FC = () => {
           return { a, volId: application?.volunteer_id };
         })
         .filter(({ volId }) => volId && ratings[volId])
-        .map(({ a, volId }) => ({
+        .map(({ volId }) => ({
           reviewer_id: user.id, // Orgs use user_id to write reviews? Wait, auth.users(id) is the reviewer. We'll use user.id.
           reviewee_id: volId,
           gig_id: gig.id,
