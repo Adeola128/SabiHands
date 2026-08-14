@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
 import LoadingScreen from '../../components/LoadingScreen';
 import './VolunteerPages.css';
+// @ts-ignore
+import html2pdf from 'html2pdf.js';
 
 const CertificateDetail: React.FC = () => {
   const { id } = useParams(); // This is the verification_code
@@ -19,6 +21,19 @@ const CertificateDetail: React.FC = () => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
+  };
+
+  const handleDownloadPDF = () => {
+    const element = document.getElementById('certificate-node');
+    if (!element) return;
+    const opt = {
+      margin:       0,
+      filename:     `Certificate-${cert.name.replace(/\s+/g, '-')}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' }
+    };
+    html2pdf().set(opt).from(element).save();
   };
 
   useEffect(() => {
@@ -54,14 +69,18 @@ const CertificateDetail: React.FC = () => {
            if (vp?.full_name) certName = vp.full_name;
         }
         
+        const gig = Array.isArray(data.gigs) ? data.gigs[0] : data.gigs;
+        const org = gig?.organizations ? (Array.isArray(gig.organizations) ? gig.organizations[0] : gig.organizations) : null;
+        const attendance = Array.isArray(data.attendance) ? data.attendance[0] : data.attendance;
+
         setCert({
           name: certName || 'Volunteer',
-          gig: data.gigs?.title,
-          org: data.gigs?.organizations?.name,
-          org_logo: data.gigs?.organizations?.logo_url,
+          gig: gig?.title,
+          org: org?.name,
+          org_logo: org?.logo_url,
           date: new Date(data.issued_at).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase(),
-          type: data.gigs?.type,
-          hours: data.attendance?.hours || 0,
+          type: gig?.type,
+          hours: attendance?.hours || 0,
           code: data.verification_code
         });
       }
@@ -128,7 +147,7 @@ const CertificateDetail: React.FC = () => {
                 {copied ? 'Copied!' : 'Copy Verify Link'}
               </button>
               <button
-                onClick={() => window.print()}
+                onClick={handleDownloadPDF}
                 style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 16px', backgroundColor: 'var(--paper)', color: 'var(--ink)', border: '1.5px solid #E4E1F5', borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: 'pointer', width: '100%' }}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
@@ -144,7 +163,7 @@ const CertificateDetail: React.FC = () => {
         </Link>
       </aside>
 
-      {/* â”€â”€ MAIN CONTENT: The Certificate â”€â”€ */}
+      {/* ── MAIN CONTENT: The Certificate ── */}
       <div className="main-content">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -152,7 +171,7 @@ const CertificateDetail: React.FC = () => {
           transition={{ type: 'spring', stiffness: 50 }}
         >
           {/* Outer certificate frame */}
-          <div style={{ backgroundColor: '#ffffff', position: 'relative', border: '1px solid #E4E1F5', borderRadius: '8px', boxShadow: '0 30px 60px -15px rgba(83,74,183,0.15)', overflow: 'hidden', aspectRatio: '1.414 / 1', display: 'flex', flexDirection: 'column' }}>
+          <div id="certificate-node" style={{ backgroundColor: '#ffffff', position: 'relative', border: '1px solid #E4E1F5', borderRadius: '8px', boxShadow: '0 30px 60px -15px rgba(83,74,183,0.15)', overflow: 'hidden', aspectRatio: '1.414 / 1', display: 'flex', flexDirection: 'column' }}>
             
             {/* Top-left Geometric Banner */}
             <div style={{ position: 'absolute', top: 0, left: '5%', width: '15%', height: '45%', zIndex: 0 }}>
