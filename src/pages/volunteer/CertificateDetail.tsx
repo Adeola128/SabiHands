@@ -11,6 +11,7 @@ const CertificateDetail: React.FC = () => {
   const [cert, setCert] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   const handleCopy = () => {
     if (cert && cert.code) {
@@ -30,7 +31,6 @@ const CertificateDetail: React.FC = () => {
         .select(`
           *,
           gigs(title, type, organizations(name, logo_url)),
-          users(volunteer_profiles(full_name)),
           attendance(hours)
         `);
         
@@ -40,11 +40,22 @@ const CertificateDetail: React.FC = () => {
         query = query.eq('verification_code', id);
       }
       
-      const { data } = await query.single();
+      const { data, error } = await query.single();
       
+      if (error) {
+         console.error("Certificate fetch error:", error);
+         setFetchError(error.message || JSON.stringify(error));
+      }
+
       if (data) {
+        let certName = data.recipient_name;
+        if (!certName && data.volunteer_id) {
+           const { data: vp } = await supabase.from('volunteer_profiles').select('full_name').eq('user_id', data.volunteer_id).maybeSingle();
+           if (vp?.full_name) certName = vp.full_name;
+        }
+        
         setCert({
-          name: data.recipient_name || (data.users?.volunteer_profiles && data.users.volunteer_profiles.length > 0 ? data.users.volunteer_profiles[0].full_name : 'Volunteer'),
+          name: certName || 'Volunteer',
           gig: data.gigs?.title,
           org: data.gigs?.organizations?.name,
           org_logo: data.gigs?.organizations?.logo_url,
@@ -60,6 +71,7 @@ const CertificateDetail: React.FC = () => {
   }, [id]);
 
   if (loading) return <LoadingScreen message="Loading certificate details..." fullScreen={true} />;
+  if (fetchError) return <div style={{ padding: '48px', textAlign: 'center', color: 'red' }}>Error fetching certificate: {fetchError}</div>;
   if (!cert) return <div style={{ padding: '48px', textAlign: 'center' }}>Certificate not found.</div>;
 
   return (
