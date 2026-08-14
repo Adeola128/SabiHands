@@ -81,7 +81,7 @@ const MarkAttendance: React.FC = () => {
       return {
         ...(existingAttendance ? { id: existingAttendance.id } : {}),
         application_id: app.id,
-        confirmed_by: orgData.id,
+        confirmed_by: user.id,
         attended: attendance[app.id] || false,
         hours: 6, // Defaulting to 6 hours for MVP
         confirmed_at: new Date().toISOString()
