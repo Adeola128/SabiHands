@@ -78,7 +78,10 @@ const IssueCertificates: React.FC = () => {
 
       if (attendanceData) {
         // Filter out those who already have a certificate
-        const eligibleAttendees = attendanceData.filter(a => !issuedVolunteerIds.has(a.applications.volunteer_id));
+        const eligibleAttendees = attendanceData.filter(a => {
+          const application = Array.isArray(a.applications) ? a.applications[0] : a.applications;
+          return application?.volunteer_id && !issuedVolunteerIds.has(application.volunteer_id);
+        });
         
         setAttendees(eligibleAttendees);
         
@@ -88,20 +91,24 @@ const IssueCertificates: React.FC = () => {
 
         const initialNames: Record<string, string> = {};
         for (const a of eligibleAttendees) {
-          const profiles = a.applications?.volunteer_profiles;
+          const application = Array.isArray(a.applications) ? a.applications[0] : a.applications;
+          const profiles = application?.volunteer_profiles;
           const profile = Array.isArray(profiles) ? profiles[0] : profiles;
           let name = profile?.full_name;
           
-          if (!name && a.applications?.volunteer_id) {
-            const { data: vp } = await supabase.from('volunteer_profiles').select('full_name').eq('user_id', a.applications.volunteer_id).maybeSingle();
+          if (!name && application?.volunteer_id) {
+            const { data: vp } = await supabase.from('volunteer_profiles').select('full_name').eq('user_id', application.volunteer_id).maybeSingle();
             if (vp?.full_name) name = vp.full_name;
           }
           
-          initialNames[a.applications?.volunteer_id] = name || 'Volunteer';
+          if (application?.volunteer_id) {
+            initialNames[application.volunteer_id] = name || 'Volunteer';
+          }
         }
         setNames(initialNames);
         if (eligibleAttendees.length > 0) {
-          setPreviewId(eligibleAttendees[0].applications.volunteer_id);
+          const firstApp = Array.isArray(eligibleAttendees[0].applications) ? eligibleAttendees[0].applications[0] : eligibleAttendees[0].applications;
+          setPreviewId(firstApp?.volunteer_id || null);
         }
       }
       setLoading(false);
@@ -138,14 +145,18 @@ const IssueCertificates: React.FC = () => {
     setIssuing(true);
     
     // Generate certificates
-    const certificates = attendees.map(a => ({
-      attendance_id: a.id,
-      volunteer_id: a.applications.volunteer_id,
-      gig_id: gig.id,
-      verification_code: `SH-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
-      issued_at: new Date().toISOString(),
-      recipient_name: names[a.applications.volunteer_id] || 'Volunteer'
-    }));
+    const certificates = attendees.map(a => {
+      const application = Array.isArray(a.applications) ? a.applications[0] : a.applications;
+      const volId = application?.volunteer_id;
+      return {
+        attendance_id: a.id,
+        volunteer_id: volId,
+        gig_id: gig.id,
+        verification_code: `SH-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+        issued_at: new Date().toISOString(),
+        recipient_name: volId ? (names[volId] || 'Volunteer') : 'Volunteer'
+      };
+    });
 
     const { error: certError } = await supabase
       .from('certificates')
@@ -160,13 +171,17 @@ const IssueCertificates: React.FC = () => {
     // Insert Reviews
     if (user && gig.organizations?.id) {
       const reviewRecords = attendees
-        .filter(a => ratings[a.applications.volunteer_id])
-        .map(a => ({
+        .map(a => {
+          const application = Array.isArray(a.applications) ? a.applications[0] : a.applications;
+          return { a, volId: application?.volunteer_id };
+        })
+        .filter(({ volId }) => volId && ratings[volId])
+        .map(({ a, volId }) => ({
           reviewer_id: user.id, // Orgs use user_id to write reviews? Wait, auth.users(id) is the reviewer. We'll use user.id.
-          reviewee_id: a.applications.volunteer_id,
+          reviewee_id: volId,
           gig_id: gig.id,
-          rating: ratings[a.applications.volunteer_id],
-          comment: comments[a.applications.volunteer_id] || ''
+          rating: ratings[volId!],
+          comment: comments[volId!] || ''
         }));
 
       if (reviewRecords.length > 0) {
@@ -278,40 +293,42 @@ const IssueCertificates: React.FC = () => {
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         {attendees.length === 0 && <div style={{ fontSize: '13px', color: 'var(--muted)' }}>No attendees marked present.</div>}
                         {attendees.map(a => {
-                          const name = names[a.applications.volunteer_id] || 'Volunteer';
+                          const application = Array.isArray(a.applications) ? a.applications[0] : a.applications;
+                          const volId = application?.volunteer_id || a.id;
+                          const name = names[volId] || 'Volunteer';
                           const initials = name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase();
-                          const isPreview = previewId === a.applications.volunteer_id;
+                          const isPreview = previewId === volId;
                           return (
-                          <div key={a.id} onClick={() => setPreviewId(a.applications.volunteer_id)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', backgroundColor: isPreview ? 'var(--purple-50)' : 'var(--paper)', borderRadius: '10px', border: `1px solid ${isPreview ? 'var(--purple-400)' : '#E4E1F5'}`, cursor: 'pointer', transition: 'all 0.2s' }}>
+                          <div key={a.id} onClick={() => setPreviewId(volId)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', backgroundColor: isPreview ? 'var(--purple-50)' : 'var(--paper)', borderRadius: '10px', border: `1px solid ${isPreview ? 'var(--purple-400)' : '#E4E1F5'}`, cursor: 'pointer', transition: 'all 0.2s' }}>
                             <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'var(--purple-100)', color: 'var(--purple-700)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '12px', fontFamily: 'var(--display)', flexShrink: 0 }}>
                               {initials}
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
                               <input 
                                 type="text" 
-                                value={names[a.applications.volunteer_id] || ''}
-                                onChange={(e) => setNames(prev => ({ ...prev, [a.applications.volunteer_id]: e.target.value }))}
-                                onClick={(e) => { e.stopPropagation(); setPreviewId(a.applications.volunteer_id); }}
-                                onFocus={() => setPreviewId(a.applications.volunteer_id)}
+                                value={names[volId] || ''}
+                                onChange={(e) => setNames(prev => ({ ...prev, [volId]: e.target.value }))}
+                                onClick={(e) => { e.stopPropagation(); setPreviewId(volId); }}
+                                onFocus={() => setPreviewId(volId)}
                                 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--ink)', border: '1px solid transparent', borderBottom: '1px solid #D1CEDF', outline: 'none', background: 'transparent', padding: '2px 0', width: '100%' }}
                                 placeholder="Certificate Name"
                               />
                               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
                                 <span style={{ fontSize: '11px', color: 'var(--muted)' }}>Rate volunteer:</span>
-                                <div onClick={(e) => { e.stopPropagation(); setPreviewId(a.applications.volunteer_id); }}>
+                                <div onClick={(e) => { e.stopPropagation(); setPreviewId(volId); }}>
                                   <StarRating 
-                                    rating={ratings[a.applications.volunteer_id] || 0} 
-                                    onChange={(score) => setRatings(prev => ({ ...prev, [a.applications.volunteer_id]: score }))} 
+                                    rating={ratings[volId] || 0} 
+                                    onChange={(score) => setRatings(prev => ({ ...prev, [volId]: score }))} 
                                   />
                                 </div>
                               </div>
-                              {ratings[a.applications.volunteer_id] ? (
+                              {ratings[volId] ? (
                                 <textarea
                                   placeholder="Leave a short review (optional)"
-                                  value={comments[a.applications.volunteer_id] || ''}
-                                  onChange={(e) => setComments(prev => ({ ...prev, [a.applications.volunteer_id]: e.target.value }))}
-                                  onClick={(e) => { e.stopPropagation(); setPreviewId(a.applications.volunteer_id); }}
-                                  onFocus={() => setPreviewId(a.applications.volunteer_id)}
+                                  value={comments[volId] || ''}
+                                  onChange={(e) => setComments(prev => ({ ...prev, [volId]: e.target.value }))}
+                                  onClick={(e) => { e.stopPropagation(); setPreviewId(volId); }}
+                                  onFocus={() => setPreviewId(volId)}
                                   style={{ marginTop: '8px', padding: '8px', fontSize: '12px', border: '1px solid #D1CEDF', borderRadius: '4px', resize: 'vertical', minHeight: '40px', width: '100%', fontFamily: 'var(--sans)' }}
                                 />
                               ) : null}
