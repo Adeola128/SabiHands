@@ -1,18 +1,27 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
-import { NIGERIA_STATES } from '../../utils/constants';
 import './Signup.css';
 
-const interestsList = [
+const CAUSES = [
+  "Education & Mentorship",
+  "Tech Empowerment",
+  "Environment & Climate",
+  "Health & Wellness",
+  "Poverty Alleviation",
+  "Arts & Culture"
+];
+
+const SKILLS = [
   "Web/App Development",
-  "Design & Creative",
+  "Design & UI/UX",
   "Social Media & Marketing",
   "Physical Event Support",
   "Writing & Content",
   "Data Entry & Admin",
+  "Project Management"
 ];
 
 const VolunteerOnboarding: React.FC = () => {
@@ -20,234 +29,243 @@ const VolunteerOnboarding: React.FC = () => {
   const { user } = useAuth();
   
   const [step, setStep] = useState(1);
+  const [direction, setDirection] = useState(1); // 1 for forward, -1 for backward
   
-  // Form State
+  // Quiz State
+  const [primaryGoal, setPrimaryGoal] = useState<string[]>([]);
+  const [selectedCauses, setSelectedCauses] = useState<string[]>([]);
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [location, setLocation] = useState('');
-  const [avatarUrl, setAvatarUrl] = useState('');
-  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
-  const [availability, setAvailability] = useState('');
-  const [skills, setSkills] = useState('');
+  
+  // Fake Loading State
+  const [isBuildingFeed, setIsBuildingFeed] = useState(false);
+  const [loadingText, setLoadingText] = useState('Analyzing your profile...');
+  const [feedReady, setFeedReady] = useState(false);
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const toggleInterest = (interest: string) => {
-    setSelectedInterests(prev => 
-      prev.includes(interest) 
-        ? prev.filter(i => i !== interest)
-        : [...prev, interest]
+  const toggleArrayItem = (setter: React.Dispatch<React.SetStateAction<string[]>>, item: string) => {
+    setter(prev => 
+      prev.includes(item) 
+        ? prev.filter(i => i !== item)
+        : [...prev, item]
     );
   };
 
-  const saveProfile = async (complete: boolean = false) => {
-    if (!user) {
-      setError("You must be logged in to complete onboarding.");
-      return false;
+  const handleNext = () => {
+    if (step < 4) {
+      setDirection(1);
+      setStep(prev => prev + 1);
+    } else if (step === 4) {
+      startFeedGeneration();
     }
+  };
 
-    setLoading(true);
-    setError(null);
+  const startFeedGeneration = () => {
+    setIsBuildingFeed(true);
+    setStep(5); // Loading Step
 
+    // Simulate analyzing phases
+    setTimeout(() => setLoadingText('Matching your skills with local NGOs...'), 1500);
+    setTimeout(() => setLoadingText('Building your personalized feed...'), 3000);
+    setTimeout(() => {
+      setIsBuildingFeed(false);
+      setFeedReady(true);
+    }, 4500);
+  };
+
+  const handleComplete = async () => {
+    if (!user) return;
+    
     try {
-      // Clean up skills array
-      const skillsArray = skills.split(',').map(s => s.trim()).filter(s => s);
+      await supabase.from('volunteer_profiles').upsert({
+        user_id: user.id,
+        full_name: user.user_metadata?.full_name || 'Volunteer',
+        location: location || null,
+        interests: [...selectedCauses, ...primaryGoal],
+        skills: selectedSkills,
+      }, { onConflict: 'user_id' });
 
-      const { error: updateError } = await supabase
-        .from('volunteer_profiles')
-        .upsert({
-          user_id: user.id,
-          full_name: user.user_metadata?.full_name || 'Volunteer',
-          location: location || null,
-          avatar_url: avatarUrl || null,
-          interests: selectedInterests.length > 0 ? selectedInterests : null,
-          skills: skillsArray.length > 0 ? skillsArray : null,
-          bio: availability ? `Available for ${availability}` : null
-        }, { onConflict: 'user_id' });
-
-      if (updateError) throw updateError;
-
-      if (complete) {
-        await supabase.auth.updateUser({ data: { onboarding_complete: true } });
-      }
-      return true;
-    } catch (err: any) {
-      console.error("Onboarding error:", err);
-      setError(err.message || "Failed to save profile.");
-      return false;
-    } finally {
-      setLoading(false);
+      await supabase.auth.updateUser({ data: { onboarding_complete: true } });
+      navigate('/dashboard/volunteer', { replace: true });
+    } catch (error) {
+      console.error("Failed to save profile", error);
+      navigate('/dashboard/volunteer', { replace: true });
     }
   };
 
-  const handleNext = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (step < 3) {
-      setStep(prev => prev + 1);
-    } else {
-      const success = await saveProfile(true);
-      if (success) navigate('/dashboard/volunteer', { replace: true });
-    }
+  const variants = {
+    enter: (dir: number) => ({
+      x: dir > 0 ? 50 : -50,
+      opacity: 0
+    }),
+    center: {
+      x: 0,
+      opacity: 1
+    },
+    exit: (dir: number) => ({
+      x: dir < 0 ? 50 : -50,
+      opacity: 0
+    })
   };
 
-  const handleSkip = async () => {
-    if (step < 3) {
-      setStep(prev => prev + 1);
-    } else {
-      const success = await saveProfile(true);
-      if (success) navigate('/dashboard/volunteer', { replace: true });
-    }
-  };
+  // ----------------------------------------------------
+  // RENDER HELPERS
+  // ----------------------------------------------------
 
-  const handleSkipAll = async () => {
-    const success = await saveProfile(true);
-    if (success) navigate('/dashboard/volunteer', { replace: true });
-  };
+  const renderStep1 = () => (
+    <div style={{ textAlign: 'center' }}>
+      <h2 style={{ fontSize: '28px', color: 'var(--ink)', marginBottom: '12px', fontFamily: 'var(--display)' }}>What brings you to Ralvo?</h2>
+      <p style={{ color: 'var(--body)', marginBottom: '32px' }}>Select all that apply.</p>
+      
+      <div style={{ display: 'grid', gap: '12px', textAlign: 'left' }}>
+        {["Gain practical experience", "Help my local community", "Meet like-minded people", "Build my professional portfolio"].map(goal => (
+          <label key={goal} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 24px', backgroundColor: primaryGoal.includes(goal) ? 'var(--purple-50)' : 'white', border: `2px solid ${primaryGoal.includes(goal) ? 'var(--purple-600)' : '#E2E8F0'}`, borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s' }}>
+            <input type="checkbox" checked={primaryGoal.includes(goal)} onChange={() => toggleArrayItem(setPrimaryGoal, goal)} style={{ width: '20px', height: '20px', accentColor: 'var(--purple-600)' }} />
+            <span style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink)' }}>{goal}</span>
+          </label>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderStep2 = () => (
+    <div style={{ textAlign: 'center' }}>
+      <h2 style={{ fontSize: '28px', color: 'var(--ink)', marginBottom: '12px', fontFamily: 'var(--display)' }}>What causes keep you awake at night?</h2>
+      <p style={{ color: 'var(--body)', marginBottom: '32px' }}>We'll prioritize gigs related to these areas.</p>
+      
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'center' }}>
+        {CAUSES.map(cause => (
+          <button key={cause} onClick={() => toggleArrayItem(setSelectedCauses, cause)} style={{ padding: '12px 24px', borderRadius: '99px', border: `2px solid ${selectedCauses.includes(cause) ? 'var(--purple-600)' : '#E2E8F0'}`, backgroundColor: selectedCauses.includes(cause) ? 'var(--purple-600)' : 'white', color: selectedCauses.includes(cause) ? 'white' : 'var(--ink)', fontWeight: 600, fontSize: '15px', cursor: 'pointer', transition: 'all 0.2s' }}>
+            {cause}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderStep3 = () => (
+    <div style={{ textAlign: 'center' }}>
+      <h2 style={{ fontSize: '28px', color: 'var(--ink)', marginBottom: '12px', fontFamily: 'var(--display)' }}>What superpowers can you offer?</h2>
+      <p style={{ color: 'var(--body)', marginBottom: '32px' }}>Select skills you want to use or improve.</p>
+      
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'center' }}>
+        {SKILLS.map(skill => (
+          <button key={skill} onClick={() => toggleArrayItem(setSelectedSkills, skill)} style={{ padding: '12px 24px', borderRadius: '99px', border: `2px solid ${selectedSkills.includes(skill) ? 'var(--teal-600)' : '#E2E8F0'}`, backgroundColor: selectedSkills.includes(skill) ? 'var(--teal-600)' : 'white', color: selectedSkills.includes(skill) ? 'white' : 'var(--ink)', fontWeight: 600, fontSize: '15px', cursor: 'pointer', transition: 'all 0.2s' }}>
+            {skill}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderStep4 = () => (
+    <div style={{ textAlign: 'center' }}>
+      <h2 style={{ fontSize: '28px', color: 'var(--ink)', marginBottom: '12px', fontFamily: 'var(--display)' }}>Where are you located?</h2>
+      <p style={{ color: 'var(--body)', marginBottom: '32px' }}>This helps us match you with physical events in your city.</p>
+      
+      <input 
+        type="text" 
+        value={location} 
+        onChange={e => setLocation(e.target.value)} 
+        placeholder="e.g. Lagos, Abuja, Remote"
+        style={{ width: '100%', maxWidth: '400px', padding: '16px', borderRadius: '12px', border: '2px solid #E2E8F0', fontSize: '16px', outline: 'none' }}
+      />
+    </div>
+  );
+
+  const renderLoading = () => (
+    <div style={{ textAlign: 'center', padding: '60px 0' }}>
+      <div style={{ margin: '0 auto 32px', width: '64px', height: '64px', border: '4px solid #E0E7FF', borderTopColor: 'var(--purple-600)', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+      <h2 style={{ fontSize: '24px', color: 'var(--ink)', fontFamily: 'var(--display)', marginBottom: '12px' }}>{loadingText}</h2>
+      <p style={{ color: 'var(--body)' }}>Please wait a moment...</p>
+    </div>
+  );
+
+  const renderSuccess = () => (
+    <div style={{ textAlign: 'center' }}>
+      <div style={{ width: '80px', height: '80px', backgroundColor: '#ECFDF5', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', color: '#10B981' }}>
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <h2 style={{ fontSize: '32px', color: 'var(--ink)', fontFamily: 'var(--display)', marginBottom: '16px' }}>Your feed is ready.</h2>
+      <p style={{ color: 'var(--body)', fontSize: '16px', marginBottom: '40px', lineHeight: 1.6 }}>
+        We found <strong>several active gigs</strong> that need your exact skills. <br/>
+        It's time to build your portfolio and make a difference.
+      </p>
+      
+      <div style={{ backgroundColor: '#F8FAFC', padding: '32px', borderRadius: '16px', marginBottom: '40px', textAlign: 'left', border: '1px solid #E2E8F0' }}>
+        <p style={{ fontStyle: 'italic', color: 'var(--ink)', fontSize: '16px', lineHeight: 1.6, marginBottom: '24px' }}>
+          "Welcome to the movement. We built Ralvo to connect passionate people like you with organizations driving real impact. Let's get to work!"
+        </p>
+        <div style={{ fontFamily: '"Brush Script MT", cursive', fontSize: '24px', color: 'var(--purple-600)' }}>
+          - Adeola
+        </div>
+      </div>
+      
+      <button onClick={handleComplete} style={{ width: '100%', padding: '16px', backgroundColor: 'var(--purple-600)', color: 'white', border: 'none', borderRadius: '12px', fontWeight: 600, fontSize: '16px', cursor: 'pointer', transition: 'background-color 0.2s' }}>
+        Take me to my gigs &rarr;
+      </button>
+    </div>
+  );
 
   return (
-    <div className="screen role-is-volunteer">
-      <div className="visual">
-        <div className="visual-photo">
-          <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=900&q=80" alt="Volunteers working together" />
+    <div style={{ minHeight: '100vh', display: 'flex', backgroundColor: '#F1EFFB' }}>
+      
+      {/* Left Side - Image/Branding */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '40px', position: 'relative', overflow: 'hidden' }} className="hide-on-mobile">
+        <div style={{ position: 'relative', zIndex: 2 }}>
+          <img src="https://res.cloudinary.com/dohuj4mx9/image/upload/v1786580446/Ralvo_Horizontal_Lockup_1_ljgzj1.png" alt="Ralvo" width="120" />
         </div>
-        <svg className="seam" viewBox="0 0 64 100" preserveAspectRatio="none">
-          <path d="M32,0 C 8,16 54,28 32,42 C 8,56 54,68 32,82 C 14,92 40,96 30,100 L64,100 L64,0 Z" />
-        </svg>
-        <div className="visual-content">
-          <Link to="/" className="visual-brand">
-            <svg viewBox="0 0 100 100">
-              <path d="M60 15 A35 35 0 1 0 60 85" fill="none" stroke="#AFA9EC" strokeWidth="16" strokeLinecap="round" />
-              <path d="M40 15 A35 35 0 1 1 40 85" fill="none" stroke="#5DCAA5" strokeWidth="16" strokeLinecap="round" />
-            </svg>
-            <span>Ralvo</span>
-          </Link>
-          <div>
-            <p className="visual-quote">"Your skills are needed. We'll show you where."</p>
-            <p className="visual-sub">Let us know what you're good at, so we can match you perfectly.</p>
-          </div>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', zIndex: 2 }}>
+          {/* Using mix-blend-mode to remove the white background from the generated image */}
+          <img src="/images/onboarding-volunteer.jpg" alt="Volunteer Illustration" style={{ width: '80%', maxWidth: '500px', mixBlendMode: 'multiply' }} />
         </div>
       </div>
 
-      <div className="form-panel">
-        <div className="form-inner">
-          <div className="form-top" style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span className="login-hint">Step {step} of 3</span>
-            <button type="button" onClick={handleSkipAll} className="btn-link" style={{ fontSize: '14px', color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer' }}>Skip all</button>
+      {/* Right Side - Interactive Quiz */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: 'white', borderTopLeftRadius: '32px', borderBottomLeftRadius: '32px', boxShadow: '-10px 0 40px rgba(0,0,0,0.05)', position: 'relative' }}>
+        
+        {/* Progress Bar */}
+        {step <= 4 && (
+          <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', backgroundColor: '#F1F5F9', borderTopLeftRadius: '32px' }}>
+            <div style={{ height: '100%', backgroundColor: 'var(--purple-600)', width: \`\${(step / 4) * 100}%\`, transition: 'width 0.3s ease', borderTopLeftRadius: '32px' }} />
           </div>
+        )}
 
-          <div className="auth-eyebrow">Profile Setup</div>
-          
-          <AnimatePresence mode="wait">
-            <motion.div 
-              key={step}
-              initial={{ opacity: 0, x: 20 }} 
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.2 }}
-            >
-              {error && <div className="auth-error-popup">{error}</div>}
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px' }}>
+          <div style={{ width: '100%', maxWidth: '480px' }}>
+            
+            <AnimatePresence mode="wait" custom={direction}>
+              <motion.div
+                key={step}
+                custom={direction}
+                variants={variants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ type: "tween", ease: "easeInOut", duration: 0.3 }}
+              >
+                {step === 1 && renderStep1()}
+                {step === 2 && renderStep2()}
+                {step === 3 && renderStep3()}
+                {step === 4 && renderStep4()}
+                {step === 5 && !feedReady && renderLoading()}
+                {step === 5 && feedReady && renderSuccess()}
+              </motion.div>
+            </AnimatePresence>
 
-              <form className="auth-form" onSubmit={handleNext}>
+            {/* Bottom Controls */}
+            {step <= 4 && (
+              <div style={{ marginTop: '48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                {step > 1 ? (
+                  <button onClick={() => { setDirection(-1); setStep(s => s - 1); }} style={{ background: 'none', border: 'none', color: 'var(--muted)', fontWeight: 600, cursor: 'pointer', padding: '8px 0' }}>&larr; Back</button>
+                ) : <div/>}
                 
-                {step === 1 && (
-                  <>
-                    <h1>Basic Details</h1>
-                    <p className="form-sub">Tell us where you are based and how you look.</p>
-                    
-                    <div className="field">
-                      <div className="field-header">
-                        <label htmlFor="location">Where are you based in Nigeria?</label>
-                      </div>
-                      <select id="location" value={location} onChange={e => setLocation(e.target.value)} required style={{ width: '100%', padding: '16px', borderRadius: '10px', border: '1.5px solid #E4E1F5', outline: 'none', fontFamily: 'var(--sans)', fontSize: '16px' }}>
-                        <option value="">Select your area...</option>
-                        {NIGERIA_STATES.map(state => (
-                          <option key={state} value={state}>{state}</option>
-                        ))}
-                      </select>
-                    </div>
+                <button onClick={handleNext} style={{ padding: '12px 32px', backgroundColor: 'var(--ink)', color: 'white', border: 'none', borderRadius: '99px', fontWeight: 600, fontSize: '15px', cursor: 'pointer' }}>
+                  {step === 4 ? 'Build My Feed' : 'Continue'}
+                </button>
+              </div>
+            )}
 
-                    <div className="field" style={{ marginTop: '24px' }}>
-                      <div className="field-header">
-                        <label htmlFor="avatarUrl">Avatar URL (Optional)</label>
-                      </div>
-                      <input 
-                        type="url" 
-                        id="avatarUrl" 
-                        value={avatarUrl} 
-                        onChange={e => setAvatarUrl(e.target.value)} 
-                        placeholder="https://example.com/photo.jpg" 
-                      />
-                    </div>
-                  </>
-                )}
-
-                {step === 2 && (
-                  <>
-                    <h1>Your Interests</h1>
-                    <p className="form-sub">What causes or roles are you most passionate about?</p>
-                    
-                    <div className="field">
-                      <div className="chip-row">
-                        {interestsList.map(interest => (
-                          <div 
-                            key={interest}
-                            className={`chip ${selectedInterests.includes(interest) ? 'selected' : ''}`}
-                            onClick={() => toggleInterest(interest)}
-                            style={{ cursor: 'pointer' }}
-                          >
-                            {interest}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </>
-                )}
-
-                {step === 3 && (
-                  <>
-                    <h1>Availability & Skills</h1>
-                    <p className="form-sub">Let us know when you can help and what you bring to the table.</p>
-                    
-                    <div className="field">
-                      <div className="field-header">
-                        <label>Current Availability</label>
-                      </div>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                        {['weekends', 'part-time', 'full-time', 'remote-only'].map(val => (
-                          <label key={val} style={{ display: 'flex', flexDirection: 'column', padding: '16px', border: availability === val ? '1.5px solid var(--purple-500)' : '1.5px solid #E4E1F5', borderRadius: '12px', cursor: 'pointer', backgroundColor: 'var(--white)' }} className="radio-card">
-                            <input type="radio" name="availability" value={val} checked={availability === val} onChange={e => setAvailability(e.target.value)} required style={{ marginBottom: '12px', accentColor: 'var(--purple-500)' }} />
-                            <span style={{ fontWeight: 600, color: 'var(--ink)', textTransform: 'capitalize' }}>{val.replace('-', ' ')}</span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="field" style={{ marginTop: '24px' }}>
-                      <div className="field-header">
-                        <label htmlFor="skills">Specific Skills (comma separated)</label>
-                      </div>
-                      <input 
-                        type="text" 
-                        id="skills" 
-                        value={skills} 
-                        onChange={e => setSkills(e.target.value)} 
-                        placeholder="e.g. React, Graphic Design, Copywriting" 
-                      />
-                    </div>
-                  </>
-                )}
-
-                <div style={{ display: 'flex', gap: '16px', marginTop: '32px' }}>
-                  <button type="button" onClick={handleSkip} disabled={loading} className="submit-btn" style={{ background: 'transparent', color: 'var(--ink)', border: '1px solid #E4E1F5', opacity: loading ? 0.7 : 1 }}>
-                    Skip
-                  </button>
-                  <button type="submit" disabled={loading} className="submit-btn" style={{ opacity: loading ? 0.7 : 1 }}>
-                    {loading ? 'Saving...' : step === 3 ? 'Complete Profile' : 'Next Step'}
-                  </button>
-                </div>
-                
-              </form>
-            </motion.div>
-          </AnimatePresence>
+          </div>
         </div>
       </div>
     </div>
@@ -255,4 +273,3 @@ const VolunteerOnboarding: React.FC = () => {
 };
 
 export default VolunteerOnboarding;
-

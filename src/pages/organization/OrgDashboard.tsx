@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import LoadingScreen from '../../components/LoadingScreen';
 import EmptyState from '../../components/EmptyState';
+import OnboardingChecklist from '../../components/dashboard/OnboardingChecklist';
 
 const OrgDashboard: React.FC = () => {
   const { user } = useAuth();
@@ -161,6 +162,8 @@ const OrgDashboard: React.FC = () => {
             </Link>
           </div>
         </div>
+
+        <OnboardingChecklist organization={org} stats={stats} />
 
         {/* Action Required — Pending Applicants & Submissions */}
         <div className="dash-card" style={{ marginBottom: '32px' }}>

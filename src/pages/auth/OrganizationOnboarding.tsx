@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
-import { NIGERIA_STATES } from '../../utils/constants';
-import { uploadImage } from '../../lib/uploadImage';
 import { generateSlug } from '../../utils/slug';
 import './Signup.css';
 
@@ -13,51 +11,39 @@ const OrganizationOnboarding: React.FC = () => {
   const { user } = useAuth();
   
   const [step, setStep] = useState(1);
+  const [direction, setDirection] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [uploadingLogo, setUploadingLogo] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Form State
   const [orgData, setOrgData] = useState({
     name: user?.user_metadata?.full_name || '',
-    org_type: '',
-    cac_number: '',
-    logo_url: '',
     location: '',
-    website: '',
-    contact_phone: '',
-    bio: ''
+    focus: ''
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setOrgData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleNext = () => setStep(s => s + 1);
-  const handlePrev = () => setStep(s => s - 1);
-
-  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setUploadingLogo(true);
-      setError(null);
-      try {
-        const url = await uploadImage(e.target.files[0], 'organization-logos');
-        setOrgData(prev => ({ ...prev, logo_url: url }));
-      } catch (err: any) {
-        setError(err.message || 'Failed to upload logo.');
-      } finally {
-        setUploadingLogo(false);
-      }
+  const handleNext = () => {
+    if (step < 3) {
+      setDirection(1);
+      setStep(s => s + 1);
+    } else {
+      handleSubmit();
     }
   };
 
-  const handleSubmit = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (!user) {
-      setError("You must be logged in to complete onboarding.");
-      return;
+  const handlePrev = () => {
+    if (step > 1) {
+      setDirection(-1);
+      setStep(s => s - 1);
     }
+  };
 
+  const handleSubmit = async () => {
+    if (!user) return;
     setLoading(true);
     setError(null);
 
@@ -83,13 +69,9 @@ const OrganizationOnboarding: React.FC = () => {
           user_id: user.id,
           name: orgData.name || 'Organization',
           slug: slug,
-          org_type: orgData.org_type,
-          cac_number: orgData.cac_number,
-          logo_url: orgData.logo_url,
           location: orgData.location,
-          website: orgData.website,
-          contact_phone: orgData.contact_phone,
-          bio: orgData.bio
+          // Bio is used temporarily to store focus before they flesh it out
+          bio: orgData.focus ? `Main focus: ${orgData.focus}` : null
         }, { onConflict: 'user_id' });
 
       if (updateError) throw updateError;
@@ -99,209 +81,151 @@ const OrganizationOnboarding: React.FC = () => {
       navigate('/dashboard/org', { replace: true });
     } catch (err: any) {
       console.error("Onboarding error:", err);
-      setError(err.message || "Failed to save organization profile.");
+      setError(err.message || "Failed to save profile.");
       setLoading(false);
     }
   };
 
-  return (
-    <div className="screen role-is-org">
-      <div className="visual role-org">
-        <div className="visual-photo">
-          <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=900&q=80" alt="Volunteers working together" />
+  const variants = {
+    enter: (dir: number) => ({ x: dir > 0 ? 50 : -50, opacity: 0 }),
+    center: { x: 0, opacity: 1 },
+    exit: (dir: number) => ({ x: dir < 0 ? 50 : -50, opacity: 0 })
+  };
+
+  // ----------------------------------------------------
+  // RENDER HELPERS
+  // ----------------------------------------------------
+
+  const renderStep1 = () => (
+    <div style={{ textAlign: 'center' }}>
+      <h2 style={{ fontSize: '28px', color: 'var(--ink)', marginBottom: '12px', fontFamily: 'var(--display)' }}>Let's set up your HQ</h2>
+      <p style={{ color: 'var(--body)', marginBottom: '32px' }}>We just need a couple of details to get you started.</p>
+      
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', textAlign: 'left' }}>
+        <div>
+          <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, color: 'var(--ink)' }}>Organization Name</label>
+          <input 
+            type="text" 
+            name="name"
+            value={orgData.name} 
+            onChange={handleChange} 
+            placeholder="e.g. SabiHands Initiative"
+            style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '2px solid #E2E8F0', fontSize: '16px', outline: 'none' }}
+          />
         </div>
-        <svg className="seam" viewBox="0 0 64 100" preserveAspectRatio="none">
-          <path d="M32,0 C 8,16 54,28 32,42 C 8,56 54,68 32,82 C 14,92 40,96 30,100 L64,100 L64,0 Z" />
-        </svg>
-        <div className="visual-content">
-          <Link to="/" className="visual-brand">
-            <svg viewBox="0 0 100 100">
-              <path d="M60 15 A35 35 0 1 0 60 85" fill="none" stroke="#AFA9EC" strokeWidth="16" strokeLinecap="round" />
-              <path d="M40 15 A35 35 0 1 1 40 85" fill="none" stroke="#5DCAA5" strokeWidth="16" strokeLinecap="round" />
-            </svg>
-            <span>Ralvo</span>
-          </Link>
-          <div>
-            <p className="visual-quote">"Real hands. Real impact."</p>
-            <p className="visual-sub">Help us verify your organization so you can start posting gigs and recruiting volunteers.</p>
-          </div>
+        <div>
+          <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, color: 'var(--ink)' }}>City / Location</label>
+          <input 
+            type="text" 
+            name="location"
+            value={orgData.location} 
+            onChange={handleChange} 
+            placeholder="e.g. Lagos, Nigeria"
+            style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '2px solid #E2E8F0', fontSize: '16px', outline: 'none' }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderStep2 = () => (
+    <div style={{ textAlign: 'center' }}>
+      <h2 style={{ fontSize: '28px', color: 'var(--ink)', marginBottom: '12px', fontFamily: 'var(--display)' }}>What's your main focus right now?</h2>
+      <p style={{ color: 'var(--body)', marginBottom: '32px' }}>We'll customize your dashboard checklist based on this.</p>
+      
+      <div style={{ display: 'grid', gap: '12px', textAlign: 'left' }}>
+        {["Finding skilled volunteers", "Tracking volunteer impact hours", "Managing event registrations", "Building a community"].map(focus => (
+          <label key={focus} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 24px', backgroundColor: orgData.focus === focus ? 'var(--purple-50)' : 'white', border: `2px solid ${orgData.focus === focus ? 'var(--purple-600)' : '#E2E8F0'}`, borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s' }}>
+            <input 
+              type="radio" 
+              name="focus" 
+              value={focus} 
+              checked={orgData.focus === focus} 
+              onChange={handleChange} 
+              style={{ width: '20px', height: '20px', accentColor: 'var(--purple-600)' }} 
+            />
+            <span style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink)' }}>{focus}</span>
+          </label>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderStep3 = () => (
+    <div style={{ textAlign: 'center' }}>
+      <div style={{ width: '80px', height: '80px', backgroundColor: '#E0E7FF', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', color: '#4F46E5' }}>
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      </div>
+      <h2 style={{ fontSize: '32px', color: 'var(--ink)', fontFamily: 'var(--display)', marginBottom: '16px' }}>You're all set!</h2>
+      <p style={{ color: 'var(--body)', fontSize: '16px', marginBottom: '40px', lineHeight: 1.6 }}>
+        Your organization workspace is ready. You can finish setting up your profile, get verified, and post your first gig from your dashboard.
+      </p>
+      
+      <button onClick={handleSubmit} disabled={loading} style={{ width: '100%', padding: '16px', backgroundColor: 'var(--ink)', color: 'white', border: 'none', borderRadius: '12px', fontWeight: 600, fontSize: '16px', cursor: 'pointer', transition: 'background-color 0.2s', opacity: loading ? 0.7 : 1 }}>
+        {loading ? 'Setting up workspace...' : 'Go to my Dashboard \u2192'}
+      </button>
+      
+      {error && <p style={{ color: 'var(--red-600)', marginTop: '16px', fontSize: '14px' }}>{error}</p>}
+    </div>
+  );
+
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', backgroundColor: '#F1EFFB' }}>
+      
+      {/* Left Side - Image/Branding */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '40px', position: 'relative', overflow: 'hidden' }} className="hide-on-mobile">
+        <div style={{ position: 'relative', zIndex: 2 }}>
+          <img src="https://res.cloudinary.com/dohuj4mx9/image/upload/v1786580446/Ralvo_Horizontal_Lockup_1_ljgzj1.png" alt="Ralvo" width="120" />
+        </div>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', zIndex: 2 }}>
+          {/* Using mix-blend-mode to remove the white background from the generated image */}
+          <img src="/images/onboarding-org.jpg" alt="Organization Illustration" style={{ width: '90%', maxWidth: '550px', mixBlendMode: 'multiply' }} />
         </div>
       </div>
 
-      <div className="form-panel">
-        <div className="form-inner">
-          <div className="form-top" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span className="login-hint">Step {step} of 3</span>
-            <button 
-              type="button"
-              onClick={() => handleSubmit()}
-              style={{ background: 'none', border: 'none', color: 'var(--muted)', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}
-            >
-              Skip for now
-            </button>
+      {/* Right Side - Interactive Flow */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: 'white', borderTopLeftRadius: '32px', borderBottomLeftRadius: '32px', boxShadow: '-10px 0 40px rgba(0,0,0,0.05)', position: 'relative' }}>
+        
+        {/* Progress Bar */}
+        {step <= 2 && (
+          <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', backgroundColor: '#F1F5F9', borderTopLeftRadius: '32px' }}>
+            <div style={{ height: '100%', backgroundColor: 'var(--purple-600)', width: \`\${(step / 2) * 100}%\`, transition: 'width 0.3s ease', borderTopLeftRadius: '32px' }} />
           </div>
+        )}
 
-          <div className="auth-eyebrow">Organization Setup</div>
-          
-          {error && <div className="auth-error-popup">{error}</div>}
-
-          <AnimatePresence mode="wait">
-            {step === 1 && (
-              <motion.div 
-                key="step1"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px' }}>
+          <div style={{ width: '100%', maxWidth: '480px' }}>
+            
+            <AnimatePresence mode="wait" custom={direction}>
+              <motion.div
+                key={step}
+                custom={direction}
+                variants={variants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ type: "tween", ease: "easeInOut", duration: 0.3 }}
               >
-                <h1>Basic Details</h1>
-                <p className="form-sub">Tell us a bit more about your organization.</p>
+                {step === 1 && renderStep1()}
+                {step === 2 && renderStep2()}
+                {step === 3 && renderStep3()}
+              </motion.div>
+            </AnimatePresence>
 
-                <div className="field" style={{ marginBottom: '20px' }}>
-                  <div className="field-header">
-                    <label>Organization Logo</label>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginTop: '8px' }}>
-                    <div style={{ width: '64px', height: '64px', borderRadius: '12px', backgroundColor: 'var(--purple-50)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '1.5px dashed var(--purple-200)' }}>
-                      {orgData.logo_url ? (
-                        <img src={orgData.logo_url} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      ) : (
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--purple-600)" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                      )}
-                    </div>
-                    <label style={{ display: 'inline-block', padding: '8px 16px', backgroundColor: 'white', border: '1px solid #E4E1F5', borderRadius: '8px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', color: 'var(--ink)' }}>
-                      {uploadingLogo ? 'Uploading...' : 'Upload Logo'}
-                      <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleLogoUpload} disabled={uploadingLogo} />
-                    </label>
-                  </div>
-                </div>
-
-                <div className="field">
-                  <div className="field-header">
-                    <label htmlFor="name">Organization Name</label>
-                  </div>
-                  <input id="name" name="name" type="text" value={orgData.name} onChange={handleChange} className="org-focus" required />
-                </div>
-
-                <div className="field" style={{ marginTop: '24px' }}>
-                  <div className="field-header">
-                    <label htmlFor="org_type">Organization Type</label>
-                  </div>
-                  <select id="org_type" name="org_type" value={orgData.org_type} onChange={handleChange} className="org-focus" required style={{ width: '100%', padding: '16px', borderRadius: '10px', border: '1.5px solid #E4E1F5', outline: 'none', fontFamily: 'var(--sans)', fontSize: '16px' }}>
-                    <option value="">Select type...</option>
-                    <option value="Non-Profit (NGO)">Non-Profit (NGO)</option>
-                    <option value="Community Group">Community Group</option>
-                    <option value="Corporate/Business">Corporate/Business</option>
-                    <option value="Government">Government Agency</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
-
-                <div className="field" style={{ marginTop: '24px' }}>
-                  <div className="field-header">
-                    <label htmlFor="cac_number">CAC Registration Number (Optional)</label>
-                  </div>
-                  <input id="cac_number" name="cac_number" type="text" value={orgData.cac_number} onChange={handleChange} placeholder="e.g. RC 123456" className="org-focus" />
-                </div>
-
-                <button 
-                  type="button" 
-                  onClick={handleNext} 
-                  disabled={!orgData.name || !orgData.org_type} 
-                  className="submit-btn org-btn" 
-                  style={{ marginTop: '32px' }}
-                >
+            {/* Bottom Controls */}
+            {step <= 2 && (
+              <div style={{ marginTop: '48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                {step > 1 ? (
+                  <button onClick={handlePrev} style={{ background: 'none', border: 'none', color: 'var(--muted)', fontWeight: 600, cursor: 'pointer', padding: '8px 0' }}>&larr; Back</button>
+                ) : <div/>}
+                
+                <button onClick={handleNext} disabled={!orgData.name && step === 1} style={{ padding: '12px 32px', backgroundColor: 'var(--purple-600)', color: 'white', border: 'none', borderRadius: '99px', fontWeight: 600, fontSize: '15px', cursor: 'pointer', opacity: (!orgData.name && step === 1) ? 0.5 : 1 }}>
                   Continue
                 </button>
-              </motion.div>
+              </div>
             )}
 
-            {step === 2 && (
-              <motion.div 
-                key="step2"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
-              >
-                <h1>Contact Information</h1>
-                <p className="form-sub">Where are you located and how can people reach you?</p>
-
-                <div className="field">
-                  <div className="field-header">
-                    <label htmlFor="location">Location (State)</label>
-                  </div>
-                  <select id="location" name="location" value={orgData.location} onChange={handleChange} className="org-focus" required style={{ width: '100%', padding: '16px', borderRadius: '10px', border: '1.5px solid #E4E1F5', outline: 'none', fontFamily: 'var(--sans)', fontSize: '16px' }}>
-                    <option value="">Select a state...</option>
-                    {NIGERIA_STATES.map(state => (
-                      <option key={state} value={state}>{state}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="field" style={{ marginTop: '24px' }}>
-                  <div className="field-header">
-                    <label htmlFor="contact_phone">Contact Phone Number</label>
-                  </div>
-                  <input id="contact_phone" name="contact_phone" type="tel" value={orgData.contact_phone} onChange={handleChange} placeholder="+234..." className="org-focus" required />
-                </div>
-
-                <div className="field" style={{ marginTop: '24px' }}>
-                  <div className="field-header">
-                    <label htmlFor="website">Website (Optional)</label>
-                  </div>
-                  <input id="website" name="website" type="url" value={orgData.website} onChange={handleChange} placeholder="https://..." className="org-focus" />
-                </div>
-
-                <div style={{ display: 'flex', gap: '16px', marginTop: '32px' }}>
-                  <button type="button" onClick={handlePrev} className="submit-btn" style={{ background: 'var(--paper)', color: 'var(--ink)', border: '1px solid #E4E1F5', flex: 1 }}>
-                    Back
-                  </button>
-                  <button type="button" onClick={handleNext} disabled={!orgData.location || !orgData.contact_phone} className="submit-btn org-btn" style={{ flex: 2 }}>
-                    Continue
-                  </button>
-                </div>
-              </motion.div>
-            )}
-
-            {step === 3 && (
-              <motion.div 
-                key="step3"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
-              >
-                <h1>Mission & About</h1>
-                <p className="form-sub">Tell volunteers what your organization stands for.</p>
-
-                <div className="field">
-                  <div className="field-header">
-                    <label htmlFor="bio">About / Mission Statement</label>
-                  </div>
-                  <textarea 
-                    id="bio" 
-                    name="bio" 
-                    value={orgData.bio} 
-                    onChange={handleChange} 
-                    placeholder="Describe your organization's mission and what you do..." 
-                    className="org-focus" 
-                    style={{ width: '100%', padding: '16px', borderRadius: '10px', border: '1.5px solid #E4E1F5', outline: 'none', fontFamily: 'var(--sans)', minHeight: '150px', resize: 'vertical' }}
-                    required
-                  ></textarea>
-                </div>
-
-                <div style={{ display: 'flex', gap: '16px', marginTop: '32px' }}>
-                  <button type="button" onClick={handlePrev} className="submit-btn" style={{ background: 'var(--paper)', color: 'var(--ink)', border: '1px solid #E4E1F5', flex: 1 }}>
-                    Back
-                  </button>
-                  <button type="button" onClick={() => handleSubmit()} disabled={loading || !orgData.bio} className="submit-btn org-btn" style={{ flex: 2, opacity: loading ? 0.7 : 1 }}>
-                    {loading ? 'Saving...' : 'Complete Setup'}
-                  </button>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          </div>
         </div>
       </div>
     </div>
@@ -309,4 +233,3 @@ const OrganizationOnboarding: React.FC = () => {
 };
 
 export default OrganizationOnboarding;
-
