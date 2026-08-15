@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-
 interface ChecklistItem {
   id: string;
   title: string;
@@ -22,7 +20,6 @@ const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({ organization,
   // Derive completed status from data
   const isVerified = organization?.verification_status === 'verified';
   const hasGigs = stats.activeGigs > 0;
-  const hasTeam = true; // We don't fetch team count by default in dashboard yet, but we'll simulate
 
   const items: ChecklistItem[] = [
     {
@@ -75,7 +72,7 @@ const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({ organization,
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <span style={{ fontSize: '13px', color: 'var(--muted)', fontWeight: 500 }}>{completedCount} of {totalCount} complete</span>
             <div style={{ width: '100px', height: '6px', backgroundColor: '#F1F5F9', borderRadius: '99px' }}>
-              <div style={{ height: '100%', backgroundColor: 'var(--purple-600)', borderRadius: '99px', width: \`\${progress}%\`, transition: 'width 0.3s' }} />
+              <div style={{ height: '100%', backgroundColor: 'var(--purple-600)', borderRadius: '99px', width: `${progress}%`, transition: 'width 0.3s' }} />
             </div>
           </div>
         </div>
@@ -83,8 +80,8 @@ const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({ organization,
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
         {items.map(item => (
-          <div key={item.id} style={{ display: 'flex', gap: '16px', padding: '16px', backgroundColor: item.isComplete ? '#F8FAFC' : 'white', border: \`1px solid \${item.isComplete ? '#E2E8F0' : 'var(--purple-100)'}\`, borderRadius: '12px', opacity: item.isComplete ? 0.7 : 1 }}>
-            <div style={{ width: '24px', height: '24px', borderRadius: '50%', border: \`2px solid \${item.isComplete ? '#10B981' : '#CBD5E1'}\`, backgroundColor: item.isComplete ? '#10B981' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
+          <div key={item.id} style={{ display: 'flex', gap: '16px', padding: '16px', backgroundColor: item.isComplete ? '#F8FAFC' : 'white', border: `1px solid ${item.isComplete ? '#E2E8F0' : 'var(--purple-100)'}`, borderRadius: '12px', opacity: item.isComplete ? 0.7 : 1 }}>
+            <div style={{ width: '24px', height: '24px', borderRadius: '50%', border: `2px solid ${item.isComplete ? '#10B981' : '#CBD5E1'}`, backgroundColor: item.isComplete ? '#10B981' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
               {item.isComplete && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
             </div>
             <div>

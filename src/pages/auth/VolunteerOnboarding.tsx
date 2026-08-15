@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
@@ -38,7 +38,6 @@ const VolunteerOnboarding: React.FC = () => {
   const [location, setLocation] = useState('');
   
   // Fake Loading State
-  const [isBuildingFeed, setIsBuildingFeed] = useState(false);
   const [loadingText, setLoadingText] = useState('Analyzing your profile...');
   const [feedReady, setFeedReady] = useState(false);
 
@@ -60,14 +59,12 @@ const VolunteerOnboarding: React.FC = () => {
   };
 
   const startFeedGeneration = () => {
-    setIsBuildingFeed(true);
     setStep(5); // Loading Step
 
     // Simulate analyzing phases
     setTimeout(() => setLoadingText('Matching your skills with local NGOs...'), 1500);
     setTimeout(() => setLoadingText('Building your personalized feed...'), 3000);
     setTimeout(() => {
-      setIsBuildingFeed(false);
       setFeedReady(true);
     }, 4500);
   };
@@ -80,7 +77,8 @@ const VolunteerOnboarding: React.FC = () => {
         user_id: user.id,
         full_name: user.user_metadata?.full_name || 'Volunteer',
         location: location || null,
-        interests: [...selectedCauses, ...primaryGoal],
+        primary_goals: primaryGoal,
+        interests: selectedCauses,
         skills: selectedSkills,
       }, { onConflict: 'user_id' });
 
@@ -226,7 +224,7 @@ const VolunteerOnboarding: React.FC = () => {
         {/* Progress Bar */}
         {step <= 4 && (
           <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', backgroundColor: '#F1F5F9', borderTopLeftRadius: '32px' }}>
-            <div style={{ height: '100%', backgroundColor: 'var(--purple-600)', width: \`\${(step / 4) * 100}%\`, transition: 'width 0.3s ease', borderTopLeftRadius: '32px' }} />
+            <div style={{ height: '100%', backgroundColor: 'var(--purple-600)', width: `${(step / 4) * 100}%`, transition: 'width 0.3s ease', borderTopLeftRadius: '32px' }} />
           </div>
         )}
 

@@ -70,8 +70,7 @@ const OrganizationOnboarding: React.FC = () => {
           name: orgData.name || 'Organization',
           slug: slug,
           location: orgData.location,
-          // Bio is used temporarily to store focus before they flesh it out
-          bio: orgData.focus ? `Main focus: ${orgData.focus}` : null
+          focus_area: orgData.focus || null
         }, { onConflict: 'user_id' });
 
       if (updateError) throw updateError;
@@ -189,7 +188,7 @@ const OrganizationOnboarding: React.FC = () => {
         {/* Progress Bar */}
         {step <= 2 && (
           <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', backgroundColor: '#F1F5F9', borderTopLeftRadius: '32px' }}>
-            <div style={{ height: '100%', backgroundColor: 'var(--purple-600)', width: \`\${(step / 2) * 100}%\`, transition: 'width 0.3s ease', borderTopLeftRadius: '32px' }} />
+            <div style={{ height: '100%', backgroundColor: 'var(--purple-600)', width: `${(step / 2) * 100}%`, transition: 'width 0.3s ease', borderTopLeftRadius: '32px' }} />
           </div>
         )}
 

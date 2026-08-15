@@ -9,7 +9,6 @@ const JoinTeam: React.FC = () => {
   const adminToken = searchParams.get('admin_token');
   const navigate = useNavigate();
   const [needsAuth, setNeedsAuth] = useState(false);
-  const [processing, setProcessing] = useState(true);
 
   useEffect(() => {
     const handleJoin = async () => {
@@ -26,7 +25,6 @@ const JoinTeam: React.FC = () => {
         if (token) localStorage.setItem('pending_team_invite_token', token);
         if (adminToken) localStorage.setItem('pending_admin_invite_token', adminToken);
         setNeedsAuth(true);
-        setProcessing(false);
         return;
       }
 
