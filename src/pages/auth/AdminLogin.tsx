@@ -45,6 +45,8 @@ const AdminLogin: React.FC = () => {
   const handleGoogleLogin = async () => {
     try {
       setLoading(true);
+      // Temporarily store the intended role so AuthContext can apply it upon return
+      localStorage.setItem('pendingOnboardingData', JSON.stringify({ role: 'admin' }));
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
