@@ -16,6 +16,7 @@ const TeamMembers: React.FC = () => {
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState('manager');
   const [inviting, setInviting] = useState(false);
+  const [inviteSuccess, setInviteSuccess] = useState('');
 
   useEffect(() => {
     const fetchTeam = async () => {
@@ -121,8 +122,8 @@ const TeamMembers: React.FC = () => {
          throw new Error(resData.error);
       }
       
-      toast.success("Invitation sent successfully!");
-      alert("Invitation sent successfully!");
+      setInviteSuccess("Invitation sent successfully!");
+      setTimeout(() => setInviteSuccess(''), 5000);
       setShowInvite(false);
       setInviteEmail('');
       
@@ -136,13 +137,12 @@ const TeamMembers: React.FC = () => {
       if (membersData) {
          setMembers(prev => {
             const owner = prev.find(p => p.role === 'owner');
-            return owner ? [...membersData, owner] : membersData;
+            return owner ? [...membersData.filter(m => m.id !== owner.id), owner] : membersData;
          });
       }
       
     } catch (err: any) {
       toast.error(err.message);
-      alert(err.message);
     } finally {
       setInviting(false);
     }
@@ -229,6 +229,13 @@ const TeamMembers: React.FC = () => {
           </div>
         )}
 
+        {inviteSuccess && (
+          <div style={{ padding: '16px', backgroundColor: '#F0FDF4', border: '1px solid #16A34A', color: '#16A34A', borderRadius: '8px', marginBottom: '24px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+            {inviteSuccess}
+          </div>
+        )}
+
         <div className="dash-card">
           <div className="dash-card-header">
             <h2 className="dash-card-title">Active Team Members</h2>
@@ -236,8 +243,8 @@ const TeamMembers: React.FC = () => {
           
           <div style={{ padding: '0 24px' }}>
             {members.map((m, i) => {
-              const name = m.status === 'active' ? (m.profiles?.full_name || 'Member') : 'Pending Invite';
-              const email = m.status === 'active' ? (m.profiles?.email || m.invited_email) : m.invited_email;
+              const name = m.status === 'active' ? (m.profiles?.full_name || 'Member') : m.invited_email;
+              const email = m.status === 'active' ? (m.profiles?.email || m.invited_email) : 'Pending Invite';
               const initials = name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase();
               
               return (

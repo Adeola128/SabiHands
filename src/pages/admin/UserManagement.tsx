@@ -109,6 +109,7 @@ const UserManagement: React.FC = () => {
   const [showInviteAdmin, setShowInviteAdmin] = useState(false);
   const [inviteAdminEmail, setInviteAdminEmail] = useState('');
   const [invitingAdmin, setInvitingAdmin] = useState(false);
+  const [inviteSuccess, setInviteSuccess] = useState('');
 
   const handleInviteAdmin = async () => {
     if (!inviteAdminEmail || !inviteAdminEmail.includes('@')) {
@@ -116,6 +117,7 @@ const UserManagement: React.FC = () => {
       return;
     }
     setInvitingAdmin(true);
+    setInviteSuccess('');
     try {
       const { data: resData, error: resError } = await supabase.functions.invoke('invite-platform-admin', {
         body: { email: inviteAdminEmail }
@@ -124,9 +126,12 @@ const UserManagement: React.FC = () => {
       if (resError) throw new Error(resError.message || "Failed to invite admin");
       if (resData?.error) throw new Error(resData.error);
       
-      alert("Admin invitation sent securely via email.");
-      setShowInviteAdmin(false);
+      setInviteSuccess("Admin invitation sent securely via email!");
       setInviteAdminEmail('');
+      setTimeout(() => {
+        setInviteSuccess('');
+        setShowInviteAdmin(false);
+      }, 3000);
     } catch (err: any) {
       alert(err.message);
     } finally {
@@ -168,6 +173,11 @@ const UserManagement: React.FC = () => {
               <h2 style={{ margin: 0, fontSize: '20px' }}>Invite Platform Admin</h2>
               <button onClick={() => setShowInviteAdmin(false)} style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer' }}>&times;</button>
             </div>
+            {inviteSuccess && (
+              <div style={{ padding: '12px', backgroundColor: '#F0FDF4', border: '1px solid #16A34A', color: '#16A34A', borderRadius: '8px', marginBottom: '16px', fontWeight: 600, fontSize: '13px' }}>
+                {inviteSuccess}
+              </div>
+            )}
             <div style={{ marginBottom: '24px' }}>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '8px' }}>Email Address</label>
               <input 
