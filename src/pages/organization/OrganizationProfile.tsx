@@ -13,12 +13,10 @@ const OrganizationProfile: React.FC = () => {
   const [org, setOrg] = useState<any>(null);
   const [gigs, setGigs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({ volunteers: 0, gigs: 0 });
 
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
-
-  // Temporary placeholders
-  const stats = { volunteers: gigs.length > 0 ? Math.floor(gigs.length * 2.5) : 0, gigs: gigs.length || 0 };
 
   useEffect(() => {
     if (!user) return;
@@ -32,6 +30,28 @@ const OrganizationProfile: React.FC = () => {
         
       if (data) {
         setOrg(data);
+        
+        // Fetch all gigs to get total count
+        const { count: totalGigs } = await supabase
+          .from('gigs')
+          .select('id', { count: 'exact', head: true })
+          .eq('organization_id', data.id);
+          
+        let volunteersCount = 0;
+        
+        if (totalGigs && totalGigs > 0) {
+          const { data: appsData } = await supabase
+            .from('applications')
+            .select('volunteer_id, gigs!inner(organization_id)')
+            .eq('gigs.organization_id', data.id)
+            .eq('status', 'accepted');
+            
+          if (appsData) {
+            volunteersCount = new Set(appsData.map(a => a.volunteer_id)).size;
+          }
+        }
+        
+        setStats({ volunteers: volunteersCount, gigs: totalGigs || 0 });
         
         const { data: gigsData } = await supabase
           .from('gigs')

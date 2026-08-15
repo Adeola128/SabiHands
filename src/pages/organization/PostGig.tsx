@@ -295,12 +295,18 @@ const PostGig: React.FC = () => {
                     Timeframe
                   </h3>
                   <div className="post-gig-logistics-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <p style={{ fontSize: '13px', color: 'var(--muted)', margin: '0 0 4px 0', lineHeight: 1.5 }}>
+                        <strong>Tip:</strong> Set the deadline a few days before you actually need the deliverables to create a buffer. 
+                        The gig will automatically close after this date.
+                      </p>
+                    </div>
                     <div>
-                      <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--muted)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Date</label>
+                      <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--muted)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Date / Deadline</label>
                       <input type="date" value={form.date} onChange={e => update('date', e.target.value)} style={{ width: '100%', padding: '12px 16px', borderRadius: '10px', border: '1.5px solid #E4E1F5', fontSize: '15px', color: 'var(--ink)', outline: 'none', fontFamily: 'var(--sans)', backgroundColor: '#FAFAFC', transition: 'border-color 0.2s' }} onFocus={e => e.currentTarget.style.borderColor = 'var(--purple-400)'} onBlur={e => e.currentTarget.style.borderColor = '#E4E1F5'} />
                     </div>
                     <div>
-                      <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--muted)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Start Time</label>
+                      <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--muted)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Time</label>
                       <input type="time" value={form.time} onChange={e => update('time', e.target.value)} style={{ width: '100%', padding: '12px 16px', borderRadius: '10px', border: '1.5px solid #E4E1F5', fontSize: '15px', color: 'var(--ink)', outline: 'none', fontFamily: 'var(--sans)', backgroundColor: '#FAFAFC', transition: 'border-color 0.2s' }} onFocus={e => e.currentTarget.style.borderColor = 'var(--purple-400)'} onBlur={e => e.currentTarget.style.borderColor = '#E4E1F5'} />
                     </div>
                   </div>
@@ -312,7 +318,8 @@ const PostGig: React.FC = () => {
                     <input type="number" min="1" value={form.duration} onChange={e => update('duration', e.target.value)} placeholder="e.g. 4" style={{ width: '100%', padding: '16px 20px', borderRadius: '12px', border: '2px solid transparent', boxShadow: '0 0 0 1px #E4E1F5', fontSize: '16px', color: 'var(--ink)', outline: 'none', fontFamily: 'var(--sans)', backgroundColor: 'var(--white)', transition: 'all 0.2s' }} onFocus={e => e.currentTarget.style.boxShadow = '0 0 0 2px var(--purple-400)'} onBlur={e => e.currentTarget.style.boxShadow = '0 0 0 1px #E4E1F5'} />
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: 'var(--ink)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Volunteers Needed</label>
+                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: 'var(--ink)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Volunteers Needed</label>
+                    <p style={{ fontSize: '11px', color: 'var(--muted)', margin: '0 0 8px 0', lineHeight: 1.4 }}>The gig will not automatically close when this number is reached, allowing you to choose the best fits.</p>
                     <input type="number" min="1" value={form.volunteers} onChange={e => update('volunteers', e.target.value)} placeholder="e.g. 5" style={{ width: '100%', padding: '16px 20px', borderRadius: '12px', border: '2px solid transparent', boxShadow: '0 0 0 1px #E4E1F5', fontSize: '16px', color: 'var(--ink)', outline: 'none', fontFamily: 'var(--sans)', backgroundColor: 'var(--white)', transition: 'all 0.2s' }} onFocus={e => e.currentTarget.style.boxShadow = '0 0 0 2px var(--purple-400)'} onBlur={e => e.currentTarget.style.boxShadow = '0 0 0 1px #E4E1F5'} />
                   </div>
                 </div>

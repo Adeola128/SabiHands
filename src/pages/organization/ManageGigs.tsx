@@ -11,6 +11,7 @@ const statusStyle: Record<string, { bg: string; color: string; label: string }> 
   published: { bg: '#D4EDDA', color: '#155724', label: 'Active' },
   draft:     { bg: '#E4E1F5', color: 'var(--body)', label: 'Draft' },
   completed: { bg: 'var(--teal-50)', color: 'var(--teal-900)', label: 'Completed' },
+  closed:    { bg: '#FEE2E2', color: '#991B1B', label: 'Closed' },
 };
 
 const ManageGigs: React.FC = () => {
@@ -51,6 +52,42 @@ const ManageGigs: React.FC = () => {
 
     fetchGigs();
   }, [user]);
+
+  const handleCloseGig = async (gigId: string) => {
+    if (!window.confirm("Are you sure you want to close this gig? It will no longer accept applications.")) return;
+    
+    setLoading(true);
+    const { error } = await supabase
+      .from('gigs')
+      .update({ status: 'closed' })
+      .eq('id', gigId);
+      
+    if (error) {
+      console.error(error);
+      alert("Failed to close gig.");
+    } else {
+      setGigs(gigs.map(g => g.id === gigId ? { ...g, status: 'closed' } : g));
+    }
+    setLoading(false);
+  };
+
+  const handleDeleteGig = async (gigId: string) => {
+    if (!window.confirm("Are you sure you want to delete this draft gig?")) return;
+    
+    setLoading(true);
+    const { error } = await supabase
+      .from('gigs')
+      .delete()
+      .eq('id', gigId);
+      
+    if (error) {
+      console.error(error);
+      alert("Failed to delete gig.");
+    } else {
+      setGigs(gigs.filter(g => g.id !== gigId));
+    }
+    setLoading(false);
+  };
 
   const filtered = activeTab === 'all' ? gigs : gigs.filter(g => g.status === activeTab);
   
@@ -170,8 +207,12 @@ const ManageGigs: React.FC = () => {
                     <Link to={`/dashboard/org/gigs/${gig.id}`} className="gig-action" style={{ background: 'none', border: '1.5px solid #E4E1F5', color: 'var(--body)', textDecoration: 'none', fontSize: '13px', padding: '8px 16px' }}>
                       {gig.status === 'draft' ? 'Continue Editing' : 'View Details'}
                     </Link>
-                    {gig.status !== 'completed' && (
-                      <button className="gig-action" style={{ background: 'none', border: '1.5px solid #fecaca', color: '#dc2626', fontSize: '13px', padding: '8px 16px' }}>
+                    {gig.status !== 'completed' && gig.status !== 'closed' && (
+                      <button 
+                        className="gig-action" 
+                        onClick={() => gig.status === 'draft' ? handleDeleteGig(gig.id) : handleCloseGig(gig.id)}
+                        style={{ background: 'none', border: '1.5px solid #fecaca', color: '#dc2626', fontSize: '13px', padding: '8px 16px', cursor: 'pointer' }}
+                      >
                         {gig.status === 'draft' ? 'Delete' : 'Close Gig'}
                       </button>
                     )}

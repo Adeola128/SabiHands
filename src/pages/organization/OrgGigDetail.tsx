@@ -18,6 +18,23 @@ const OrgGigDetail: React.FC = () => {
   const [applicants, setApplicants] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const handleCloseGig = async () => {
+    if (!window.confirm("Are you sure you want to close this gig? It will no longer accept applications.")) return;
+    setLoading(true);
+    const { error } = await supabase
+      .from('gigs')
+      .update({ status: 'closed' })
+      .eq('id', gig.id);
+      
+    if (error) {
+      console.error(error);
+      alert("Failed to close gig.");
+    } else {
+      setGig({ ...gig, status: 'closed' });
+    }
+    setLoading(false);
+  };
+
   useEffect(() => {
     const fetchGigDetails = async () => {
       if (!id || !user) return;
@@ -80,16 +97,18 @@ const OrgGigDetail: React.FC = () => {
           <div className="dash-card-padding" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <Link to={`/dashboard/org/gigs/${gig.id}/applicants`} className="gig-action" style={{ textDecoration: 'none', textAlign: 'center', display: 'block' }}>Review Applicants</Link>
             
-            {gig.type === 'skilled' ? (
-              <Link to={`/dashboard/org/gigs/${gig.id}/submissions`} className="gig-action" style={{ textDecoration: 'none', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: 'var(--teal-600)', color: 'white', border: 'none' }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                Review Submissions
-              </Link>
-            ) : (
-              <Link to={`/dashboard/org/gigs/${gig.id}/attendance`} className="gig-action" style={{ textDecoration: 'none', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: 'var(--teal-600)', color: 'white', border: 'none' }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                Mark Attendance
-              </Link>
+            {applicants.some(a => a.status === 'accepted') && (
+              gig.type === 'skilled' ? (
+                <Link to={`/dashboard/org/gigs/${gig.id}/submissions`} className="gig-action" style={{ textDecoration: 'none', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: 'var(--teal-600)', color: 'white', border: 'none' }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                  Review Submissions
+                </Link>
+              ) : (
+                <Link to={`/dashboard/org/gigs/${gig.id}/attendance`} className="gig-action" style={{ textDecoration: 'none', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: 'var(--teal-600)', color: 'white', border: 'none' }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  Mark Attendance
+                </Link>
+              )
             )}
 
             <Link to={`/dashboard/org/gigs/${gig.id}/edit`} className="gig-action" style={{ textDecoration: 'none', textAlign: 'center', display: 'block', background: 'none', border: '1.5px solid #E4E1F5', color: 'var(--body)' }}>Edit Gig</Link>
@@ -98,7 +117,9 @@ const OrgGigDetail: React.FC = () => {
               <ShareGigButton gigId={gig.id} title={gig.title} buttonText="Share Public Link" />
             </div>
 
-            <button className="gig-action" style={{ background: 'none', border: '1.5px solid #fecaca', color: '#dc2626', width: '100%', marginTop: '4px' }}>Close Gig</button>
+            {gig.status !== 'closed' && gig.status !== 'completed' && (
+              <button onClick={handleCloseGig} className="gig-action" style={{ background: 'none', border: '1.5px solid #fecaca', color: '#dc2626', width: '100%', marginTop: '4px', cursor: 'pointer' }}>Close Gig</button>
+            )}
           </div>
         </div>
 
@@ -146,7 +167,16 @@ const OrgGigDetail: React.FC = () => {
             <Link to={`/dashboard/org/gigs/${gig.id}/applicants`} className="gig-action" style={{ textDecoration: 'none', fontSize: '13px', padding: '8px 16px' }}>Review All</Link>
           </div>
           {applicants.length === 0 ? (
-            <div style={{ padding: '24px', textAlign: 'center', color: 'var(--muted)' }}>No applicants yet.</div>
+            <div style={{ padding: '32px 24px', textAlign: 'center' }}>
+              <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'var(--purple-50)', color: 'var(--purple-600)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--ink)', marginBottom: '8px' }}>No Applicants Yet</h3>
+              <p style={{ fontSize: '14px', color: 'var(--body)', marginBottom: '24px' }}>Share your gig to reach more volunteers and get your first applicant.</p>
+              <div style={{ display: 'inline-block' }}>
+                <ShareGigButton gigId={gig.id} title={gig.title} buttonText="Share Gig" />
+              </div>
+            </div>
           ) : applicants.map((a) => {
             const name = a.volunteer_profiles?.full_name || 'Volunteer';
             const initials = name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase();

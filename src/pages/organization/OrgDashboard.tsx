@@ -8,8 +8,9 @@ import EmptyState from '../../components/EmptyState';
 const OrgDashboard: React.FC = () => {
   const { user } = useAuth();
   const [org, setOrg] = useState<any>(null);
-  const [stats, setStats] = useState({ activeGigs: 0, pending: 0, volunteersEngaged: 0, certsIssued: 0 });
+  const [stats, setStats] = useState({ activeGigs: 0, pending: 0, pendingSubs: 0, volunteersEngaged: 0, certsIssued: 0 });
   const [pendingApplicants, setPendingApplicants] = useState<any[]>([]);
+  const [pendingSubmissions, setPendingSubmissions] = useState<any[]>([]);
   const [activeGigs, setActiveGigs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -26,43 +27,61 @@ const OrgDashboard: React.FC = () => {
       if (!orgData) return;
       setOrg(orgData);
 
-      // Fetch active gigs count
-      const { data: gigsData } = await supabase
+      // Fetch active gigs
+      const { data: activeGigsData, count: activeGigsCount } = await supabase
         .from('gigs')
-        .select('*')
-        .eq('organization_id', orgData.id);
+        .select('*', { count: 'exact' })
+        .eq('organization_id', orgData.id)
+        .in('status', ['published', 'active'])
+        .order('created_at', { ascending: false })
+        .limit(3);
 
-      const activeGigsList = gigsData?.filter(g => g.status === 'published' || g.status === 'active') || [];
-      setActiveGigs(activeGigsList.slice(0, 3)); // Keep top 3
+      setActiveGigs(activeGigsData || []);
 
-      if (gigsData && gigsData.length > 0) {
-        const gigIds = gigsData.map(g => g.id);
+      // Fetch pending applications count & top 5
+      const { data: pendingAppsData, count: pendingAppsCount } = await supabase
+        .from('applications')
+        .select('*, volunteer_profiles(full_name), gigs!inner(title, organization_id)', { count: 'exact' })
+        .eq('gigs.organization_id', orgData.id)
+        .eq('status', 'pending')
+        .order('applied_at', { ascending: false })
+        .limit(5);
 
-        // Fetch applications for these gigs
-        const { data: appsData } = await supabase
-          .from('applications')
-          .select('*, volunteer_profiles(full_name), gigs(title)')
-          .in('gig_id', gigIds);
+      setPendingApplicants(pendingAppsData || []);
 
-        const pending = appsData?.filter(a => a.status === 'pending') || [];
-        setPendingApplicants(pending.slice(0, 5));
+      // Fetch pending submissions count & top 5
+      const { data: pendingSubsData, count: pendingSubsCount } = await supabase
+        .from('submissions')
+        .select('*, applications(volunteer_profiles(full_name)), gigs!inner(title, organization_id)', { count: 'exact' })
+        .eq('gigs.organization_id', orgData.id)
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false })
+        .limit(5);
 
-        const accepted = appsData?.filter(a => a.status === 'accepted') || [];
-        const uniqueVolunteers = new Set(accepted.map(a => a.volunteer_id)).size;
+      setPendingSubmissions(pendingSubsData || []);
 
-        // Fetch certs
-        const { count: certs } = await supabase
-          .from('certificates')
-          .select('*', { count: 'exact', head: true })
-          .in('gig_id', gigIds);
+      // Fetch unique volunteers engaged (accepted applications)
+      const { data: acceptedAppsData } = await supabase
+        .from('applications')
+        .select('volunteer_id, gigs!inner(organization_id)')
+        .eq('gigs.organization_id', orgData.id)
+        .eq('status', 'accepted');
 
-        setStats({
-          activeGigs: activeGigsList.length,
-          pending: pending.length,
-          volunteersEngaged: uniqueVolunteers,
-          certsIssued: certs || 0
-        });
-      }
+      const uniqueVolunteers = new Set(acceptedAppsData?.map(a => a.volunteer_id) || []).size;
+
+      // Fetch certs issued
+      const { count: certsCount } = await supabase
+        .from('certificates')
+        .select('id, gigs!inner(organization_id)', { count: 'exact', head: true })
+        .eq('gigs.organization_id', orgData.id);
+
+      setStats({
+        activeGigs: activeGigsCount || 0,
+        pending: pendingAppsCount || 0,
+        pendingSubs: pendingSubsCount || 0,
+        volunteersEngaged: uniqueVolunteers,
+        certsIssued: certsCount || 0
+      });
       setLoading(false);
     };
 
@@ -72,8 +91,8 @@ const OrgDashboard: React.FC = () => {
   const statsItems = [
     { label: 'Active Gigs', value: stats.activeGigs, icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>, bg: 'var(--purple-50)', color: 'var(--purple-600)' },
     { label: 'Pending Applicants', value: stats.pending, icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>, bg: 'var(--teal-50)', color: 'var(--teal-600)' },
-    { label: 'Volunteers Engaged', value: stats.volunteersEngaged, icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>, bg: 'var(--purple-50)', color: 'var(--purple-600)' },
-    { label: 'Certs Issued', value: stats.certsIssued, icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>, bg: 'var(--teal-50)', color: 'var(--teal-600)' },
+    { label: 'Pending Submissions', value: stats.pendingSubs, icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>, bg: 'var(--purple-50)', color: 'var(--purple-600)' },
+    { label: 'Volunteers Engaged', value: stats.volunteersEngaged, icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>, bg: 'var(--teal-50)', color: 'var(--teal-600)' },
   ];
 
   if (loading) return <LoadingScreen message="Loading dashboard..." fullScreen={true} />;
@@ -143,46 +162,75 @@ const OrgDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Action Required — Pending Applicants */}
+        {/* Action Required — Pending Applicants & Submissions */}
         <div className="dash-card" style={{ marginBottom: '32px' }}>
           <div className="dash-card-header">
             <h2 className="dash-card-title">Action Required</h2>
-            <span style={{ fontSize: '13px', fontWeight: 600, backgroundColor: 'var(--purple-50)', color: 'var(--purple-600)', padding: '4px 10px', borderRadius: '99px' }}>{pendingApplicants.length} pending</span>
+            <span style={{ fontSize: '13px', fontWeight: 600, backgroundColor: 'var(--purple-50)', color: 'var(--purple-600)', padding: '4px 10px', borderRadius: '99px' }}>{pendingApplicants.length + pendingSubmissions.length} pending</span>
           </div>
-          {pendingApplicants.length === 0 ? (
+          {pendingApplicants.length === 0 && pendingSubmissions.length === 0 ? (
             <EmptyState 
               icon={<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>}
-              title="No pending applicants"
-              description="You're all caught up! When volunteers apply to your gigs, they will appear here for you to review."
+              title="No pending actions"
+              description="You're all caught up! New applicants and volunteer submissions will appear here for you to review."
             />
           ) : (
-            pendingApplicants.map((a, i) => {
-              const name = a.volunteer_profiles?.full_name || 'Volunteer';
-              const initials = name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase();
-              return (
-                <div key={i} className="gig-media-card" style={{ alignItems: 'center' }}>
-                  {/* Avatar */}
-                  <div style={{ width: '48px', minWidth: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', paddingLeft: '20px' }}>
-                    <div style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: 'var(--purple-600)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '14px', fontFamily: 'var(--display)' }}>{initials}</div>
-                  </div>
-                  
-                  <div className="gig-media-body" style={{ padding: '16px' }}>
-                    <div className="gig-media-header" style={{ marginBottom: '6px' }}>
-                      <div>
-                        <h3 className="gig-media-title" style={{ fontSize: '16px', marginBottom: '2px' }}>{name}</h3>
-                        <p className="gig-media-org" style={{ fontSize: '13px' }}>Applied for <strong>{a.gigs?.title}</strong></p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+              {pendingApplicants.map((a, i) => {
+                const name = a.volunteer_profiles?.full_name || 'Volunteer';
+                const initials = name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase();
+                return (
+                  <div key={`app-${i}`} className="gig-media-card" style={{ alignItems: 'center' }}>
+                    {/* Avatar */}
+                    <div style={{ width: '48px', minWidth: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', paddingLeft: '20px' }}>
+                      <div style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: 'var(--purple-600)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '14px', fontFamily: 'var(--display)' }}>{initials}</div>
+                    </div>
+                    
+                    <div className="gig-media-body" style={{ padding: '16px' }}>
+                      <div className="gig-media-header" style={{ marginBottom: '6px' }}>
+                        <div>
+                          <h3 className="gig-media-title" style={{ fontSize: '16px', marginBottom: '2px' }}>{name}</h3>
+                          <p className="gig-media-org" style={{ fontSize: '13px' }}>Applied for <strong>{a.gigs?.title}</strong></p>
+                        </div>
+                        <span style={{ fontSize: '12px', color: 'var(--muted)', flexShrink: 0 }}>
+                          {new Date(a.applied_at).toLocaleDateString()}
+                        </span>
                       </div>
-                      <span style={{ fontSize: '12px', color: 'var(--muted)', flexShrink: 0 }}>
-                        {new Date(a.applied_at).toLocaleDateString()}
-                      </span>
+                    </div>
+                    <div style={{ padding: '16px 20px 16px 8px', display: 'flex', gap: '8px', flexShrink: 0 }}>
+                      <Link to={`/dashboard/org/gigs/${a.gig_id}`} className="gig-action" style={{ textDecoration: 'none', padding: '8px 16px', fontSize: '13px' }}>Review</Link>
                     </div>
                   </div>
-                  <div style={{ padding: '16px 20px 16px 8px', display: 'flex', gap: '8px', flexShrink: 0 }}>
-                    <Link to={`/dashboard/org/gigs/${a.gig_id}`} className="gig-action" style={{ textDecoration: 'none', padding: '8px 16px', fontSize: '13px' }}>Review</Link>
+                )
+              })}
+              
+              {pendingSubmissions.map((s, i) => {
+                const name = s.applications?.volunteer_profiles?.full_name || 'Volunteer';
+                const initials = name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase();
+                return (
+                  <div key={`sub-${i}`} className="gig-media-card" style={{ alignItems: 'center', borderTop: i === 0 && pendingApplicants.length > 0 ? '1px solid #E4E1F5' : 'none' }}>
+                    <div style={{ width: '48px', minWidth: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', paddingLeft: '20px' }}>
+                      <div style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: 'var(--teal-600)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '14px', fontFamily: 'var(--display)' }}>{initials}</div>
+                    </div>
+                    
+                    <div className="gig-media-body" style={{ padding: '16px' }}>
+                      <div className="gig-media-header" style={{ marginBottom: '6px' }}>
+                        <div>
+                          <h3 className="gig-media-title" style={{ fontSize: '16px', marginBottom: '2px' }}>{name}</h3>
+                          <p className="gig-media-org" style={{ fontSize: '13px' }}>Submitted work for <strong>{s.gigs?.title}</strong></p>
+                        </div>
+                        <span style={{ fontSize: '12px', color: 'var(--muted)', flexShrink: 0 }}>
+                          {new Date(s.created_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </div>
+                    <div style={{ padding: '16px 20px 16px 8px', display: 'flex', gap: '8px', flexShrink: 0 }}>
+                      <Link to={`/dashboard/org/gigs/${s.gig_id}/submissions`} className="gig-action" style={{ textDecoration: 'none', padding: '8px 16px', fontSize: '13px', background: 'var(--teal-600)', color: 'white', border: 'none' }}>Review Work</Link>
+                    </div>
                   </div>
-                </div>
-              )
-            })
+                )
+              })}
+            </div>
           )}
         </div>
 
