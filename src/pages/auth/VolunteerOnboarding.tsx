@@ -205,16 +205,16 @@ const VolunteerOnboarding: React.FC = () => {
   );
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', backgroundColor: '#F1EFFB' }}>
+    <div className="onboarding-page-container" style={{ minHeight: '100vh', display: 'flex', backgroundColor: '#FFFFFF' }}>
       
       {/* Left Side - Image/Branding */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '40px', position: 'relative', overflow: 'hidden' }} className="hide-on-mobile">
+      <div className="hide-on-mobile onboarding-left-panel" style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '40px', position: 'relative', overflow: 'hidden', backgroundColor: '#FFFFFF' }}>
         <div style={{ position: 'relative', zIndex: 2 }}>
           <img src="https://res.cloudinary.com/dohuj4mx9/image/upload/v1786580446/Ralvo_Horizontal_Lockup_1_ljgzj1.png" alt="Ralvo" width="120" />
         </div>
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', zIndex: 2 }}>
-          {/* Using mix-blend-mode to remove the white background from the generated image */}
-          <img src="/images/onboarding-volunteer.jpg" alt="Volunteer Illustration" style={{ width: '80%', maxWidth: '500px', mixBlendMode: 'multiply' }} />
+          {/* Removed mix-blend-mode since background is now white */}
+          <img src="/images/onboarding-volunteer.jpg" alt="Volunteer Illustration" style={{ width: '100%', maxWidth: '600px' }} />
         </div>
       </div>
 

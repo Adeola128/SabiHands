@@ -30,23 +30,23 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ role = 'volunteer' })
         if (actualRole === 'volunteer') {
           const { data } = await supabase
             .from('volunteer_profiles')
-            .select('bio, interests')
+            .select('interests, primary_goals')
             .eq('user_id', user.id)
             .single();
           
-          // If no data, or if bio/interests are empty, profile is incomplete
-          if (!data || !data.bio || !data.interests || data.interests.length === 0) {
+          // If no data, or if both interests and primary_goals are empty, profile is incomplete
+          if (!data || ((!data.interests || data.interests.length === 0) && (!data.primary_goals || data.primary_goals.length === 0))) {
             navigate('/onboarding/volunteer', { replace: true });
             return;
           }
         } else if (actualRole === 'organization') {
           const { data } = await supabase
             .from('organizations')
-            .select('org_type')
+            .select('location, focus_area')
             .eq('user_id', user.id)
             .single();
             
-          if (!data || !data.org_type) {
+          if (!data || (!data.location && !data.focus_area)) {
             navigate('/onboarding/organization', { replace: true });
             return;
           }
