@@ -117,17 +117,12 @@ const UserManagement: React.FC = () => {
     }
     setInvitingAdmin(true);
     try {
-      const { data: session } = await supabase.auth.getSession();
-      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/invite-platform-admin`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.session?.access_token}`
-        },
-        body: JSON.stringify({ email: inviteAdminEmail })
+      const { data: resData, error: resError } = await supabase.functions.invoke('invite-platform-admin', {
+        body: { email: inviteAdminEmail }
       });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || "Failed to invite admin");
+      
+      if (resError) throw new Error(resError.message || "Failed to invite admin");
+      if (resData?.error) throw new Error(resData.error);
       
       alert("Admin invitation sent securely via email.");
       setShowInviteAdmin(false);

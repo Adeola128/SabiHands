@@ -98,30 +98,31 @@ const TeamMembers: React.FC = () => {
       return;
     }
     
+    if (!orgId) {
+      alert("Organization not found. Cannot send invite.");
+      return;
+    }
+
     setInviting(true);
     try {
-      const { data: session } = await supabase.auth.getSession();
-      
-      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/invite-org-member`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.session?.access_token}`
-        },
-        body: JSON.stringify({
+      const { data: resData, error: resError } = await supabase.functions.invoke('invite-org-member', {
+        body: {
           email: inviteEmail,
           role: inviteRole,
           organizationId: orgId
-        })
+        }
       });
       
-      const json = await res.json();
+      if (resError) {
+        throw new Error(resError.message || "Failed to invite member");
+      }
       
-      if (!res.ok) {
-        throw new Error(json.error || "Failed to invite member");
+      if (resData?.error) {
+         throw new Error(resData.error);
       }
       
       toast.success("Invitation sent successfully!");
+      alert("Invitation sent successfully!");
       setShowInvite(false);
       setInviteEmail('');
       
@@ -141,6 +142,7 @@ const TeamMembers: React.FC = () => {
       
     } catch (err: any) {
       toast.error(err.message);
+      alert(err.message);
     } finally {
       setInviting(false);
     }
