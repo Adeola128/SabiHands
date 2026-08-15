@@ -28,6 +28,13 @@ const Login: React.FC = () => {
         throw error;
       }
 
+      // Check for pending invite
+      const pendingToken = localStorage.getItem('pending_team_invite_token');
+      if (pendingToken) {
+        navigate(`/join-team?token=${pendingToken}`);
+        return;
+      }
+
       // Check role to determine redirect
       const role = data.user?.user_metadata?.role;
       if (role === 'organization') {

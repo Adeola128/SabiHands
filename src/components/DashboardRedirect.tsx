@@ -19,6 +19,13 @@ const DashboardRedirect: React.FC = () => {
         let metadataRole = user.user_metadata?.role;
         let onboardingComplete = user.user_metadata?.onboarding_complete;
         
+        // Check for pending invite
+        const pendingToken = localStorage.getItem('pending_team_invite_token');
+        if (pendingToken) {
+          navigate(`/join-team?token=${pendingToken}`, { replace: true });
+          return;
+        }
+
         // 1. If onboarding is not marked complete, check DB to see if they already have a profile
         if (!onboardingComplete) {
           const { data: orgData } = await supabase

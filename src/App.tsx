@@ -24,6 +24,7 @@ import VerifyContact from './pages/auth/VerifyContact';
 import VolunteerOnboarding from './pages/auth/VolunteerOnboarding';
 import OrganizationOnboarding from './pages/auth/OrganizationOnboarding';
 import OrgVerificationPending from './pages/auth/OrgVerificationPending';
+import JoinTeam from './pages/auth/JoinTeam';
 
 import DashboardLayout from './layouts/DashboardLayout';
 import DashboardRedirect from './components/DashboardRedirect';
@@ -107,6 +108,7 @@ const App: React.FC = () => {
         <Route path="/onboarding/volunteer" element={<VolunteerOnboarding />} />
         <Route path="/onboarding/organization" element={<OrganizationOnboarding />} />
         <Route path="/onboarding/pending" element={<OrgVerificationPending />} />
+        <Route path="/join-team" element={<JoinTeam />} />
 
         {/* Dashboard Routes - Volunteer */}
         <Route path="/dashboard/volunteer" element={<DashboardLayout role="volunteer" />}>

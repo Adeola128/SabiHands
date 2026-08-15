@@ -105,6 +105,40 @@ const UserManagement: React.FC = () => {
 
   if (loading) return <LoadingScreen message="Loading users..." />;
 
+  // Invite Admin State
+  const [showInviteAdmin, setShowInviteAdmin] = useState(false);
+  const [inviteAdminEmail, setInviteAdminEmail] = useState('');
+  const [invitingAdmin, setInvitingAdmin] = useState(false);
+
+  const handleInviteAdmin = async () => {
+    if (!inviteAdminEmail || !inviteAdminEmail.includes('@')) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+    setInvitingAdmin(true);
+    try {
+      const { data: session } = await supabase.auth.getSession();
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/invite-platform-admin`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.session?.access_token}`
+        },
+        body: JSON.stringify({ email: inviteAdminEmail })
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Failed to invite admin");
+      
+      alert("Admin invitation sent securely via email.");
+      setShowInviteAdmin(false);
+      setInviteAdminEmail('');
+    } catch (err: any) {
+      alert(err.message);
+    } finally {
+      setInvitingAdmin(false);
+    }
+  };
+
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '32px' }}>
@@ -117,13 +151,45 @@ const UserManagement: React.FC = () => {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input type="text" placeholder="Search by name or email..." />
           </div>
-          <button style={{ padding: '8px 16px', backgroundColor: '#3B82F6', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>+ Add User</button>
+          {activeTab === 'admins' ? (
+            <button onClick={() => setShowInviteAdmin(true)} style={{ padding: '8px 16px', backgroundColor: '#3B82F6', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>+ Invite Admin</button>
+          ) : (
+            <button style={{ padding: '8px 16px', backgroundColor: '#3B82F6', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>+ Add User</button>
+          )}
         </div>
       </div>
 
       {error && (
         <div style={{ padding: '16px', backgroundColor: '#FEE2E2', border: '1px solid #DC2626', color: '#DC2626', borderRadius: '8px', marginBottom: '24px', fontWeight: 500 }}>
           Error: {error}
+        </div>
+      )}
+
+      {/* Invite Admin Modal */}
+      {showInviteAdmin && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div style={{ backgroundColor: 'white', padding: '32px', borderRadius: '16px', width: '90%', maxWidth: '400px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+              <h2 style={{ margin: 0, fontSize: '20px' }}>Invite Platform Admin</h2>
+              <button onClick={() => setShowInviteAdmin(false)} style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer' }}>&times;</button>
+            </div>
+            <div style={{ marginBottom: '24px' }}>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '8px' }}>Email Address</label>
+              <input 
+                type="email" 
+                value={inviteAdminEmail} 
+                onChange={e => setInviteAdminEmail(e.target.value)}
+                placeholder="colleague@ralvo.com" 
+                style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E2E8F0', boxSizing: 'border-box' }}
+              />
+            </div>
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button onClick={() => setShowInviteAdmin(false)} style={{ flex: 1, padding: '12px', backgroundColor: '#F1F5F9', color: '#334155', border: 'none', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+              <button onClick={handleInviteAdmin} disabled={invitingAdmin} style={{ flex: 1, padding: '12px', backgroundColor: '#3B82F6', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 600, cursor: invitingAdmin ? 'not-allowed' : 'pointer', opacity: invitingAdmin ? 0.7 : 1 }}>
+                {invitingAdmin ? 'Sending...' : 'Send Invite'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

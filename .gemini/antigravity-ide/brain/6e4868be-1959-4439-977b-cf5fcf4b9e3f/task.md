@@ -1,0 +1,11 @@
+- [x] Database Schema Updates
+  - [x] Add `closed` status to `gigs` or implement logic to handle it
+  - [x] Add tracking for sent email reminders (e.g., `email_reminders` table or `applications` JSONB column)
+- [x] Backend (Supabase Edge Functions / Cron)
+  - [x] Create `supabase/functions/daily-status-update/`
+  - [x] Create `supabase/functions/trigger-reminders/`
+- [x] Frontend Components
+  - [x] Update `src/pages/organization/ManageGigs.tsx` with "Close Gig" functionality
+  - [x] Update `src/pages/organization/PostGig.tsx` to clarify deadline and capacity logic
+- [x] Verification
+  - [x] Test the new Edge Functions and frontend logic

@@ -18,22 +18,21 @@ const OrgVerificationQueue: React.FC = () => {
   useEffect(() => {
     const fetchOrgs = async () => {
       try {
-        const { data: orgsData, error: orgsErr } = await supabase
-          .from('organizations')
-          .select(`
-            user_id, name, verification_status, rejection_reason,
-            users ( id, email, created_at )
-          `);
+        const [orgsRes, usersRes] = await Promise.all([
+          supabase.from('organizations').select('user_id, name, verification_status, rejection_reason, created_at'),
+          supabase.from('users').select('id, email, created_at')
+        ]);
 
-        if (orgsErr) throw orgsErr;
+        if (orgsRes.error) throw orgsRes.error;
+        if (usersRes.error) throw usersRes.error;
 
-        if (orgsData) {
-          const merged = orgsData.map((o: any) => {
-            const user = Array.isArray(o.users) ? o.users[0] : o.users;
+        if (orgsRes.data) {
+          const merged = orgsRes.data.map((o: any) => {
+            const user = usersRes.data.find(u => u.id === o.user_id);
             return {
               id: o.user_id,
               email: user?.email || 'No email',
-              created_at: user?.created_at || new Date().toISOString(),
+              created_at: o.created_at || user?.created_at || new Date().toISOString(),
               organizations: [o]
             };
           });
