@@ -117,7 +117,6 @@ const PublicVolunteerProfile: React.FC = () => {
 
   const initials = profile?.full_name?.substring(0, 2).toUpperCase() || 'VO';
   const hasSkills = profile?.skills && profile.skills.length > 0;
-  const hasInterests = profile?.interests && profile.interests.length > 0;
 
   // Gamification: Impact Rings (Apple style rings logic)
   const hoursRing = Math.min((stats.hours / 50) * 100, 100);
