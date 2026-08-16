@@ -13,6 +13,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ role = 'volunteer' })
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [checkingProfile, setCheckingProfile] = useState(true);
+  const [isProfileIncomplete, setIsProfileIncomplete] = useState(false);
 
   const { user, loading, signOut } = useAuth();
 
@@ -30,14 +31,21 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ role = 'volunteer' })
         if (actualRole === 'volunteer') {
           const { data } = await supabase
             .from('volunteer_profiles')
-            .select('interests, primary_goals')
+            .select('interests, primary_goals, bio, avatar_url, skills')
             .eq('user_id', user.id)
             .single();
           
-          // If no data, or if both interests and primary_goals are empty, profile is incomplete
+          // If no data, or if both interests and primary_goals are empty, redirect to onboarding
           if (!data || ((!data.interests || data.interests.length === 0) && (!data.primary_goals || data.primary_goals.length === 0))) {
             navigate('/onboarding/volunteer', { replace: true });
             return;
+          }
+
+          // Check for incomplete profile
+          if (!data.bio || !data.avatar_url || !data.skills || data.skills.length === 0) {
+            setIsProfileIncomplete(true);
+          } else {
+            setIsProfileIncomplete(false);
           }
         } else if (actualRole === 'organization') {
           const { data } = await supabase
@@ -129,6 +137,15 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ role = 'volunteer' })
           </button>
         </div>
       </header>
+
+      {isVolunteer && isProfileIncomplete && (
+        <div style={{ backgroundColor: 'var(--pink-500)', color: 'white', padding: '12px 24px', textAlign: 'center', fontSize: '14px', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
+          <span>Your profile is incomplete! Add a bio, skills, and an avatar to stand out to organizations.</span>
+          <Link to="/dashboard/volunteer/settings" style={{ backgroundColor: 'white', color: 'var(--pink-600)', padding: '6px 16px', borderRadius: '99px', textDecoration: 'none', fontSize: '13px', fontWeight: 700 }}>
+            Complete Profile
+          </Link>
+        </div>
+      )}
 
       <nav className={`dashboard-secondary-nav ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
         <div className="dashboard-secondary-nav-inner">

@@ -103,13 +103,13 @@ const UserManagement: React.FC = () => {
     fetchUsers();
   }, []);
 
-  if (loading) return <LoadingScreen message="Loading users..." />;
-
   // Invite Admin State
   const [showInviteAdmin, setShowInviteAdmin] = useState(false);
   const [inviteAdminEmail, setInviteAdminEmail] = useState('');
   const [invitingAdmin, setInvitingAdmin] = useState(false);
   const [inviteSuccess, setInviteSuccess] = useState('');
+
+  if (loading) return <LoadingScreen message="Loading users..." />;
 
   const handleInviteAdmin = async () => {
     if (!inviteAdminEmail || !inviteAdminEmail.includes('@')) {

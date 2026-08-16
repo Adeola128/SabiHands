@@ -2,11 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
-import { useProfileCompleteness } from '../../hooks/useProfileCompleteness';
 import { uploadImage } from '../../lib/uploadImage';
-import ProfileCompletenessPrompt from '../../components/ProfileCompletenessPrompt';
 import LoadingScreen from '../../components/LoadingScreen';
-import './VolunteerProfile.css';
 
 const VolunteerProfile: React.FC = () => {
   const { user } = useAuth();
@@ -15,293 +12,332 @@ const VolunteerProfile: React.FC = () => {
 
   const [stats, setStats] = useState({ hours: 0, completed: 0, rating: 0.0 });
   const [certificates, setCertificates] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<any[]>([]);
 
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
-  const [uploadingCover, setUploadingCover] = useState(false);
 
   useEffect(() => {
     if (!user) return;
     
     const fetchProfile = async () => {
-      const { data } = await supabase
-        .from('volunteer_profiles')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
+      try {
+        const { data } = await supabase
+          .from('volunteer_profiles')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+          
+        if (data) {
+          setProfile(data);
+        } else {
+          setProfile({
+            full_name: user.user_metadata?.full_name || 'New Volunteer',
+            location: user.user_metadata?.location || 'Location Not Set',
+          });
+        }
         
-      if (data) {
-        setProfile(data);
-      } else {
-        setProfile({
-          full_name: user.user_metadata?.full_name || 'New Volunteer',
-          location: user.user_metadata?.location || 'Location Not Set',
-        });
+        // Fetch reviews
+        const { data: ratingData } = await supabase
+          .from('reviews')
+          .select(`
+            id,
+            rating,
+            comment,
+            created_at,
+            gigs(
+              title,
+              organizations(name, logo_url)
+            )
+          `)
+          .eq('reviewee_id', user.id)
+          .order('created_at', { ascending: false });
+          
+        let avgRating = 0;
+        if (ratingData && ratingData.length > 0) {
+          avgRating = ratingData.reduce((acc, curr) => acc + curr.rating, 0) / ratingData.length;
+          setReviews(ratingData);
+        }
+
+        // Fetch applications
+        const { data: applications } = await supabase
+          .from('gig_applications')
+          .select('id, status, gigs(duration_hours)')
+          .eq('volunteer_id', user.id)
+          .in('status', ['accepted', 'completed', 'certified']);
+          
+        let totalHours = 0;
+        let completed = 0;
+        if (applications) {
+          completed = applications.length;
+          totalHours = applications.reduce((acc, curr: any) => acc + (curr.gigs?.duration_hours || 0), 0);
+        }
+        
+        setStats({ hours: totalHours, completed, rating: avgRating });
+
+        const { data: certs } = await supabase
+          .from('certificates')
+          .select('*')
+          .eq('volunteer_id', user.id)
+          .order('issued_at', { ascending: false });
+          
+        if (certs) setCertificates(certs);
+      } catch (err) {
+        console.error("Error fetching profile", err);
+      } finally {
+        setLoading(false);
       }
-      
-      const { data: ratingData } = await supabase
-        .from('ratings')
-        .select('score')
-        .eq('ratee_id', user.id);
-        
-      let avgRating = 0;
-      if (ratingData && ratingData.length > 0) {
-        avgRating = ratingData.reduce((acc, curr) => acc + curr.score, 0) / ratingData.length;
-      }
-
-      const { data: applications } = await supabase
-        .from('applications')
-        .select('id')
-        .eq('volunteer_id', user.id)
-        .eq('status', 'accepted');
-        
-      const completedCount = applications ? applications.length : 0;
-      const calculatedHours = completedCount * 2;
-
-      const { data: certs } = await supabase
-        .from('certificates')
-        .select('*')
-        .eq('volunteer_id', user.id)
-        .order('issued_at', { ascending: false });
-        
-      setCertificates(certs || []);
-
-      setStats({ 
-        rating: Number(avgRating.toFixed(1)),
-        completed: completedCount,
-        hours: calculatedHours
-      });
-
-      setLoading(false);
     };
 
     fetchProfile();
   }, [user]);
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || !e.target.files[0] || !user) return;
+    if (!e.target.files || e.target.files.length === 0 || !user) return;
+    const file = e.target.files[0];
     setUploadingAvatar(true);
     try {
-      const url = await uploadImage(e.target.files[0], 'volunteer-avatars');
-      const { error } = await supabase.from('volunteer_profiles').update({ avatar_url: url }).eq('user_id', user.id);
-      if (!error) setProfile((prev: any) => ({ ...prev, avatar_url: url }));
-    } catch (err: any) {
+      const url = await uploadImage(file, 'profiles');
+      if (url) {
+        const { error } = await supabase
+          .from('volunteer_profiles')
+          .update({ avatar_url: url })
+          .eq('user_id', user.id);
+        if (!error) {
+          setProfile((p: any) => ({ ...p, avatar_url: url }));
+        }
+      }
+    } catch (err) {
       console.error(err);
-      alert('Failed to upload profile picture.');
     } finally {
       setUploadingAvatar(false);
     }
   };
 
-  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || !e.target.files[0] || !user) return;
-    setUploadingCover(true);
-    try {
-      const url = await uploadImage(e.target.files[0], 'volunteer-covers');
-      const { error } = await supabase.from('volunteer_profiles').update({ cover_url: url }).eq('user_id', user.id);
-      if (!error) setProfile((prev: any) => ({ ...prev, cover_url: url }));
-    } catch (err: any) {
-      console.error(err);
-      alert('Failed to upload cover picture.');
-    } finally {
-      setUploadingCover(false);
-    }
-  };
-
-  const completeness = useProfileCompleteness(profile, 'volunteer');
-
-  if (loading) return <LoadingScreen message="Loading profile..." fullScreen={false} />;
+  if (loading) return <LoadingScreen />;
 
   const initials = profile?.full_name?.substring(0, 2).toUpperCase() || 'VO';
   const hasSkills = profile?.skills && profile.skills.length > 0;
-  const hasInterests = profile?.interests && profile.interests.length > 0;
+
+  const hoursRing = Math.min((stats.hours / 50) * 100, 100);
+  const gigsRing = Math.min((stats.completed / 10) * 100, 100);
+  const certsRing = Math.min((certificates.length / 5) * 100, 100);
 
   return (
-    <div className="modern-profile-container">
+    <div style={{ backgroundColor: '#FAFAFA', minHeight: '100vh', paddingBottom: '80px' }}>
       
-      {/* ── PROFILE COMPLETENESS PROMPT ── */}
-      <ProfileCompletenessPrompt 
-        score={completeness.score} 
-        nextStep={completeness.nextStep || null} 
-        editLink="/dashboard/volunteer/settings" 
-      />
+      {/* ── PREMIUM HEADER ── */}
+      <div style={{ backgroundColor: '#FFFFFF', borderBottom: '1px solid #E2E8F0', padding: '60px 24px 32px 24px' }}>
+        <div className="desktop-header-layout" style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '32px' }}>
+          
+          <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start', flex: '1 1 auto' }}>
+            <div style={{ width: '120px', height: '120px', borderRadius: '50%', backgroundColor: 'var(--purple-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '40px', fontWeight: 700, color: 'var(--purple-600)', backgroundImage: profile?.avatar_url ? `url(${profile.avatar_url})` : 'none', backgroundSize: 'cover', backgroundPosition: 'center', border: '4px solid #FFFFFF', boxShadow: '0 8px 24px rgba(0,0,0,0.08)', position: 'relative', flexShrink: 0 }}>
+              {!profile?.avatar_url && initials}
+              
+              <label style={{ position: 'absolute', bottom: '0', right: '0', backgroundColor: 'var(--purple-600)', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', border: '3px solid #FFF', cursor: 'pointer', transition: 'background-color 0.2s' }} title="Change Avatar">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                <input type="file" accept="image/*" onChange={handleAvatarUpload} disabled={uploadingAvatar} hidden />
+              </label>
+            </div>
 
-      {/* ── HERO SECTION ── */}
-      <div className="profile-hero-card">
-        {/* Cover Photo Area */}
-        <div className="profile-cover-area" style={{ backgroundImage: profile?.cover_url ? `url(${profile.cover_url})` : undefined }}>
-          {uploadingCover && <div className="uploading-overlay">Uploading...</div>}
-          <label className="image-edit-btn cover-edit-btn">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
-            <span>Edit Cover</span>
-            <input type="file" accept="image/*" onChange={handleCoverUpload} disabled={uploadingCover} hidden />
-          </label>
-        </div>
-        
-        {/* Profile Info Area */}
-        <div className="profile-hero-info">
-          <div className="profile-avatar-container">
-            {profile?.avatar_url ? (
-              <img src={profile.avatar_url} alt="Profile" className="profile-avatar-img" />
-            ) : (
-              <div className="profile-avatar-placeholder">{initials}</div>
-            )}
-            
-            <label className="avatar-edit-overlay">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
-              <input type="file" accept="image/*" onChange={handleAvatarUpload} disabled={uploadingAvatar} hidden />
-            </label>
+            <div style={{ paddingTop: '8px' }}>
+              <h1 style={{ fontSize: '32px', fontWeight: 800, color: 'var(--ink)', margin: '0 0 8px 0', fontFamily: 'var(--display)', letterSpacing: '-0.02em' }}>
+                {profile?.full_name}
+              </h1>
+              <div style={{ fontSize: '16px', color: 'var(--muted)', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
+                <span>{profile?.location || 'Location Not Set'}</span>
+                &bull;
+                <span style={{ color: 'var(--teal-600)', fontWeight: 600 }}>Diamond Tier Volunteer</span>
+              </div>
 
-            <div className="profile-verified-badge" title="Verified Volunteer">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+              <Link to="/dashboard/volunteer/settings" style={{ padding: '8px 20px', backgroundColor: '#F8FAFC', color: 'var(--ink)', fontWeight: 600, fontSize: '14px', borderRadius: '99px', border: '1px solid #E2E8F0', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                Edit Profile
+              </Link>
             </div>
           </div>
           
-          <div className="profile-header-details">
-            <div className="profile-title-block">
-              <h1 className="profile-name">{profile?.full_name || 'Anonymous Volunteer'}</h1>
-              <div className="profile-headline">{profile?.headline || 'Volunteer at Ralvo'}</div>
-              <div className="profile-location">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                {profile?.location || 'Location Not Set'}
+          {/* IMPACT RINGS */}
+          <div className="impact-rings-container" style={{ display: 'flex', gap: '32px', flexShrink: 0 }}>
+            <div className="impact-ring-card">
+              <div className="ring-container" style={{ background: `conic-gradient(var(--purple-500) ${hoursRing}%, #F1EFFB 0)` }}>
+                <div className="ring-inner">
+                  <span className="ring-value">{stats.hours}</span>
+                  <span className="ring-label">Hours</span>
+                </div>
               </div>
             </div>
-            
-            <div className="profile-actions">
-              <Link to="/dashboard/volunteer/settings" className="profile-btn-secondary">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-                Edit Details
-              </Link>
+            <div className="impact-ring-card">
+              <div className="ring-container" style={{ background: `conic-gradient(var(--teal-500) ${gigsRing}%, #E6F8F5 0)` }}>
+                <div className="ring-inner">
+                  <span className="ring-value">{stats.completed}</span>
+                  <span className="ring-label">Gigs</span>
+                </div>
+              </div>
+            </div>
+            <div className="impact-ring-card">
+              <div className="ring-container" style={{ background: `conic-gradient(#F59E0B ${certsRing}%, #FEF3C7 0)` }}>
+                <div className="ring-inner">
+                  <span className="ring-value">{certificates.length}</span>
+                  <span className="ring-label">Certs</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="modern-profile-grid">
+      <div style={{ maxWidth: '1200px', margin: '40px auto 0', display: 'grid', gridTemplateColumns: '1fr 380px', gap: '32px', padding: '0 24px', alignItems: 'start' }} className="responsive-grid">
+        
         {/* ── MAIN CONTENT (LEFT) ── */}
-        <div className="profile-main-col">
-          {/* About */}
-          <div className="profile-content-card">
-            <h2 className="profile-section-title">About Me</h2>
-            <p className="profile-bio-text">
-              {profile?.bio || 'This volunteer hasn\'t added a bio yet.'}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          
+          <div className="premium-card">
+            <h2 className="premium-card-title">About</h2>
+            <p style={{ fontSize: '16px', color: 'var(--body)', lineHeight: 1.7, margin: 0, whiteSpace: 'pre-line' }}>
+              {profile?.bio || 'You haven\'t added a bio yet. Update your profile to tell organizations about yourself!'}
             </p>
           </div>
 
-          {/* Certificates */}
-          <div className="profile-content-card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h2 className="profile-section-title" style={{ margin: 0 }}>Certificates & Badges</h2>
-              <Link to="/dashboard/volunteer/certificates" className="profile-link-viewall">View All</Link>
-            </div>
-            
-            {certificates.length > 0 ? (
-              <div className="profile-cert-list">
-                {certificates.slice(0, 3).map((cert) => (
-                  <div key={cert.id} className="profile-cert-item">
-                    <div className="cert-icon-box">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 15V3m0 12l-4-4m4 4l4-4M2 17l.621 2.485A2 2 0 0 0 4.561 21h14.878a2 2 0 0 0 1.94-1.515L22 17"/></svg>
-                    </div>
-                    <div className="cert-details">
-                      <div className="cert-title">Certificate of Completion</div>
-                      <div className="cert-date">Issued: {new Date(cert.issued_at || cert.created_at || Date.now()).toLocaleDateString()}</div>
-                    </div>
+          <div className="premium-card">
+            <h2 className="premium-card-title">Reviews & Feedback</h2>
+            {reviews.length > 0 ? (
+              reviews.map((rev) => (
+                <div key={rev.id} style={{ marginBottom: '20px', paddingBottom: '20px', borderBottom: '1px solid #F1F5F9', display: 'flex', gap: '16px' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: 'var(--purple-50)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, color: 'var(--purple-600)' }}>
+                    {rev.gigs?.organizations?.name.substring(0, 2).toUpperCase()}
                   </div>
-                ))}
-              </div>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                      <span style={{ fontWeight: 700, color: 'var(--ink)' }}>{rev.gigs?.organizations?.name}</span>
+                      <div style={{ display: 'flex' }}>
+                        {[1, 2, 3, 4, 5].map(star => (
+                          <svg key={star} width="12" height="12" viewBox="0 0 24 24" fill={star <= rev.rating ? "#F59E0B" : "none"} stroke={star <= rev.rating ? "#F59E0B" : "#CBD5E1"} strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                        ))}
+                      </div>
+                    </div>
+                    <div style={{ fontSize: '13px', color: 'var(--muted)', marginBottom: '8px' }}>For "{rev.gigs?.title}"</div>
+                    {rev.comment && <p style={{ fontSize: '15px', color: 'var(--body)', margin: 0, lineHeight: 1.6 }}>"{rev.comment}"</p>}
+                  </div>
+                </div>
+              ))
             ) : (
-              <div className="profile-empty-state">No certificates earned yet.</div>
+              <p style={{ color: 'var(--muted)', margin: 0 }}>No reviews yet.</p>
             )}
           </div>
         </div>
 
         {/* ── SIDEBAR (RIGHT) ── */}
-        <div className="profile-sidebar-col">
-          {/* Stats Box */}
-          <div className="profile-content-card stats-card">
-            <h2 className="profile-section-title">Impact</h2>
-            <div className="profile-stats-grid">
-              <div className="stat-box">
-                <span className="stat-number">{stats.hours}</span>
-                <span className="stat-label">Hours</span>
-              </div>
-              <div className="stat-box">
-                <span className="stat-number">{stats.completed}</span>
-                <span className="stat-label">Gigs</span>
-              </div>
-              <div className="stat-box">
-                <span className="stat-number">{stats.rating}</span>
-                <span className="stat-label">Rating</span>
-              </div>
-            </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          
+          <div className="premium-card">
+             <h2 className="premium-card-title">Skills</h2>
+             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+               {hasSkills ? profile.skills.map((s: string) => (
+                 <span key={s} style={{ padding: '6px 12px', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '20px', fontSize: '14px', fontWeight: 500, color: 'var(--ink)' }}>{s}</span>
+               )) : <span style={{ color: 'var(--muted)' }}>No skills listed.</span>}
+             </div>
           </div>
 
-          {/* Contact / Social */}
-          {(profile?.linkedin_url || profile?.portfolio_url) && (
-            <div className="profile-content-card">
-              <h2 className="profile-section-title">Links</h2>
-              <div className="profile-links-list">
-                {profile?.linkedin_url && (
-                  <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" className="profile-social-link">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-                    LinkedIn
-                  </a>
-                )}
-                {profile?.portfolio_url && (
-                  <a href={profile.portfolio_url} target="_blank" rel="noopener noreferrer" className="profile-social-link">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                    Portfolio
-                  </a>
-                )}
-              </div>
-            </div>
-          )}
+          <div className="premium-card">
+             <h2 className="premium-card-title">Impact Areas</h2>
+             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+               {profile?.primary_goals ? profile.primary_goals.map((g: string) => (
+                 <span key={g} style={{ padding: '6px 12px', backgroundColor: 'var(--teal-50)', color: 'var(--teal-700)', borderRadius: '20px', fontSize: '14px', fontWeight: 600 }}>{g}</span>
+               )) : <span style={{ color: 'var(--muted)' }}>No impact areas selected.</span>}
+             </div>
+          </div>
 
-          {/* Skills */}
-          {hasSkills && (
-            <div className="profile-content-card">
-              <h2 className="profile-section-title">Skills</h2>
-              <div className="profile-tags-wrapper">
-                {profile.skills.map((skill: string, index: number) => (
-                  <span key={index} className="profile-tag skill-tag">{skill}</span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Causes */}
-          {hasInterests && (
-            <div className="profile-content-card">
-              <h2 className="profile-section-title">Causes I Care About</h2>
-              <div className="profile-tags-wrapper">
-                {profile.interests.map((interest: string, index: number) => (
-                  <span key={index} className="profile-tag cause-tag">{interest}</span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Verifications */}
-          <div className="profile-content-card">
-            <h2 className="profile-section-title">Verifications</h2>
-            <div className="verification-list">
-              <div className="verification-item verified">
-                <div className="ver-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg></div>
-                <span>Email Address Verified</span>
-              </div>
-              <div className={`verification-item ${profile?.phone ? 'verified' : 'unverified'}`}>
-                <div className="ver-icon">
-                  {profile?.phone ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg> : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>}
+          <div className="premium-card">
+            <h2 className="premium-card-title">Certificates</h2>
+            {certificates.length > 0 ? certificates.map((cert) => (
+              <div key={cert.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: 'linear-gradient(135deg, var(--teal-400), var(--purple-400))', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 15V3m0 12l-4-4m4 4l4-4M2 17l.621 2.485A2 2 0 0 0 4.561 21h14.878a2 2 0 0 0 1.94-1.515L22 17"/></svg>
                 </div>
-                <span>{profile?.phone ? 'Phone Number Verified' : 'Phone Not Verified'}</span>
+                <div>
+                  <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--ink)' }}>Completion Badge</div>
+                  <div style={{ fontSize: '12px', color: 'var(--muted)' }}>Issued: {new Date(cert.issued_at || cert.created_at).toLocaleDateString()}</div>
+                </div>
               </div>
-            </div>
+            )) : <p style={{ color: 'var(--muted)', margin: 0 }}>No certificates yet.</p>}
           </div>
 
         </div>
       </div>
+      
+      <style>{`
+        .impact-ring-card {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        .ring-container {
+          width: 90px;
+          height: 90px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .ring-inner {
+          width: 74px;
+          height: 74px;
+          background-color: #FFFFFF;
+          border-radius: 50%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .ring-value {
+          font-size: 20px;
+          font-weight: 800;
+          color: var(--ink);
+          line-height: 1;
+        }
+        .ring-label {
+          font-size: 11px;
+          color: var(--muted);
+          font-weight: 600;
+          text-transform: uppercase;
+          margin-top: 4px;
+        }
+        .premium-card {
+          background-color: #FFFFFF;
+          border-radius: 16px;
+          padding: 32px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+          border: 1px solid rgba(0,0,0,0.02);
+        }
+        .premium-card-title {
+          font-size: 18px;
+          font-weight: 800;
+          color: var(--ink);
+          margin: 0 0 20px 0;
+          letter-spacing: -0.01em;
+        }
+        @media (max-width: 900px) {
+          .responsive-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .desktop-header-layout {
+            flex-direction: column !important;
+            align-items: center !important;
+            text-align: center;
+          }
+          .desktop-header-layout > div:first-child {
+            flex-direction: column !important;
+            align-items: center !important;
+          }
+          .impact-rings-container {
+            justify-content: center;
+            margin-top: 24px;
+          }
+        }
+      `}</style>
     </div>
   );
 };
 
 export default VolunteerProfile;
-

@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'react-hot-toast';
+import { generateSeoUrl } from '../../utils/url';
 import LoadingScreen from '../../components/LoadingScreen';
 import { motion } from 'framer-motion';
 import { FileText, Link as LinkIcon, Image as ImageIcon } from 'lucide-react';
@@ -153,7 +154,7 @@ const ReviewSubmissions: React.FC = () => {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
                     <div>
                       <h3 style={{ fontSize: '16px', fontWeight: 700, margin: '0 0 4px 0' }}>
-                        <Link to={`/volunteer/${sub.applications?.volunteer_id}`} style={{ color: 'var(--ink)', textDecoration: 'none' }}>
+                        <Link to={`/volunteer/${generateSeoUrl(sub.applications?.volunteer_profiles?.full_name || 'volunteer', sub.applications?.volunteer_id)}`} style={{ color: 'var(--ink)', textDecoration: 'none' }}>
                           {sub.applications?.volunteer_profiles?.full_name}
                         </Link>
                       </h3>
@@ -224,7 +225,7 @@ const ReviewSubmissions: React.FC = () => {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div>
                       <h3 style={{ fontSize: '16px', fontWeight: 700, margin: '0 0 4px 0' }}>
-                        <Link to={`/volunteer/${sub.applications?.volunteer_id}`} style={{ color: 'var(--ink)', textDecoration: 'none' }}>
+                        <Link to={`/volunteer/${generateSeoUrl(sub.applications?.volunteer_profiles?.full_name || 'volunteer', sub.applications?.volunteer_id)}`} style={{ color: 'var(--ink)', textDecoration: 'none' }}>
                           {sub.applications?.volunteer_profiles?.full_name}
                         </Link>
                       </h3>

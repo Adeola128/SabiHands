@@ -3,6 +3,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'react-hot-toast';
+import { generateSeoUrl } from '../../utils/url';
 import LoadingScreen from '../../components/LoadingScreen';
 
 type Filter = 'pending' | 'accepted' | 'declined';
@@ -211,7 +212,7 @@ const ReviewApplicants: React.FC = () => {
                     <div className="gig-media-header" style={{ marginBottom: '10px' }}>
                       <div>
                         <h3 className="gig-media-title" style={{ fontSize: '16px', marginBottom: '4px' }}>
-                          <Link to={`/volunteer/${a.volunteer_id}`} style={{ color: 'var(--ink)', textDecoration: 'none' }}>{name}</Link>
+                          <Link to={`/volunteer/${generateSeoUrl(name, a.volunteer_id)}`} style={{ color: 'var(--ink)', textDecoration: 'none' }}>{name}</Link>
                         </h3>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '13px', color: 'var(--body)' }}>
                           <span>Applied on {new Date(a.applied_at).toLocaleDateString()}</span>
@@ -288,7 +289,7 @@ const ReviewApplicants: React.FC = () => {
                           {isMessaging === a.volunteer_id ? 'Starting...' : 'Message Volunteer'}
                         </button>
                       )}
-                      <Link to={`/volunteer/${a.volunteer_id}`} className="gig-action" style={{ background: 'none', border: 'none', color: 'var(--purple-600)', padding: '8px 12px', fontSize: '13px', marginLeft: 'auto', textDecoration: 'none', fontWeight: 600 }}>View Full Profile →</Link>
+                      <Link to={`/volunteer/${generateSeoUrl(name, a.volunteer_id)}`} className="gig-action" style={{ background: 'none', border: 'none', color: 'var(--purple-600)', padding: '8px 12px', fontSize: '13px', marginLeft: 'auto', textDecoration: 'none', fontWeight: 600 }}>View Full Profile →</Link>
                     </div>
                   </div>
                 </div>
