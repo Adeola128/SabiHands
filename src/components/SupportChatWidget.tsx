@@ -43,16 +43,10 @@ const SupportChatWidget: React.FC = () => {
   const [currentView, setCurrentView] = useState<'menu' | 'chat'>('menu');
   const [messages, setMessages] = useState<SupportMessage[]>([]);
   const [inputText, setInputText] = useState('');
-  const [isPermanentlyHidden, setIsPermanentlyHidden] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
 
   useEffect(() => {
-    const hidden = localStorage.getItem('sabihands_support_hidden');
-    if (hidden === 'true') {
-      setIsPermanentlyHidden(true);
-    }
-
     const saved = localStorage.getItem('sabihands_support_chat');
     if (saved) {
       setMessages(JSON.parse(saved));
@@ -71,17 +65,12 @@ const SupportChatWidget: React.FC = () => {
       if (e.key === 'sabihands_support_chat' && e.newValue) {
         setMessages(JSON.parse(e.newValue));
       }
-      if (e.key === 'sabihands_support_hidden') {
-        setIsPermanentlyHidden(e.newValue === 'true');
-      }
     };
     window.addEventListener('storage', handleStorage);
     
     const handleCustom = () => {
       const saved = localStorage.getItem('sabihands_support_chat');
       if (saved) setMessages(JSON.parse(saved));
-      const hidden = localStorage.getItem('sabihands_support_hidden');
-      setIsPermanentlyHidden(hidden === 'true');
     };
     window.addEventListener('sabihands_chat_update', handleCustom);
 
@@ -124,15 +113,12 @@ const SupportChatWidget: React.FC = () => {
   };
 
   const handleHideWidget = () => {
-    setIsPermanentlyHidden(true);
     setIsOpen(false);
-    localStorage.setItem('sabihands_support_hidden', 'true');
-    window.dispatchEvent(new Event('sabihands_chat_update'));
   };
 
   const isExcludedRoute = EXCLUDED_ROUTES.some(route => location.pathname.startsWith(route));
 
-  if (isPermanentlyHidden || isExcludedRoute) {
+  if (isExcludedRoute) {
     return null;
   }
 
