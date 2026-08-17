@@ -53,7 +53,6 @@ import MarkAttendance from './pages/organization/MarkAttendance';
 import IssueCertificates from './pages/organization/IssueCertificates';
 import OrgSettings from './pages/organization/OrgSettings';
 import TeamMembers from './pages/organization/TeamMembers';
-import MembershipBilling from './pages/organization/MembershipBilling';
 import ImpactDashboard from './pages/organization/ImpactDashboard';
 import Notifications from './pages/Notifications';
 import Messages from './pages/Messages';
@@ -151,7 +150,6 @@ const App: React.FC = () => {
           <Route path="volunteers/:id" element={<VolunteerDetailOrg />} />
           <Route path="settings" element={<OrgSettings />} />
           <Route path="team" element={<TeamMembers />} />
-          <Route path="billing" element={<MembershipBilling />} />
           <Route path="impact" element={<ImpactDashboard />} />
         </Route>
 

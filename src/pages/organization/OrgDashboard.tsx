@@ -5,6 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import LoadingScreen from '../../components/LoadingScreen';
 import EmptyState from '../../components/EmptyState';
 import OnboardingChecklist from '../../components/dashboard/OnboardingChecklist';
+import OrgOnboarding from '../../components/OrgOnboarding';
 
 const OrgDashboard: React.FC = () => {
   const { user } = useAuth();
@@ -270,6 +271,7 @@ const OrgDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+      <OrgOnboarding />
     </>
   );
 };

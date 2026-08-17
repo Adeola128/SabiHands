@@ -184,9 +184,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ role = 'volunteer' })
               <Link to="/dashboard/org/settings" onClick={() => setIsMobileMenuOpen(false)} className={`secondary-nav-item ${location.pathname === '/dashboard/org/settings' ? 'active' : ''}`}>
                 Settings
               </Link>
-              <Link to="/dashboard/org/billing" onClick={() => setIsMobileMenuOpen(false)} className={`secondary-nav-item ${location.pathname === '/dashboard/org/billing' ? 'active' : ''}`}>
-                Billing
-              </Link>
             </>
           )}
           <Link to="/dashboard/messages" onClick={() => setIsMobileMenuOpen(false)} className={`secondary-nav-item ${location.pathname === '/dashboard/messages' ? 'active' : ''}`}>

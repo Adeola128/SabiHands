@@ -116,7 +116,7 @@ const SupportChatWidget: React.FC = () => {
     setIsOpen(false);
   };
 
-  const isExcludedRoute = EXCLUDED_ROUTES.some(route => location.pathname.startsWith(route));
+  const isExcludedRoute = location.pathname === '/' || EXCLUDED_ROUTES.some(route => location.pathname.startsWith(route));
 
   if (isExcludedRoute) {
     return null;

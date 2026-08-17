@@ -333,7 +333,7 @@ const UserManagement: React.FC = () => {
             <thead>
               <tr>
                 <th>Name / Email</th>
-                {activeTab !== 'admins' && <th>Gigs</th>}
+                {activeTab !== 'admins' && <th className="text-right">Gigs</th>}
                 {activeTab === 'admins' && <th>Role</th>}
                 {activeTab !== 'admins' && <th>Joined</th>}
                 {activeTab !== 'admins' && <th>Status</th>}
@@ -346,14 +346,21 @@ const UserManagement: React.FC = () => {
                 return (
                   <tr key={user.id}>
                     <td>
-                      <div style={{ fontWeight: 600, color: '#0F172A', fontSize: '15px' }}>{name}</div>
-                      <div style={{ fontSize: '13px', color: '#64748B', marginTop: '4px' }}>{user.email}</div>
+                      <div style={{ fontWeight: 600, color: '#0F172A', fontSize: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', color: '#64748B' }}>
+                          {name ? name.charAt(0).toUpperCase() : '?'}
+                        </div>
+                        {name}
+                      </div>
+                      <div className="truncate" style={{ fontSize: '13px', color: '#64748B', marginTop: '4px', maxWidth: '200px' }} title={user.email}>{user.email}</div>
                     </td>
-                    <td>0 completed</td>
+                    <td className="text-right">0 <span style={{ color: '#64748B' }}>completed</span></td>
                     <td>{formatDistanceToNow(new Date(user.created_at))} ago</td>
-                    <td><span className="admin-status-badge admin-status-approved">Active</span></td>
+                    <td><span className="chip chip-status-approved">Active</span></td>
                     <td style={{ textAlign: 'right' }}>
-                      <button style={{ background: 'none', border: 'none', color: '#3B82F6', fontWeight: 600, cursor: 'pointer' }}>View</button>
+                      <div className="row-actions">
+                        <button style={{ background: 'none', border: 'none', color: '#3B82F6', fontWeight: 600, cursor: 'pointer', padding: '4px 8px', borderRadius: '4px' }}>View Profile</button>
+                      </div>
                     </td>
                   </tr>
                 );
@@ -364,18 +371,23 @@ const UserManagement: React.FC = () => {
                 return (
                   <tr key={org.id}>
                     <td>
-                      <div style={{ fontWeight: 600, color: '#0F172A', fontSize: '15px' }}>{name}</div>
-                      <div style={{ fontSize: '13px', color: '#64748B', marginTop: '4px' }}>{org.email}</div>
+                      <div style={{ fontWeight: 600, color: '#0F172A', fontSize: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', color: '#64748B' }}>
+                          {name ? name.charAt(0).toUpperCase() : '?'}
+                        </div>
+                        {name}
+                      </div>
+                      <div className="truncate" style={{ fontSize: '13px', color: '#64748B', marginTop: '4px', maxWidth: '200px' }} title={org.email}>{org.email}</div>
                     </td>
-                    <td>0 posted</td>
+                    <td className="text-right">0 <span style={{ color: '#64748B' }}>posted</span></td>
                     <td>{formatDistanceToNow(new Date(org.created_at))} ago</td>
                     <td>
-                      <span className={`admin-status-badge ${status === 'pending' ? 'admin-status-pending' : status === 'rejected' ? 'admin-status-rejected' : 'admin-status-approved'}`}>
+                      <span className={`chip chip-status-${status}`}>
                         {status}
                       </span>
                     </td>
                     <td style={{ textAlign: 'right' }}>
-                      <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                      <div className="row-actions">
                         <button onClick={() => openReviewModal(org)} style={{ padding: '6px 12px', backgroundColor: '#F1F5F9', color: '#334155', border: 'none', borderRadius: '6px', fontWeight: 600, fontSize: '12px', cursor: 'pointer' }}>
                           Review Documents
                         </button>
@@ -389,12 +401,21 @@ const UserManagement: React.FC = () => {
                 return (
                   <tr key={admin.id}>
                     <td>
-                      <div style={{ fontWeight: 600, color: '#0F172A', fontSize: '15px' }}>{name}</div>
-                      <div style={{ fontSize: '13px', color: '#64748B', marginTop: '4px' }}>{admin.email}</div>
+                      <div style={{ fontWeight: 600, color: '#0F172A', fontSize: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', color: '#64748B' }}>
+                          {name ? name.charAt(0).toUpperCase() : '?'}
+                        </div>
+                        {name}
+                      </div>
+                      <div className="truncate" style={{ fontSize: '13px', color: '#64748B', marginTop: '4px', maxWidth: '200px' }} title={admin.email}>{admin.email}</div>
                     </td>
-                    <td style={{ textTransform: 'capitalize' }}>{admin.role}</td>
+                    <td style={{ textTransform: 'capitalize' }}>
+                      <span className={`chip chip-role-${admin.role}`}>{admin.role}</span>
+                    </td>
                     <td style={{ textAlign: 'right' }}>
-                      <button style={{ background: 'none', border: 'none', color: '#3B82F6', fontWeight: 600, cursor: 'pointer' }}>Manage</button>
+                      <div className="row-actions">
+                        <button style={{ background: 'none', border: 'none', color: '#3B82F6', fontWeight: 600, cursor: 'pointer', padding: '4px 8px', borderRadius: '4px' }}>Manage</button>
+                      </div>
                     </td>
                   </tr>
                 );
