@@ -5,8 +5,8 @@ import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'react-hot-toast';
 import LoadingScreen from '../../components/LoadingScreen';
 import { uploadImage } from '../../lib/uploadImage';
-import { UploadCloud, Link as LinkIcon, FileText, Trash2 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { UploadCloud, Link as LinkIcon, FileText, Trash2, Star, CheckCircle2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const SubmitWork: React.FC = () => {
   const { applicationId } = useParams();
@@ -19,6 +19,8 @@ const SubmitWork: React.FC = () => {
   const [driveLink, setDriveLink] = useState('');
   const [fileUrls, setFileUrls] = useState<string[]>([]);
   const [uploadingFiles, setUploadingFiles] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
+  const [rating, setRating] = useState(0);
 
   useEffect(() => {
     const fetchApp = async () => {
@@ -117,8 +119,8 @@ const SubmitWork: React.FC = () => {
         if (error) throw error;
       }
       
-      toast.success("Work submitted successfully! The organization will review it.");
-      navigate('/dashboard/volunteer/my-gigs');
+      toast.success("Work submitted successfully!");
+      setIsCompleted(true);
     } catch (err: any) {
       console.error(err);
       toast.error("Failed to submit work.");
@@ -169,19 +171,24 @@ const SubmitWork: React.FC = () => {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 60 }}>
           <div className="dash-card">
             <div className="dash-card-padding">
-              <h1 style={{ fontSize: '24px', fontFamily: 'var(--display)', color: 'var(--ink)', marginBottom: '8px', letterSpacing: '-0.02em' }}>Submit Your Work</h1>
-              <p style={{ fontSize: '15px', color: 'var(--body)', lineHeight: 1.6, marginBottom: '24px' }}>
-                Please provide your completed work based on the organization's requirements below.
-              </p>
+              {!isCompleted && (
+                <>
+                  <h1 style={{ fontSize: '24px', fontFamily: 'var(--display)', color: 'var(--ink)', marginBottom: '8px', letterSpacing: '-0.02em' }}>Submit Your Work</h1>
+                  <p style={{ fontSize: '15px', color: 'var(--body)', lineHeight: 1.6, marginBottom: '24px' }}>
+                    Please provide your completed work based on the organization's requirements below.
+                  </p>
+                </>
+              )}
 
-              {application.gigs?.submission_notes && (
+              {application.gigs?.submission_notes && !isCompleted && (
                 <div style={{ backgroundColor: '#F0F9FF', border: '1px solid #BAE6FD', borderRadius: '12px', padding: '16px', marginBottom: '24px' }}>
                   <div style={{ fontSize: '12px', fontWeight: 700, color: '#0369A1', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>Instructions from Organization</div>
                   <div style={{ fontSize: '14px', color: '#0C4A6E', lineHeight: 1.5 }}>{application.gigs.submission_notes}</div>
                 </div>
               )}
 
-              <form onSubmit={handleSubmit}>
+              {!isCompleted && (
+                <form onSubmit={handleSubmit}>
                 {(!application.gigs?.submission_formats || application.gigs.submission_formats.includes('file')) && (
                   <div style={{ marginBottom: '24px' }}>
                     <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, color: 'var(--ink)', marginBottom: '8px' }}>
@@ -278,6 +285,71 @@ const SubmitWork: React.FC = () => {
                   </button>
                 </div>
               </form>
+              )}
+
+              <AnimatePresence>
+                {isCompleted && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                    style={{ textAlign: 'center', padding: '40px 20px' }}
+                  >
+                    <motion.div 
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.2, type: "spring", bounce: 0.5 }}
+                      style={{ marginBottom: '24px' }}
+                    >
+                      <CheckCircle2 size={80} color="var(--purple-600)" strokeWidth={1.5} style={{ margin: '0 auto' }} />
+                    </motion.div>
+                    
+                    <h2 style={{ fontSize: '28px', fontFamily: 'var(--display)', color: 'var(--ink)', marginBottom: '16px' }}>
+                      You showed up today. That's huge!
+                    </h2>
+                    
+                    <p style={{ fontSize: '16px', color: 'var(--body)', marginBottom: '32px', maxWidth: '400px', margin: '0 auto 32px' }}>
+                      Your work has been submitted to <strong>{application.gigs?.organizations?.name}</strong>. Thank you for making an impact.
+                    </p>
+
+                    <div style={{ backgroundColor: '#FAFAFC', border: '1px solid #E4E1F5', borderRadius: '16px', padding: '24px', maxWidth: '400px', margin: '0 auto 32px' }}>
+                      <h4 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--ink)', marginBottom: '16px' }}>How was your experience?</h4>
+                      <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <button
+                            key={star}
+                            type="button"
+                            onClick={() => {
+                              setRating(star);
+                              toast.success("Thanks for your feedback!");
+                            }}
+                            style={{ 
+                              background: 'none', 
+                              border: 'none', 
+                              cursor: 'pointer', 
+                              padding: '4px',
+                              color: star <= rating ? '#F59E0B' : '#D1CEDF',
+                              transition: 'all 0.2s'
+                            }}
+                          >
+                            <Star size={32} fill={star <= rating ? '#F59E0B' : 'transparent'} strokeWidth={1.5} />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '16px' }}>
+                      <Link to="/dashboard/volunteer/my-gigs" style={{ padding: '14px 28px', backgroundColor: 'var(--paper)', border: '1px solid var(--border)', borderRadius: '99px', color: 'var(--ink)', fontWeight: 600, textDecoration: 'none' }}>
+                        Back to My Gigs
+                      </Link>
+                      <Link to="/dashboard/volunteer/gigs" style={{ padding: '14px 28px', backgroundColor: 'var(--purple-600)', color: 'white', border: 'none', borderRadius: '99px', fontWeight: 600, textDecoration: 'none', boxShadow: '0 8px 20px rgba(83, 74, 183, 0.3)' }}>
+                        Find Next Gig
+                      </Link>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
             </div>
           </div>
         </motion.div>

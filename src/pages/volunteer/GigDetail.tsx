@@ -103,12 +103,24 @@ const GigDetail: React.FC = () => {
               </div>
             </div>
 
-            <Link
-              to={`/dashboard/volunteer/gigs/${gig.id}/apply`}
-              style={{ display: 'block', width: '100%', padding: '14px', backgroundColor: 'var(--purple-600)', color: 'var(--white)', textAlign: 'center', borderRadius: '10px', fontWeight: 700, textDecoration: 'none', fontSize: '15px', boxShadow: '0 4px 12px rgba(38,33,92,0.2)', transition: 'all 0.2s ease', marginBottom: '12px' }}
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              animate={{ boxShadow: ['0 4px 12px rgba(83,74,183,0.2)', '0 4px 20px rgba(83,74,183,0.4)', '0 4px 12px rgba(83,74,183,0.2)'] }}
+              transition={{ boxShadow: { repeat: Infinity, duration: 2, ease: "easeInOut" } }}
+              style={{ marginBottom: '8px' }}
             >
-              Apply for this Gig
-            </Link>
+              <Link
+                to={`/dashboard/volunteer/gigs/${gig.id}/apply`}
+                style={{ display: 'block', width: '100%', padding: '14px', backgroundColor: 'var(--purple-600)', color: 'var(--white)', textAlign: 'center', borderRadius: '10px', fontWeight: 700, textDecoration: 'none', fontSize: '15px' }}
+              >
+                Apply for this Gig
+              </Link>
+            </motion.div>
+            <div style={{ textAlign: 'center', fontSize: '12px', color: 'var(--muted)', fontWeight: 500, marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Takes 2 mins to apply
+            </div>
             
             <ShareGigButton gigId={gig.id} title={gig.title} buttonText="Share with a Friend" />
           </div>

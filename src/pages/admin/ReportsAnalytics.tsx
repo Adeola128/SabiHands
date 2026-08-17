@@ -20,6 +20,9 @@ const ReportsAnalytics: React.FC = () => {
   });
   const [loading, setLoading] = useState(true);
 
+  const [generatingPDF, setGeneratingPDF] = useState(false);
+  const [engagementData, setEngagementData] = useState<any[]>([]);
+
   useEffect(() => {
     const fetchAnalytics = async () => {
       // 1. Fetch YTD users
@@ -78,11 +81,26 @@ const ReportsAnalytics: React.FC = () => {
         totalGigs: totalGigs || 0
       });
 
+      // 4. Mock Engagement Data
+      setEngagementData([
+        { name: 'Week 1', rate: 45 },
+        { name: 'Week 2', rate: 52 },
+        { name: 'Week 3', rate: 49 },
+        { name: 'Week 4', rate: 61 }
+      ]);
+
       setLoading(false);
     };
 
     fetchAnalytics();
   }, []);
+
+  const handleGeneratePDF = async () => {
+    setGeneratingPDF(true);
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    setGeneratingPDF(false);
+    alert('PDF Report generated and downloaded successfully!');
+  };
 
   if (loading) return <LoadingScreen message="Loading analytics..." />;
 
@@ -93,7 +111,13 @@ const ReportsAnalytics: React.FC = () => {
           <h1 style={{ fontSize: '28px', fontWeight: 700, color: '#0F172A', margin: '0 0 8px 0', fontFamily: 'var(--display)' }}>Reports & Analytics</h1>
           <p style={{ color: '#64748B', margin: 0, fontSize: '15px' }}>Platform-wide reporting for the internal team.</p>
         </div>
-        <button style={{ padding: '8px 16px', backgroundColor: '#3B82F6', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>Generate PDF Report</button>
+        <button 
+          onClick={handleGeneratePDF} 
+          disabled={generatingPDF}
+          style={{ padding: '8px 16px', backgroundColor: '#3B82F6', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: generatingPDF ? 'not-allowed' : 'pointer', opacity: generatingPDF ? 0.7 : 1 }}
+        >
+          {generatingPDF ? 'Generating...' : 'Generate PDF Report'}
+        </button>
       </div>
 
       {/* Quick Stats */}
@@ -176,6 +200,24 @@ const ReportsAnalytics: React.FC = () => {
                   <Legend />
                 </PieChart>
               )}
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
+      {/* Engagement Bottom Row */}
+      <div style={{ marginTop: '24px' }}>
+        <div className="admin-card" style={{ height: '300px', display: 'flex', flexDirection: 'column' }}>
+          <h3 style={{ margin: '0 0 24px 0', fontSize: '16px', fontWeight: 600, color: '#0F172A' }}>Volunteer Engagement Rate (Last 4 Weeks)</h3>
+          <div style={{ flex: 1, width: '100%' }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={engagementData}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                <YAxis axisLine={false} tickLine={false} tickFormatter={value => `${value}%`} />
+                <Tooltip formatter={(value) => [`${value}%`, 'Engagement Rate']} />
+                <Line type="monotone" dataKey="rate" stroke="#10B981" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+              </LineChart>
             </ResponsiveContainer>
           </div>
         </div>

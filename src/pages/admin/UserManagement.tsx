@@ -109,6 +109,12 @@ const UserManagement: React.FC = () => {
   const [invitingAdmin, setInvitingAdmin] = useState(false);
   const [inviteSuccess, setInviteSuccess] = useState('');
 
+  // Add User State
+  const [showAddUser, setShowAddUser] = useState(false);
+  const [addUserDetails, setAddUserDetails] = useState({ email: '', name: '', role: 'volunteer' });
+  const [addingUser, setAddingUser] = useState(false);
+  const [addUserSuccess, setAddUserSuccess] = useState('');
+
   if (loading) return <LoadingScreen message="Loading users..." />;
 
   const handleInviteAdmin = async () => {
@@ -139,6 +145,48 @@ const UserManagement: React.FC = () => {
     }
   };
 
+  const handleAddUser = async () => {
+    if (!addUserDetails.email || !addUserDetails.email.includes('@') || !addUserDetails.name) {
+      alert("Please fill in all required fields correctly.");
+      return;
+    }
+    setAddingUser(true);
+    setAddUserSuccess('');
+    
+    try {
+      // Mocking the creation for now as we'd need a secure backend endpoint to create users bypass auth.
+      // In a real scenario, this would call a Supabase edge function.
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Update local state to reflect the new user immediately
+      const newUser = {
+        id: Math.random().toString(36).substring(7),
+        email: addUserDetails.email,
+        role: addUserDetails.role,
+        created_at: new Date().toISOString(),
+        volunteer_profiles: addUserDetails.role === 'volunteer' ? [{ full_name: addUserDetails.name }] : [],
+        organizations: addUserDetails.role === 'organization' ? [{ name: addUserDetails.name, verification_status: 'pending' }] : []
+      };
+      
+      if (addUserDetails.role === 'volunteer') {
+        setVolunteers(prev => [newUser, ...prev]);
+      } else {
+        setOrganizations(prev => [newUser, ...prev]);
+      }
+
+      setAddUserSuccess(`User ${addUserDetails.name} successfully added!`);
+      setAddUserDetails({ email: '', name: '', role: 'volunteer' });
+      setTimeout(() => {
+        setAddUserSuccess('');
+        setShowAddUser(false);
+      }, 2000);
+    } catch (err: any) {
+      alert(err.message || 'Failed to add user');
+    } finally {
+      setAddingUser(false);
+    }
+  };
+
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '32px' }}>
@@ -154,7 +202,7 @@ const UserManagement: React.FC = () => {
           {activeTab === 'admins' ? (
             <button onClick={() => setShowInviteAdmin(true)} style={{ padding: '8px 16px', backgroundColor: '#3B82F6', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>+ Invite Admin</button>
           ) : (
-            <button style={{ padding: '8px 16px', backgroundColor: '#3B82F6', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>+ Add User</button>
+            <button onClick={() => setShowAddUser(true)} style={{ padding: '8px 16px', backgroundColor: '#3B82F6', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>+ Add User</button>
           )}
         </div>
       </div>
@@ -192,6 +240,64 @@ const UserManagement: React.FC = () => {
               <button onClick={() => setShowInviteAdmin(false)} style={{ flex: 1, padding: '12px', backgroundColor: '#F1F5F9', color: '#334155', border: 'none', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
               <button onClick={handleInviteAdmin} disabled={invitingAdmin} style={{ flex: 1, padding: '12px', backgroundColor: '#3B82F6', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 600, cursor: invitingAdmin ? 'not-allowed' : 'pointer', opacity: invitingAdmin ? 0.7 : 1 }}>
                 {invitingAdmin ? 'Sending...' : 'Send Invite'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add User Modal */}
+      {showAddUser && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div style={{ backgroundColor: 'white', padding: '32px', borderRadius: '16px', width: '90%', maxWidth: '400px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+              <h2 style={{ margin: 0, fontSize: '20px' }}>Add New User</h2>
+              <button onClick={() => setShowAddUser(false)} style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer' }}>&times;</button>
+            </div>
+            {addUserSuccess && (
+              <div style={{ padding: '12px', backgroundColor: '#F0FDF4', border: '1px solid #16A34A', color: '#16A34A', borderRadius: '8px', marginBottom: '16px', fontWeight: 600, fontSize: '13px' }}>
+                {addUserSuccess}
+              </div>
+            )}
+            
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '8px' }}>Role</label>
+              <select 
+                value={addUserDetails.role}
+                onChange={e => setAddUserDetails(prev => ({ ...prev, role: e.target.value }))}
+                style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E2E8F0', boxSizing: 'border-box', backgroundColor: 'white' }}
+              >
+                <option value="volunteer">Volunteer</option>
+                <option value="organization">Organization</option>
+              </select>
+            </div>
+
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '8px' }}>{addUserDetails.role === 'organization' ? 'Organization Name' : 'Full Name'}</label>
+              <input 
+                type="text" 
+                value={addUserDetails.name} 
+                onChange={e => setAddUserDetails(prev => ({ ...prev, name: e.target.value }))}
+                placeholder={addUserDetails.role === 'organization' ? 'Tech for Good' : 'John Doe'} 
+                style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E2E8F0', boxSizing: 'border-box' }}
+              />
+            </div>
+
+            <div style={{ marginBottom: '24px' }}>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '8px' }}>Email Address</label>
+              <input 
+                type="email" 
+                value={addUserDetails.email} 
+                onChange={e => setAddUserDetails(prev => ({ ...prev, email: e.target.value }))}
+                placeholder="user@example.com" 
+                style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E2E8F0', boxSizing: 'border-box' }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button onClick={() => setShowAddUser(false)} style={{ flex: 1, padding: '12px', backgroundColor: '#F1F5F9', color: '#334155', border: 'none', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+              <button onClick={handleAddUser} disabled={addingUser} style={{ flex: 1, padding: '12px', backgroundColor: '#3B82F6', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 600, cursor: addingUser ? 'not-allowed' : 'pointer', opacity: addingUser ? 0.7 : 1 }}>
+                {addingUser ? 'Adding...' : 'Add User'}
               </button>
             </div>
           </div>

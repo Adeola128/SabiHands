@@ -5,8 +5,9 @@ import { useAuth } from '../../contexts/AuthContext';
 import { uploadImage } from '../../lib/uploadImage';
 import { toast } from 'react-hot-toast';
 import LoadingScreen from '../../components/LoadingScreen';
+import { motion, AnimatePresence } from 'framer-motion';
+import { CheckCircle } from 'lucide-react';
 import './ApplyGig.css';
-
 const ApplyGig: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ const ApplyGig: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -124,7 +126,7 @@ const ApplyGig: React.FC = () => {
       }
       
       toast.success("Application submitted successfully!");
-      navigate('/dashboard/volunteer/applications');
+      setShowSuccess(true);
     } catch (err: any) {
       if (err.code === '23505') {
         const msg = "You have already applied for this gig and it is currently active.";
@@ -354,6 +356,37 @@ const ApplyGig: React.FC = () => {
       </div>
       )}
       </div>
+
+      <AnimatePresence>
+        {showSuccess && (
+          <motion.div 
+            className="success-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div 
+              className="success-card"
+              initial={{ scale: 0.8, y: 50, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              transition={{ type: "spring", bounce: 0.5 }}
+            >
+              <motion.div 
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: "spring", bounce: 0.5 }}
+              >
+                <CheckCircle size={80} color="var(--teal-500)" strokeWidth={1.5} />
+              </motion.div>
+              <h2>Application Submitted!</h2>
+              <p>You're one step closer to making an impact. The organization will review your profile shortly.</p>
+              <button onClick={() => navigate('/dashboard/volunteer/applications')}>
+                Return to Dashboard
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

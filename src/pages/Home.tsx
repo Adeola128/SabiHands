@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
-import { supabase } from '../lib/supabase';
+
 import './Home.css';
 
 const fadeUpVariant: Variants = {
@@ -33,43 +33,6 @@ const scaleUpVariant: Variants = {
 };
 
 const Home: React.FC = () => {
-  const [verifyCode, setVerifyCode] = useState('');
-  const [verifyCert, setVerifyCert] = useState<any>(null);
-  const [verifyError, setVerifyError] = useState<string | null>(null);
-  const [verifyLoading, setVerifyLoading] = useState(false);
-
-  const handleVerify = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (verifyCode.trim()) {
-      setVerifyLoading(true);
-      setVerifyError(null);
-      setVerifyCert(null);
-      
-      const { data, error } = await supabase
-        .from('certificates')
-        .select(`
-          *,
-          gigs(title, type, organizations(name)),
-          users(volunteer_profiles(full_name))
-        `)
-        .eq('verification_code', verifyCode.trim().toUpperCase())
-        .maybeSingle();
-
-      if (error || !data) {
-        setVerifyError('Invalid or unrecognized certificate code.');
-      } else {
-        setVerifyCert({
-          name: data.users?.volunteer_profiles[0]?.full_name || 'Volunteer',
-          gig: data.gigs?.title,
-          org: data.gigs?.organizations?.name,
-          date: new Date(data.issued_at).toLocaleDateString(),
-          code: data.verification_code
-        });
-      }
-      setVerifyLoading(false);
-    }
-  };
-
   useEffect(() => {
     // Parallax logic for floating elements (if not reduced motion)
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -267,80 +230,6 @@ const Home: React.FC = () => {
 
         <div className="wave">
           <svg viewBox="0 0 1440 120" preserveAspectRatio="none"><path fill="#FFFFFF" d="M0,40 C240,100 480,10 720,50 C960,90 1200,20 1440,64 L1440,120 L0,120 Z"/></svg>
-        </div>
-      </section>
-
-      {/* CERTIFICATE */}
-      <section className="panel panel-white" id="certificate" style={{ overflow: 'hidden' }}>
-        <div className="wrap">
-          <div className="cert-row">
-            <motion.div style={{ position: 'relative' }} data-parallax="0.05" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={fadeUpVariant}>
-              <div className="bg-glow-teal" style={{ top: '-30%', left: '-30%', filter: 'blur(70px)', opacity: 0.8 }}></div>
-              <div className="cert-card glass-effect" style={{ position: 'relative', overflow: 'hidden' }}>
-                <div className="cert-top">
-                  <svg className="cert-mark" viewBox="0 0 100 100"><path d="M20 15 L75 50" fill="none" stroke="#7F77DD" strokeWidth="16" strokeLinecap="round"/><path d="M20 85 L75 50" fill="none" stroke="#1D9E75" strokeWidth="16" strokeLinecap="round"/></svg>
-                  <span className="cert-badge"><span className="dot"></span>Verified</span>
-                </div>
-                <div className="cert-title">Certificate of Completion</div>
-                <div className="cert-sub">Issued via Ralvo</div>
-                <div className="cert-name">{verifyCert ? verifyCert.name : 'Amara Okafor'}</div>
-                <div className="cert-meta">
-                  <div><span>Organization</span><b>{verifyCert ? verifyCert.org : 'Lagos Food Bank Initiative'}</b></div>
-                  <div><span>Gig completed</span><b>{verifyCert ? verifyCert.gig : 'Event support · Physical'}</b></div>
-                  <div><span>Certificate ID</span><b style={{ fontFamily: 'monospace' }}>{verifyCert ? verifyCert.code : 'SH-DEMO-123'}</b></div>
-                  <div><span>Issued</span><b>{verifyCert ? verifyCert.date : 'March 2027'}</b></div>
-                </div>
-                {verifyLoading && (
-                  <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1D9E75" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="home-spinner">
-                      <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
-                    </svg>
-                  </div>
-                )}
-              </div>
-              <div className="cert-float-illus illus-slot tone-teal">
-                <img src="/illustrations/certificate-illustration.png" alt="Certificate" />
-              </div>
-            </motion.div>
-            
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.4 }} variants={fadeUpVariant}>
-              <div className="kicker">The differentiator</div>
-              <h2>Proof, not just a thank-you note</h2>
-              <p className="lede">Every gig completed on Ralvo produces a real, verifiable certificate - something an employer, a school, or the next NGO can actually check, not just a line on a CV nobody can confirm.</p>
-              
-              <div className="verify-widget-home">
-                <h3>Verify a Certificate</h3>
-                <p>Enter a certificate ID to instantly verify its authenticity.</p>
-                <form onSubmit={handleVerify} className="verify-form">
-                  <input 
-                    type="text" 
-                    placeholder="e.g. SH-..." 
-                    value={verifyCode}
-                    onChange={(e) => setVerifyCode(e.target.value)}
-                    required
-                  />
-                  <button type="submit" disabled={verifyLoading} className="btn btn-primary">
-                    {verifyLoading ? 'Verifying...' : 'Verify'}
-                  </button>
-                </form>
-                {verifyError && (
-                  <div className="verify-msg error">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                    {verifyError}
-                  </div>
-                )}
-                {verifyCert && (
-                  <div className="verify-msg success">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                    Certificate verified successfully! See details to the left.
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          </div>
-        </div>
-        <div className="wave">
-          <svg viewBox="0 0 1440 120" preserveAspectRatio="none"><path fill="#26215C" d="M0,60 C240,110 480,10 720,48 C960,86 1200,30 1440,70 L1440,120 L0,120 Z"/></svg>
         </div>
       </section>
 

@@ -69,12 +69,13 @@ import OrgVerificationQueue from './pages/admin/OrgVerificationQueue';
 import UserManagement from './pages/admin/UserManagement';
 import GigModeration from './pages/admin/GigModeration';
 import CertificateRegistry from './pages/admin/CertificateRegistry';
-import SponsoredPlacement from './pages/admin/SponsoredPlacement';
 import SupportDisputes from './pages/admin/SupportDisputes';
 import ReportsAnalytics from './pages/admin/ReportsAnalytics';
 
 import PermissionDenied from './pages/system/PermissionDenied';
 import Maintenance from './pages/system/Maintenance';
+
+import SupportChatWidget from './components/SupportChatWidget';
 
 const App: React.FC = () => {
   return (
@@ -162,7 +163,6 @@ const App: React.FC = () => {
           <Route path="users" element={<UserManagement />} />
           <Route path="gig-moderation" element={<GigModeration />} />
           <Route path="certificates" element={<CertificateRegistry />} />
-          <Route path="sponsored" element={<SponsoredPlacement />} />
           <Route path="support" element={<SupportDisputes />} />
           <Route path="reports" element={<ReportsAnalytics />} />
         </Route>
@@ -178,6 +178,7 @@ const App: React.FC = () => {
           style: { borderRadius: '12px', padding: '16px', color: 'var(--ink)' }
         }} 
       />
+      <SupportChatWidget />
     </BrowserRouter>
   );
 };

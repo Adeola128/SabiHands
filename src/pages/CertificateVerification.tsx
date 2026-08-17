@@ -31,8 +31,7 @@ const CertificateVerification: React.FC = () => {
         .from('certificates')
         .select(`
           *,
-          gigs(title, type, organizations(name)),
-          users(volunteer_profiles(full_name))
+          gigs(title, type, organizations(name))
         `)
         .eq('verification_code', code.trim().toUpperCase())
         .maybeSingle();
@@ -40,10 +39,19 @@ const CertificateVerification: React.FC = () => {
       if (error || !data) {
         setError('Invalid or unrecognized certificate code.');
       } else {
+        let certName = data.recipient_name;
+        if (!certName && data.volunteer_id) {
+           const { data: vp } = await supabase.from('volunteer_profiles').select('full_name').eq('user_id', data.volunteer_id).maybeSingle();
+           if (vp?.full_name) certName = vp.full_name;
+        }
+        
+        const gig = Array.isArray(data.gigs) ? data.gigs[0] : data.gigs;
+        const org = gig?.organizations ? (Array.isArray(gig.organizations) ? gig.organizations[0] : gig.organizations) : null;
+
         setCert({
-          name: data.users?.volunteer_profiles[0]?.full_name || 'Volunteer',
-          gig: data.gigs?.title,
-          org: data.gigs?.organizations?.name,
+          name: certName || 'Volunteer',
+          gig: gig?.title,
+          org: org?.name,
           date: new Date(data.issued_at).toLocaleDateString(),
           code: data.verification_code
         });
