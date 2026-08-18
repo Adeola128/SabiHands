@@ -9,10 +9,7 @@ const Footer: React.FC = () => {
         <div className="footer-top">
           <div className="footer-brand-col">
             <Link className="brand" to="/">
-              <svg viewBox="0 0 100 100" width="32" height="32">
-                <path d="M20 15 L75 50" fill="none" stroke="#7F77DD" strokeWidth="16" strokeLinecap="round"/>
-                <path d="M20 85 L75 50" fill="none" stroke="#1D9E75" strokeWidth="16" strokeLinecap="round"/>
-              </svg>
+              <img src="/logo.png" alt="Ralvo Logo" style={{ height: '32px', width: 'auto' }} />
               <span style={{ color: 'var(--purple-900)' }}>Ralvo</span>
             </Link>
             <p className="footer-tagline">A Lagos-first marketplace for real gigs and real proof.</p>

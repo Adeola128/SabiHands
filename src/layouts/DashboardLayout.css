@@ -34,9 +34,9 @@
   text-decoration: none;
 }
 
-.dashboard-logo svg {
-  width: 36px;
-  height: 36px;
+.dashboard-logo img {
+  width: auto;
+  height: 24px;
 }
 
 .dashboard-logo span {

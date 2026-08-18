@@ -271,7 +271,7 @@ const OrgDashboard: React.FC = () => {
           </div>
         </div>
       </div>
-      <OrgOnboarding />
+      <OrgOnboarding organization={org} stats={stats} />
     </>
   );
 };

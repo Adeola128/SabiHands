@@ -99,11 +99,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ role = 'volunteer' })
     <div className="dashboard-container">
       <header className="dashboard-header">
         <div className="dashboard-header-inner">
-          <Link to="/" className="dashboard-logo">
-            <svg viewBox="0 0 100 100">
-              <path d="M60 15 A35 35 0 1 0 60 85" fill="none" stroke="#7F77DD" strokeWidth="16" strokeLinecap="round"/>
-              <path d="M40 15 A35 35 0 1 1 40 85" fill="none" stroke="#1D9E75" strokeWidth="16" strokeLinecap="round"/>
-            </svg>
+          <Link to="/dashboard" className="dashboard-logo">
+            <img src="/logo.png" alt="Ralvo Logo" style={{ height: '24px', width: 'auto' }} />
             <span>Ralvo</span>
           </Link>
           

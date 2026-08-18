@@ -7,10 +7,7 @@ const OrgVerificationPending: React.FC = () => {
     <div className="screen" style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: 'var(--paper)' }}>
       <div style={{ maxWidth: '480px', width: '100%', padding: '48px', backgroundColor: 'var(--white)', borderRadius: '24px', boxShadow: '0 16px 40px -16px rgba(38,33,92,0.15)', textAlign: 'center' }}>
         <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', textDecoration: 'none', color: 'var(--teal-600)', fontWeight: 700, fontFamily: 'var(--display)', fontSize: '24px', marginBottom: '32px' }}>
-          <svg viewBox="0 0 100 100" style={{ width: '32px', height: '32px' }}>
-            <path d="M60 15 A35 35 0 1 0 60 85" fill="none" stroke="#AFA9EC" strokeWidth="16" strokeLinecap="round" />
-            <path d="M40 15 A35 35 0 1 1 40 85" fill="none" stroke="#5DCAA5" strokeWidth="16" strokeLinecap="round" />
-          </svg>
+          <img src="/logo.png" alt="Ralvo Logo" style={{ height: '32px', width: 'auto' }} />
           Ralvo
         </Link>
         

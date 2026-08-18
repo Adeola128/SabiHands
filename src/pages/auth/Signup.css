@@ -109,7 +109,7 @@
   font-weight: 600;
 }
 .visual-stats div span {
-  font-size: 12px;
+  font-size: 14px;
   color: rgba(255,255,255,0.65);
 }
 
@@ -132,7 +132,7 @@
   margin-bottom: 36px;
 }
 .form-top .back {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--muted);
   display: flex;
   align-items: center;
@@ -148,7 +148,7 @@
   height: 14px;
 }
 .form-top .login-hint {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--muted);
 }
 .form-top .login-hint a {
@@ -157,7 +157,7 @@
 }
 
 .auth-eyebrow {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -169,7 +169,7 @@
 }
 .form-sub {
   margin-top: 8px;
-  font-size: 14.5px;
+  font-size: 16px;
   color: var(--muted);
   min-height: 20px;
 }
@@ -189,7 +189,7 @@
   background: none;
   padding: 10px 6px;
   border-radius: 999px;
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--muted);
   cursor: pointer;
@@ -417,18 +417,18 @@
 }
 .field label {
   display: block;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--ink);
   margin-bottom: 6px;
 }
 .field input, .field select {
   width: 100%;
-  padding: 12px 14px;
+  padding: 14px 16px;
   border-radius: 10px;
   border: 1.5px solid #E4E1F5;
   background: var(--white);
-  font-size: 14px;
+  font-size: 16px;
   color: var(--ink);
   font-family: var(--sans);
   outline: none;

@@ -5,10 +5,10 @@ import { motion } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
 import LoadingScreen from '../../components/LoadingScreen';
 import ShareGigButton from '../../components/ShareGigButton';
-import '../organization/OrganizationProfile.css';
+import './PublicGigDetail.css';
 
 const PublicGigDetail: React.FC = () => {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const [gig, setGig] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -49,150 +49,162 @@ const PublicGigDetail: React.FC = () => {
   
   if (!gig) {
     return (
-      <div className="modern-profile-container">
-        <div style={{ padding: '40px', textAlign: 'center', backgroundColor: 'var(--white)', borderRadius: '12px', border: '1px solid #E4E1F5' }}>
-          <h2 style={{ fontSize: '24px', fontWeight: 700, color: 'var(--ink)', marginBottom: '16px' }}>Gig not found</h2>
-          <p style={{ color: 'var(--body)', marginBottom: '24px' }}>This opportunity may have been closed or removed by the organization.</p>
-          <Link to="/" style={{ display: 'inline-block', padding: '12px 24px', backgroundColor: 'var(--purple-600)', color: 'white', borderRadius: '8px', textDecoration: 'none', fontWeight: 600 }}>Return Home</Link>
+      <div className="gig-detail-wrapper">
+        <div style={{ padding: '64px', textAlign: 'center', backgroundColor: 'var(--white)', borderRadius: '32px', border: '1px solid #E4E1F5', boxShadow: '0 12px 48px -12px rgba(0,0,0,0.05)' }}>
+          <h2 style={{ fontSize: '32px', fontFamily: 'var(--display)', fontWeight: 800, color: 'var(--ink)', marginBottom: '16px' }}>Opportunity not found</h2>
+          <p style={{ color: 'var(--body)', marginBottom: '32px', fontSize: '18px' }}>This gig may have been closed or removed by the organization.</p>
+          <Link to="/" style={{ display: 'inline-block', padding: '16px 32px', backgroundColor: 'var(--purple-600)', color: 'white', borderRadius: '16px', textDecoration: 'none', fontWeight: 700, fontSize: '18px' }}>Browse Other Roles</Link>
         </div>
       </div>
     );
   }
 
   const gigImageUrl = gig.image_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(gig.title)}&background=random&size=800`;
+  const urlSlug = gig.slug || gig.id;
+  const canonicalUrl = `${window.location.origin}/gig/${urlSlug}`;
 
   return (
-    <div className="modern-profile-container">
+    <div className="gig-detail-wrapper">
       <Helmet>
-        <title>{gig.title} &mdash; Ralvo</title>
-        <meta name="description" content={`Apply for ${gig.title} with ${gig.organizations?.name || 'an NGO'} on Ralvo.`} />
-        <meta property="og:title" content={`${gig.title} &mdash; Ralvo`} />
+        <title>{gig.title} | {gig.organizations?.name} &mdash; Ralvo</title>
+        <meta name="description" content={`Apply for ${gig.title} with ${gig.organizations?.name || 'an NGO'} on Ralvo. Join to volunteer and make an impact.`} />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:title" content={`${gig.title} | ${gig.organizations?.name} &mdash; Ralvo`} />
         <meta property="og:description" content={`Apply for ${gig.title} with ${gig.organizations?.name || 'an NGO'} on Ralvo.`} />
         <meta property="og:image" content={gigImageUrl} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={`${gig.title} &mdash; Ralvo`} />
         <meta name="twitter:description" content={`Apply for ${gig.title} with ${gig.organizations?.name || 'an NGO'} on Ralvo.`} />
         <meta name="twitter:image" content={gigImageUrl} />
       </Helmet>
       
-      {/* ── MAIN GRID ── */}
-      <div className="modern-profile-grid">
+      {/* ── HERO SECTION ── */}
+      <motion.div 
+        className="gig-hero-card"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="gig-hero-cover" style={{ backgroundImage: `url(${gigImageUrl})` }}></div>
+        <div className="gig-hero-content">
+          <div className="gig-hero-tag">
+            {gig.type === 'skilled' ? '✨ Skilled Role' : '🤝 Physical Event Support'}
+          </div>
+          <h1 className="gig-hero-title">{gig.title}</h1>
+          <div className="gig-hero-meta">
+            <div className="gig-hero-meta-item">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="9" width="18" height="13" rx="2"/><path d="M8 9V5a2 2 0 0 1 4 0v4"/></svg>
+              {gig.organizations?.name || 'Organization'}
+            </div>
+            <div className="gig-hero-meta-item">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              {gig.location || 'Remote'}
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* ── LAYOUT GRID ── */}
+      <div className="gig-bento-grid">
         
         {/* ── MAIN CONTENT (LEFT) ── */}
-        <div className="profile-main-col">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ type: 'spring', stiffness: 60 }}
-          >
-            {/* Hero Section */}
-            <div className="profile-hero-card" style={{ marginBottom: '24px' }}>
-              <div className="profile-cover-area" style={{ height: '300px', backgroundImage: `url(${gigImageUrl})` }}>
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 40%, rgba(15,12,41,0.85) 100%)' }} />
-                
-                <div style={{ position: 'absolute', bottom: '24px', left: '24px', right: '24px', zIndex: 2 }}>
-                  <div style={{ display: 'inline-flex', alignItems: 'center', padding: '6px 14px', backgroundColor: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)', borderRadius: '99px', fontSize: '12px', fontWeight: 700, color: 'var(--white)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '12px', border: '1px solid rgba(255,255,255,0.3)' }}>
-                    {gig.type === 'skilled' ? 'Skilled Role' : 'Physical Event Support'}
-                  </div>
-                  <h1 style={{ fontSize: '32px', fontFamily: 'var(--display)', color: 'var(--white)', margin: 0, lineHeight: 1.2, textShadow: '0 2px 8px rgba(0,0,0,0.4)', fontWeight: 700 }}>
-                    {gig.title}
-                  </h1>
-                </div>
-              </div>
-              
-              {/* Tags Row */}
-              <div style={{ padding: '20px 24px', display: 'flex', gap: '8px', flexWrap: 'wrap', backgroundColor: 'var(--white)' }}>
-                <span className="profile-tag skill-tag">
-                  {gig.type === 'skilled' ? 'Skilled' : 'Physical'}
-                </span>
-                {gig.location === 'Remote' && (
-                  <span className="profile-tag cause-tag">
-                    Remote
-                  </span>
-                )}
-              </div>
+        <div className="gig-main-col">
+          
+          <div className="gig-content-card">
+            <h2 className="gig-section-title">About this Opportunity</h2>
+            <div className="gig-description-text">
+              {gig.description}
             </div>
+          </div>
 
-            {/* About this Opportunity */}
-            <div className="profile-content-card">
-              <h2 className="profile-section-title">About this Opportunity</h2>
-              <p className="profile-bio-text">
-                {gig.description}
-              </p>
-            </div>
-          </motion.div>
+          <div className="gig-content-card">
+            <h2 className="gig-section-title">Requirements &amp; Details</h2>
+            <ul className="gig-req-list">
+              {gig.resume_requirement !== 'not_required' && (
+                <li className="gig-req-item">
+                  <svg className="gig-req-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                  <span><strong>Resume/CV</strong> is {gig.resume_requirement} for this role.</span>
+                </li>
+              )}
+              {gig.linkedin_requirement !== 'not_required' && (
+                <li className="gig-req-item">
+                  <svg className="gig-req-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                  <span><strong>LinkedIn Profile</strong> is {gig.linkedin_requirement}.</span>
+                </li>
+              )}
+              {gig.portfolio_requirement !== 'not_required' && (
+                <li className="gig-req-item">
+                  <svg className="gig-req-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                  <span><strong>Portfolio</strong> is {gig.portfolio_requirement}.</span>
+                </li>
+              )}
+              <li className="gig-req-item">
+                <svg className="gig-req-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <span>Upon completion, volunteers will receive a verified <strong>Certificate of Completion</strong>.</span>
+              </li>
+            </ul>
+          </div>
+
         </div>
         
         {/* ── SIDEBAR (RIGHT) ── */}
-        <div className="profile-sidebar-col">
+        <div className="gig-sidebar-col">
           
-          {/* Apply CTA */}
-          <div className="profile-content-card" style={{ textAlign: 'center' }}>
-            <div style={{ width: '64px', height: '64px', borderRadius: '16px', background: 'linear-gradient(135deg, var(--teal-50), var(--teal-100))', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--teal-600)" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          {/* Quick Apply Card */}
+          <div className="gig-summary-card">
+            <div className="gig-summary-grid">
+              <div className="gig-summary-item">
+                <span className="gig-summary-label">Commitment</span>
+                <span className="gig-summary-value">{gig.hours_required ? `${gig.hours_required} Hours` : 'Flexible'}</span>
+              </div>
+              <div className="gig-summary-item">
+                <span className="gig-summary-label">Date</span>
+                <span className="gig-summary-value">{gig.date_start ? new Date(gig.date_start).toLocaleDateString() : 'Ongoing'}</span>
+              </div>
+              <div className="gig-summary-item">
+                <span className="gig-summary-label">Format</span>
+                <span className="gig-summary-value">{gig.type === 'skilled' ? 'Skilled' : 'Physical'}</span>
+              </div>
+              <div className="gig-summary-item">
+                <span className="gig-summary-label">Location</span>
+                <span className="gig-summary-value">{gig.location === 'Remote' ? 'Remote' : 'On-Site'}</span>
+              </div>
             </div>
-            <h3 style={{ fontSize: '20px', color: 'var(--ink)', fontWeight: 700, marginBottom: '8px', fontFamily: 'var(--display)' }}>Ready to make an impact?</h3>
-            <p style={{ fontSize: '14px', color: 'var(--body)', marginBottom: '24px', lineHeight: 1.5 }}>Join Ralvo to apply for this gig and start building your volunteer portfolio.</p>
 
-            <Link
-              to="/signup"
-              style={{ display: 'block', width: '100%', padding: '16px', backgroundColor: 'var(--purple-600)', color: 'var(--white)', textAlign: 'center', borderRadius: '12px', fontWeight: 700, textDecoration: 'none', fontSize: '16px', boxShadow: '0 4px 12px rgba(38,33,92,0.2)', transition: 'all 0.2s ease', marginBottom: '16px' }}
-            >
-              Sign Up to Apply
+            <Link to="/signup" className="gig-apply-btn">
+              Apply Now
             </Link>
             
-            <ShareGigButton gigId={gig.id} slug={gig.slug} title={gig.title} text={`Check out this volunteering opportunity on Ralvo: ${gig.title}`} />
+            <div style={{ marginTop: '16px' }}>
+              <ShareGigButton gigId={gig.id} slug={gig.slug} title={gig.title} variant="outline" text={`Check out this volunteering opportunity on Ralvo: ${gig.title}`} />
+            </div>
             
-            <p style={{ fontSize: '13px', color: 'var(--muted)', margin: '16px 0 0 0' }}>
-              Already have an account? <Link to="/login" style={{ color: 'var(--purple-600)', fontWeight: 600, textDecoration: 'none' }}>Log In</Link>
-            </p>
-          </div>
-
-          {/* When & Where */}
-          <div className="profile-content-card">
-            <h2 className="profile-section-title">When &amp; Where</h2>
-            <div className="profile-links-list">
-              {[
-                { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>, label: 'Date', value: gig.date_start ? new Date(gig.date_start).toLocaleDateString() : 'Flexible / Ongoing' },
-                { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>, label: 'Location', value: gig.location || 'Remote' },
-                { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>, label: 'Commitment', value: `${gig.hours_required || 0} Hours` },
-              ].map(item => (
-                <div key={item.label} style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
-                  <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: 'var(--purple-50)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--purple-600)', flexShrink: 0 }}>
-                    {item.icon}
-                  </div>
-                  <div>
-                    <div style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)', marginBottom: '2px' }}>{item.label}</div>
-                    <div style={{ fontSize: '15px', fontWeight: 500, color: 'var(--ink)' }}>{item.value}</div>
-                  </div>
-                </div>
-              ))}
+            <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>
+              Already have an account? <Link to="/login" style={{ color: 'white', fontWeight: 600, textDecoration: 'underline' }}>Log In</Link>
             </div>
           </div>
 
-          {/* Organizer */}
-          <div className="profile-content-card">
-            <h2 className="profile-section-title">Organizer</h2>
-            <Link to={`/organization/${gig.organizations?.user_id}`} style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '16px', textDecoration: 'none' }}>
-              <div style={{ width: '52px', height: '52px', borderRadius: '12px', backgroundColor: 'var(--purple-50)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden' }}>
-                {gig.organizations?.logo_url ? (
-                  <img src={gig.organizations.logo_url} alt={gig.organizations.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                ) : (
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--purple-600)" strokeWidth="2"><rect x="3" y="9" width="18" height="13" rx="2"/><path d="M8 9V5a2 2 0 0 1 4 0v4"/></svg>
-                )}
-              </div>
-              <div>
-                <div style={{ fontWeight: 700, color: 'var(--ink)', fontSize: '16px', marginBottom: '4px' }}>{gig.organizations?.name || 'Organization'}</div>
-                <div style={{ fontSize: '13px', color: 'var(--muted)' }}>{gig.organizations?.org_type || 'NGO'}</div>
-              </div>
-            </Link>
-            
-            {gig.organizations?.verification_status === 'verified' && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: 'var(--teal-700)', fontWeight: 600, padding: '12px', backgroundColor: 'var(--teal-50)', borderRadius: '8px' }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                Verified Organization
+          {/* Organizer Card */}
+          <Link to={`/organization/${gig.organizations?.slug || gig.organizations?.user_id}`} className="gig-org-card">
+            {gig.organizations?.logo_url ? (
+              <img src={gig.organizations.logo_url} alt={gig.organizations.name} className="gig-org-logo" />
+            ) : (
+              <div className="gig-org-logo" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--purple-600)" strokeWidth="2"><rect x="3" y="9" width="18" height="13" rx="2"/><path d="M8 9V5a2 2 0 0 1 4 0v4"/></svg>
               </div>
             )}
-          </div>
+            <div className="gig-org-info">
+              <h3 className="gig-org-name">{gig.organizations?.name || 'Organization'}</h3>
+              <div className="gig-org-type">{gig.organizations?.org_type || 'NGO'}</div>
+              {gig.organizations?.verification_status === 'verified' && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: 'var(--teal-600)', fontWeight: 700, marginTop: '8px' }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10" stroke="white" strokeWidth="2" fill="none"></polyline></svg>
+                  Verified
+                </div>
+              )}
+            </div>
+          </Link>
           
         </div>
       </div>

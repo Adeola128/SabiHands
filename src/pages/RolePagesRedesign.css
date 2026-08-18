@@ -1,0 +1,205 @@
+/* RolePagesRedesign.css */
+
+.role-page-redesign {
+  padding-top: 120px;
+  min-height: 100vh;
+  font-family: var(--body);
+}
+
+.role-page-redesign.org-theme {
+  background-color: var(--slate-50);
+}
+
+.role-page-redesign.vol-theme {
+  background-color: #F8FAFC;
+}
+
+.redesign-hero {
+  text-align: center;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 60px 20px 80px;
+  position: relative;
+}
+
+.redesign-hero h1 {
+  font-size: 64px;
+  line-height: 1.1;
+  font-family: var(--display);
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 24px;
+  letter-spacing: -0.02em;
+}
+
+.redesign-hero.vol-theme h1 {
+  color: var(--teal-900);
+}
+
+.redesign-hero h1 em {
+  color: var(--teal-600);
+  font-style: normal;
+}
+
+.redesign-hero p {
+  font-size: 20px;
+  color: var(--slate-500);
+  max-width: 600px;
+  margin: 0 auto 40px;
+  line-height: 1.6;
+}
+
+.redesign-cta {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.redesign-cta .btn {
+  padding: 16px 32px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 100px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.redesign-cta .btn-solid {
+  background: var(--teal-600);
+  color: white;
+  box-shadow: 0 8px 24px -8px rgba(13, 148, 136, 0.6);
+}
+
+.redesign-cta .btn-solid:hover {
+  background: var(--teal-700);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px -8px rgba(13, 148, 136, 0.8);
+}
+
+.redesign-cta .btn-outline {
+  background: white;
+  color: var(--ink);
+  border: 1px solid var(--slate-200);
+  box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.05);
+}
+
+.redesign-cta .btn-outline:hover {
+  border-color: var(--slate-300);
+  transform: translateY(-2px);
+}
+
+/* Masonry Grid (Pinterest Style) */
+.masonry-section {
+  padding: 0 20px 100px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.masonry-grid {
+  column-count: 3;
+  column-gap: 24px;
+}
+
+.masonry-card {
+  break-inside: avoid;
+  margin-bottom: 24px;
+  background: white;
+  border-radius: 32px;
+  overflow: hidden;
+  box-shadow: 0 12px 48px -12px rgba(0,0,0,0.08);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.masonry-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 24px 56px -12px rgba(0,0,0,0.12);
+}
+
+.masonry-card img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  mix-blend-mode: multiply; /* Blends white background into the card */
+  border-bottom: 1px solid var(--slate-50);
+}
+
+.masonry-content {
+  padding: 32px 28px;
+}
+
+.masonry-content h3 {
+  font-size: 24px;
+  font-family: var(--display);
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 12px 0;
+  line-height: 1.2;
+}
+
+.masonry-content p {
+  font-size: 15px;
+  color: var(--slate-500);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Bottom CTA Banner */
+.cta-banner {
+  background: var(--ink);
+  border-radius: 40px;
+  padding: 80px 40px;
+  text-align: center;
+  color: white;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 80px;
+}
+
+.cta-banner.teal-theme {
+  background: var(--teal-900);
+}
+
+.cta-banner h2 {
+  font-size: 48px;
+  font-family: var(--display);
+  font-weight: 700;
+  margin: 0 0 24px;
+  position: relative;
+  z-index: 2;
+}
+
+.cta-banner p {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.8);
+  max-width: 500px;
+  margin: 0 auto 40px;
+  position: relative;
+  z-index: 2;
+}
+
+@media (max-width: 900px) {
+  .masonry-grid {
+    column-count: 2;
+  }
+  .redesign-hero h1 {
+    font-size: 48px;
+  }
+}
+
+@media (max-width: 600px) {
+  .masonry-grid {
+    column-count: 1;
+  }
+  .redesign-hero h1 {
+    font-size: 40px;
+  }
+  .redesign-cta {
+    flex-direction: column;
+  }
+  .cta-banner h2 {
+    font-size: 36px;
+  }
+}

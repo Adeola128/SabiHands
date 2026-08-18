@@ -1,14 +1,26 @@
 import React, { useState, useEffect } from 'react';
 
-const OrgOnboarding: React.FC = () => {
+interface OrgOnboardingProps {
+  organization: any;
+  stats: any;
+}
+
+const OrgOnboarding: React.FC<OrgOnboardingProps> = ({ organization, stats }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
-  const [tasks, setTasks] = useState([
-    { id: 1, text: 'Complete Organization Profile (Bio, Logo)', completed: false },
-    { id: 2, text: 'Add Contact Information & Location', completed: false },
-    { id: 3, text: 'Submit Verification Documents', completed: false },
-    { id: 4, text: 'Create First Volunteering Gig', completed: false }
-  ]);
+
+  // Compute tasks automatically based on real data
+  const hasProfile = !!organization?.bio && !!organization?.logo_url;
+  const hasContact = !!organization?.contact_phone && !!organization?.location;
+  const hasDocs = !!organization?.cac_number || organization?.verification_status === 'verified';
+  const hasGigs = (stats?.activeGigs || 0) > 0;
+
+  const tasks = [
+    { id: 1, text: 'Complete Organization Profile (Bio, Logo)', completed: hasProfile },
+    { id: 2, text: 'Add Contact Information & Location', completed: hasContact },
+    { id: 3, text: 'Submit Verification Documents', completed: hasDocs },
+    { id: 4, text: 'Create First Volunteering Gig', completed: hasGigs }
+  ];
 
   useEffect(() => {
     // Only show if they haven't dismissed it before
@@ -19,10 +31,6 @@ const OrgOnboarding: React.FC = () => {
       return () => clearTimeout(timer);
     }
   }, []);
-
-  const toggleTask = (id: number) => {
-    setTasks(tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
-  };
 
   const dismiss = () => {
     setIsVisible(false);
@@ -88,7 +96,6 @@ const OrgOnboarding: React.FC = () => {
             {tasks.map(task => (
               <label key={task.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
                 <div 
-                  onClick={() => toggleTask(task.id)}
                   style={{
                     width: '20px',
                     height: '20px',

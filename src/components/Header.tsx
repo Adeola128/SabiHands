@@ -9,10 +9,7 @@ const Header: React.FC = () => {
     <nav className="nav">
       <div className="nav-inner">
         <Link className="brand" to="/">
-          <svg viewBox="0 0 100 100">
-            <path d="M20 15 L75 50" fill="none" stroke="#7F77DD" strokeWidth="16" strokeLinecap="round"/>
-            <path d="M20 85 L75 50" fill="none" stroke="#1D9E75" strokeWidth="16" strokeLinecap="round"/>
-          </svg>
+          <img src="/logo.png" alt="Ralvo Logo" style={{ height: '24px', width: 'auto' }} />
           <span>Ralvo</span>
         </Link>
         <div className={`nav-links ${isOpen ? 'open' : ''}`}>

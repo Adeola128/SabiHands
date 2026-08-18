@@ -81,10 +81,7 @@ const VerifyContact: React.FC = () => {
         </svg>
         <div className="visual-content">
           <Link to="/" className="visual-brand">
-            <svg viewBox="0 0 100 100">
-              <path d="M60 15 A35 35 0 1 0 60 85" fill="none" stroke="#AFA9EC" strokeWidth="16" strokeLinecap="round" />
-              <path d="M40 15 A35 35 0 1 1 40 85" fill="none" stroke="#5DCAA5" strokeWidth="16" strokeLinecap="round" />
-            </svg>
+            <img src="/logo.png" alt="Ralvo Logo" style={{ height: '32px', width: 'auto' }} />
             <span>Ralvo</span>
           </Link>
           <div>
