@@ -17,7 +17,7 @@ const About: React.FC = () => {
   return (
     <div className="about-page">
       <Helmet>
-        <title>About Us &mdash; Built for the Lagos Hustle | Ralvo</title>
+        <title>About Us &mdash; Built for the Nigerian Hustle | Ralvo</title>
         <meta name="description" content="Ralvo is Nigeria's premier volunteer matching and verification platform. We turn real gigs into verifiable proof to help young Nigerians build a track record employers trust." />
         <link rel="canonical" href="https://www.ralvo.com.ng/about" />
         <script type="application/ld+json">
@@ -41,7 +41,7 @@ const About: React.FC = () => {
           variants={fadeUpVariant}
         >
           <div className="eyebrow" style={{ color: 'var(--teal-600)', fontSize: '13px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Our Story</div>
-          <h1>Built for the <em>Lagos</em> hustle.</h1>
+          <h1>Built for the <em>Nigerian</em> hustle.</h1>
           <p className="about-lede">We believe that showing up should count for something. Ralvo was built to turn real gigs into real proof.</p>
         </motion.div>
       </header>
@@ -68,9 +68,9 @@ const About: React.FC = () => {
           viewport={{ once: true, amount: 0.2 }}
           variants={fadeUpVariant}
         >
-          <h2>Why Lagos First?</h2>
-          <p>Lagos isn't just a city; it's a completely unique operating environment. Global platforms like Catchafire are built for US-only, professional-skills volunteering. Generic directories don't offer verification. We knew that to make this work, it had to be built specifically for the Lagos ecosystem â€” handling both skilled (digital) and physical (on-ground) gigs, right from day one.</p>
-          <p>If we can make Ralvo the definitive home for showing up in Lagos, the rest of the continent will follow.</p>
+          <h2>Built for Nigeria</h2>
+          <p>Nigeria isn't just a country; it's a completely unique operating environment. Global platforms like Catchafire are built for US-only, professional-skills volunteering. Generic directories don't offer verification. We knew that to make this work, it had to be built specifically for the Nigerian ecosystem â€” handling both skilled (digital) and physical (on-ground) gigs, right from day one.</p>
+          <p>If we can make Ralvo the definitive home for showing up in Nigeria, the rest of the continent will follow.</p>
         </motion.section>
 
         <motion.section 
