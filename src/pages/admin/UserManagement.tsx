@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { formatDistanceToNow } from 'date-fns';
 import LoadingScreen from '../../components/LoadingScreen';
@@ -358,10 +359,10 @@ const UserManagement: React.FC = () => {
                     <td>{formatDistanceToNow(new Date(user.created_at))} ago</td>
                     <td><span className="chip chip-status-approved">Active</span></td>
                     <td style={{ textAlign: 'right' }}>
-                      <div className="row-actions">
-                        <button style={{ background: 'none', border: 'none', color: '#3B82F6', fontWeight: 600, cursor: 'pointer', padding: '4px 8px', borderRadius: '4px' }}>View Profile</button>
-                      </div>
-                    </td>
+                    <div className="row-actions">
+                      <Link to={`/volunteer/${user.id}`} target="_blank" style={{ background: 'none', border: 'none', color: '#3B82F6', fontWeight: 600, cursor: 'pointer', padding: '4px 8px', borderRadius: '4px', textDecoration: 'none', display: 'inline-block' }}>View Profile</Link>
+                    </div>
+                  </td>
                   </tr>
                 );
               })}
@@ -387,12 +388,15 @@ const UserManagement: React.FC = () => {
                       </span>
                     </td>
                     <td style={{ textAlign: 'right' }}>
-                      <div className="row-actions">
-                        <button onClick={() => openReviewModal(org)} style={{ padding: '6px 12px', backgroundColor: '#F1F5F9', color: '#334155', border: 'none', borderRadius: '6px', fontWeight: 600, fontSize: '12px', cursor: 'pointer' }}>
-                          Review Documents
-                        </button>
-                      </div>
-                    </td>
+                    <div className="row-actions" style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', alignItems: 'center' }}>
+                      <Link to={`/organization/${org.id}`} target="_blank" style={{ padding: '6px 12px', backgroundColor: 'transparent', color: '#3B82F6', border: 'none', borderRadius: '6px', fontWeight: 600, fontSize: '12px', textDecoration: 'none' }}>
+                        View Profile
+                      </Link>
+                      <button onClick={() => openReviewModal(org)} style={{ padding: '6px 12px', backgroundColor: '#F1F5F9', color: '#334155', border: 'none', borderRadius: '6px', fontWeight: 600, fontSize: '12px', cursor: 'pointer' }}>
+                        Review Documents
+                      </button>
+                    </div>
+                  </td>
                   </tr>
                 );
               })}
