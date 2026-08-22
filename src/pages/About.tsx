@@ -73,27 +73,7 @@ const About: React.FC = () => {
           <p>If we can make Ralvo the definitive home for showing up in Nigeria, the rest of the continent will follow.</p>
         </motion.section>
 
-        <motion.section 
-          className="about-section"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-          variants={fadeUpVariant}
-        >
-          <h2>The Founding Story</h2>
-          <div className="founder-card">
-            <img 
-              src="https://images.unsplash.com/photo-1531384441138-2736e62e0919?auto=format&fit=crop&w=400&q=80" 
-              alt="Founder" 
-              className="founder-img"
-            />
-            <div className="founder-info">
-              <h3>Adeola Okonkwo</h3>
-              <span>Founder & CEO</span>
-              <p>After running dozens of community beach cleanups and seeing the same talented, unemployed youth showing up every weekend, Adeola realized the fundamental problem wasn't a lack of driveâ€”it was a lack of proof. She built Ralvo so that every time someone steps up to help, it adds to a resume that employers actually trust.</p>
-            </div>
-          </div>
-        </motion.section>
+
       </div>
     </div>
   );
