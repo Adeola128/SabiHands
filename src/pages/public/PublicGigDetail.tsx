@@ -77,6 +77,43 @@ const PublicGigDetail: React.FC = () => {
         <meta name="twitter:title" content={`${gig.title} &mdash; Ralvo`} />
         <meta name="twitter:description" content={`Apply for ${gig.title} with ${gig.organizations?.name || 'an NGO'} on Ralvo.`} />
         <meta name="twitter:image" content={gigImageUrl} />
+        <script type="application/ld+json">
+          {`
+            {
+              "@context": "https://schema.org/",
+              "@type": "JobPosting",
+              "title": ${JSON.stringify(gig.title)},
+              "description": ${JSON.stringify(gig.description)},
+              "identifier": {
+                "@type": "PropertyValue",
+                "name": ${JSON.stringify(gig.organizations?.name || 'Ralvo')},
+                "value": "${gig.id}"
+              },
+              "datePosted": "${gig.created_at || new Date().toISOString()}",
+              "employmentType": "VOLUNTEER",
+              "hiringOrganization": {
+                "@type": "Organization",
+                "name": ${JSON.stringify(gig.organizations?.name || 'NGO')},
+                "sameAs": "https://www.ralvo.com.ng/organization/${gig.organizations?.slug || gig.organizations?.user_id || ''}",
+                "logo": "${gig.organizations?.logo_url || 'https://www.ralvo.com.ng/logo.png'}"
+              },
+              "jobLocation": {
+                "@type": "Place",
+                "address": {
+                  "@type": "PostalAddress",
+                  "addressLocality": ${JSON.stringify(gig.location === 'Remote' ? '' : (gig.location || 'Lagos'))},
+                  "addressCountry": "NG"
+                }
+              },
+              "applicantLocationRequirements": {
+                "@type": "Country",
+                "name": "Nigeria"
+              }
+              ${gig.location === 'Remote' ? ',"jobLocationType": "TELECOMMUTE"' : ''}
+              ${gig.date_end ? `,"validThrough": "${gig.date_end}"` : ''}
+            }
+          `}
+        </script>
       </Helmet>
       
       {/* ── HERO SECTION ── */}
