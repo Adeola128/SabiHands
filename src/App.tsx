@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import MainLayout from './layouts/MainLayout';
+import ErrorBoundary from './components/ErrorBoundary';
 import Home from './pages/Home';
 
 import ForVolunteers from './pages/ForVolunteers';
@@ -78,9 +79,10 @@ import SupportChatWidget from './components/SupportChatWidget';
 
 const App: React.FC = () => {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<MainLayout />} errorElement={<ErrorPage />}>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<MainLayout />} errorElement={<ErrorPage />}>
           <Route index element={<Home />} />
 
           <Route path="volunteers" element={<ForVolunteers />} />
@@ -176,8 +178,9 @@ const App: React.FC = () => {
           style: { borderRadius: '12px', padding: '16px', color: 'var(--ink)' }
         }} 
       />
-      <SupportChatWidget />
-    </BrowserRouter>
+        <SupportChatWidget />
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 };
 

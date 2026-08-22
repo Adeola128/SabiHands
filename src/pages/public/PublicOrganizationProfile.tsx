@@ -22,11 +22,15 @@ const PublicOrganizationProfile: React.FC = () => {
     
     const fetchOrg = async () => {
       try {
-        const { data, error: fetchError } = await supabase
-          .from('organizations')
-          .select('*')
-          .or(`id.eq.${id},user_id.eq.${id},slug.eq.${id}`)
-          .single();
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+        let query = supabase.from('organizations').select('*');
+        if (isUUID) {
+          query = query.or(`id.eq.${id},user_id.eq.${id},slug.eq.${id}`);
+        } else {
+          query = query.eq('slug', id);
+        }
+        
+        const { data, error: fetchError } = await query.single();
           
         if (fetchError || !data) {
           setError("Organization not found.");

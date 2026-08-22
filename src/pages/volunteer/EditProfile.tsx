@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase';
 import { uploadImage } from '../../lib/uploadImage';
 import { NIGERIA_STATES } from '../../utils/constants';
 import LoadingScreen from '../../components/LoadingScreen';
+import { toast } from 'react-hot-toast';
 import './VolunteerPages.css';
 
 const EditProfile: React.FC = () => {
@@ -13,7 +14,6 @@ const EditProfile: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
-  const [message, setMessage] = useState('');
 
   // Form State
   const [profile, setProfile] = useState({
@@ -80,7 +80,6 @@ const EditProfile: React.FC = () => {
     e.preventDefault();
     if (!user) return;
     setSaving(true);
-    setMessage('');
 
     const formattedData = {
       full_name: profile.full_name,
@@ -102,9 +101,9 @@ const EditProfile: React.FC = () => {
       .eq('user_id', user.id);
 
     if (error) {
-      setMessage(`Error: ${error.message}`);
+      toast.error(`Error: ${error.message}`);
     } else {
-      setMessage('Profile updated successfully!');
+      toast.success('Profile updated successfully!');
     }
     setSaving(false);
   };
@@ -193,12 +192,6 @@ const EditProfile: React.FC = () => {
             <div className="vol-card">
               <h2 style={{ fontSize: '20px', color: 'var(--ink)', marginBottom: '8px', fontFamily: 'var(--display)' }}>Public Profile</h2>
               <p style={{ color: 'var(--body)', marginBottom: '32px', fontSize: '15px' }}>This is how you will appear to organizations on the platform.</p>
-              
-              {message && (
-                <div style={{ padding: '12px', backgroundColor: message.includes('Error') ? 'var(--pink-50)' : 'var(--teal-50)', color: message.includes('Error') ? 'var(--pink-700)' : 'var(--teal-700)', borderRadius: '8px', marginBottom: '24px', fontSize: '14px', fontWeight: 600 }}>
-                  {message}
-                </div>
-              )}
 
               <form onSubmit={handleSubmit}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '20px', paddingBottom: '24px', borderBottom: '1px solid #E4E1F5', marginBottom: '24px' }}>
@@ -219,7 +212,7 @@ const EditProfile: React.FC = () => {
                             const url = await uploadImage(e.target.files[0], 'volunteer-avatars');
                             setProfile(prev => ({ ...prev, avatar_url: url }));
                           } catch (err: any) {
-                            setMessage(err.message);
+                            toast.error(err.message);
                           } finally {
                             setUploadingAvatar(false);
                           }
@@ -247,7 +240,7 @@ const EditProfile: React.FC = () => {
                             const url = await uploadImage(e.target.files[0], 'volunteer-covers');
                             setProfile(prev => ({ ...prev, cover_url: url }));
                           } catch (err: any) {
-                            setMessage(err.message);
+                            toast.error(err.message);
                           } finally {
                             setUploadingCover(false);
                           }

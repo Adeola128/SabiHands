@@ -22,6 +22,9 @@ const BrowseGigs: React.FC = () => {
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [sortBy, setSortBy] = useState('newest');
+  
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 5;
 
   const hasActiveFilters = locationFilter !== '' || dateFrom !== '' || dateTo !== '' || typeFilter.length < 2;
 
@@ -32,6 +35,7 @@ const BrowseGigs: React.FC = () => {
     setDateFrom('');
     setDateTo('');
     setSortBy('newest');
+    setCurrentPage(1);
   };
 
   const filtered = gigs
@@ -60,6 +64,14 @@ const BrowseGigs: React.FC = () => {
     if (sortBy === 'closing') return new Date(a.date_start || '9999').getTime() - new Date(b.date_start || '9999').getTime();
     return 0;
   });
+
+  const totalPages = Math.ceil(sorted.length / ITEMS_PER_PAGE);
+  const paginatedGigs = sorted.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, typeFilter, locationFilter, dateFrom, dateTo, sortBy]);
 
   const toggleType = (t: string) => setTypeFilter(prev =>
     prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t]
@@ -254,8 +266,9 @@ const BrowseGigs: React.FC = () => {
               }
             />
           ) : (
-            sorted.map(gig => (
-              <div key={gig.id} className="gig-media-card">
+            <>
+              {paginatedGigs.map(gig => (
+                <div key={gig.id} className="gig-media-card">
                 <div className="gig-media-cover" style={{ backgroundImage: `url(${gig.image_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(gig.title)}&background=random&size=400`})` }} />
                 <div className="gig-media-body">
                   <div className="gig-media-header">
@@ -288,8 +301,45 @@ const BrowseGigs: React.FC = () => {
                     </div>
                   </div>
                 </div>
-              </div>
-            ))
+                </div>
+              ))}
+              
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderTop: '1px solid #E4E1F5', backgroundColor: '#FAFAFC', borderBottomLeftRadius: '16px', borderBottomRightRadius: '16px' }}>
+                  <span style={{ fontSize: '13px', color: 'var(--muted)' }}>
+                    Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to {Math.min(currentPage * ITEMS_PER_PAGE, sorted.length)} of {sorted.length} gigs
+                  </span>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button 
+                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                      style={{ padding: '8px 12px', border: '1px solid #D1CEDF', background: 'var(--white)', borderRadius: '8px', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', opacity: currentPage === 1 ? 0.5 : 1, color: 'var(--ink)' }}
+                    >
+                      Previous
+                    </button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                        <button
+                          key={page}
+                          onClick={() => setCurrentPage(page)}
+                          style={{ width: '32px', height: '32px', border: 'none', background: currentPage === page ? 'var(--purple-600)' : 'transparent', color: currentPage === page ? 'white' : 'var(--ink)', borderRadius: '8px', cursor: 'pointer', fontWeight: currentPage === page ? 600 : 400 }}
+                        >
+                          {page}
+                        </button>
+                      ))}
+                    </div>
+                    <button 
+                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                      disabled={currentPage === totalPages}
+                      style={{ padding: '8px 12px', border: '1px solid #D1CEDF', background: 'var(--white)', borderRadius: '8px', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer', opacity: currentPage === totalPages ? 0.5 : 1, color: 'var(--ink)' }}
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

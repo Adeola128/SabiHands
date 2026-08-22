@@ -70,7 +70,7 @@ const DashboardRedirect: React.FC = () => {
         if (metadataRole === 'organization') {
           navigate('/dashboard/org', { replace: true });
         } else if (metadataRole === 'admin') {
-          navigate('/admin', { replace: true });
+          navigate('/hq', { replace: true });
         } else {
           // Default to volunteer if it's somehow missing but onboarding is true
           if (!metadataRole) {

@@ -1,33 +1,59 @@
 :root {
   /* Purple - Primary */
-  --purple-900: #26215C;
-  --purple-800: #393185;
-  --purple-700: #463DA6;
-  --purple-600: #534AB7;
-  --purple-500: #6960C9;
-  --purple-400: #7F77DD;
-  --purple-300: #9791E5;
-  --purple-200: #AFA9EC;
-  --purple-100: #D8D5F6;
-  --purple-50: #EEEDFE;
+  --purple-900: #1a1543;
+  --purple-800: #2a2266;
+  --purple-700: #3b308a;
+  --purple-600: #4c3eae;
+  --purple-500: #5e4cd1;
+  --purple-400: #7b6be3;
+  --purple-300: #9e91ee;
+  --purple-200: #c2baf4;
+  --purple-100: #e2def9;
+  --purple-50: #f4f3fd;
   
   /* Teal - Accent/Success */
-  --teal-900: #04342C;
-  --teal-600: #0F6E56;
-  --teal-400: #1D9E75;
-  --teal-200: #5DCAA5;
-  --teal-50: #E1F5EE;
+  --teal-900: #022b24;
+  --teal-800: #044439;
+  --teal-700: #065d4e;
+  --teal-600: #087663;
+  --teal-500: #0a8f78;
+  --teal-400: #19a58d;
+  --teal-300: #3cbe9a;
+  --teal-200: #75d4b8;
+  --teal-100: #b5ebd9;
+  --teal-50: #e3f7f1;
   
   /* System */
-  --ink: #26215C;
-  --body: #4A4770;
-  --muted: #8B87B0;
-  --paper: #FBFAFF;
-  --white: #FFFFFF;
+  --ink: #111827;
+  --body: #4b5563;
+  --muted: #9ca3af;
+  --paper: #f9fafb;
+  --white: #ffffff;
+  --border: #e5e7eb;
+  
+  /* Glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.4);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
   
   /* Typography */
-  --display: 'Fraunces', serif;
+  --display: 'Outfit', 'Fraunces', serif;
   --sans: 'Inter', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #f9fafb;
+    --body: #d1d5db;
+    --muted: #6b7280;
+    --paper: #030712;
+    --white: #111827;
+    --border: #374151;
+    --glass-bg: rgba(17, 24, 39, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  }
 }
 
 * {
@@ -114,6 +140,24 @@ button:focus-visible, input:focus-visible, textarea:focus-visible {
 
 button, input, textarea, select {
   font-family: inherit;
+}
+
+/* Glassmorphism Utilities */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: 16px;
 }
 
 /* Base utility classes */

@@ -6,6 +6,7 @@ import LoadingScreen from '../../components/LoadingScreen';
 import EmptyState from '../../components/EmptyState';
 import OnboardingChecklist from '../../components/dashboard/OnboardingChecklist';
 import OrgOnboarding from '../../components/OrgOnboarding';
+import { motion } from 'framer-motion';
 
 const OrgDashboard: React.FC = () => {
   const { user } = useAuth();
@@ -104,7 +105,12 @@ const OrgDashboard: React.FC = () => {
       {/* ── SIDEBAR ── */}
       <aside className="context-col">
         {/* Stats */}
-        <div className="dash-card">
+        <motion.div 
+          className="dash-card glass-card"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4 }}
+        >
           <div className="dash-card-padding">
             <h2 className="dash-card-title" style={{ fontSize: '15px', marginBottom: '16px' }}>Organization Overview</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -119,10 +125,15 @@ const OrgDashboard: React.FC = () => {
               ))}
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Quick Actions */}
-        <div className="dash-card">
+        <motion.div 
+          className="dash-card glass-card"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+        >
           <div className="dash-card-padding">
             <h2 className="dash-card-title" style={{ fontSize: '15px', marginBottom: '14px' }}>Quick Actions</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -140,13 +151,18 @@ const OrgDashboard: React.FC = () => {
               </Link>
             </div>
           </div>
-        </div>
+        </motion.div>
       </aside>
 
       {/* ── MAIN CONTENT ── */}
       <div className="main-content">
         {/* Welcome hero */}
-        <div className="hero-section">
+        <motion.div 
+          className="hero-section"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           <h1 className="hero-greeting">Welcome back, {org?.name || 'Organization'}!</h1>
           <div className="hero-actions">
             <Link to="/dashboard/org/gigs/new" className="hero-btn">
@@ -162,12 +178,18 @@ const OrgDashboard: React.FC = () => {
               View impact
             </Link>
           </div>
-        </div>
+        </motion.div>
 
         <OnboardingChecklist organization={org} stats={stats} />
 
         {/* Action Required — Pending Applicants & Submissions */}
-        <div className="dash-card" style={{ marginBottom: '32px' }}>
+        <motion.div 
+          className="dash-card glass-card" 
+          style={{ marginBottom: '32px' }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
           <div className="dash-card-header">
             <h2 className="dash-card-title">Action Required</h2>
             <span style={{ fontSize: '13px', fontWeight: 600, backgroundColor: 'var(--purple-50)', color: 'var(--purple-600)', padding: '4px 10px', borderRadius: '99px' }}>{pendingApplicants.length + pendingSubmissions.length} pending</span>
@@ -236,10 +258,15 @@ const OrgDashboard: React.FC = () => {
               })}
             </div>
           )}
-        </div>
+        </motion.div>
 
         {/* Active Gigs Carousel */}
-        <div className="gig-carousel-wrapper">
+        <motion.div 
+          className="gig-carousel-wrapper"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
           <div className="gig-carousel-header">
             <h2 className="gig-carousel-title">Your Gigs</h2>
             <Link to="/dashboard/org/gigs" style={{ fontSize: '14px', color: 'var(--purple-600)', fontWeight: 600, textDecoration: 'none' }}>View all →</Link>
@@ -269,7 +296,7 @@ const OrgDashboard: React.FC = () => {
               </div>
             </Link>
           </div>
-        </div>
+        </motion.div>
       </div>
       <OrgOnboarding organization={org} stats={stats} />
     </>

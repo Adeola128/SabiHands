@@ -30,6 +30,13 @@ const PublicVolunteerProfile: React.FC = () => {
 
     const fetchProfile = async () => {
       try {
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(actualId);
+        if (!isUUID) {
+          setError("Invalid profile URL.");
+          setLoading(false);
+          return;
+        }
+
         const { data, error: fetchError } = await supabase
           .from('volunteer_profiles')
           .select('*')
@@ -123,6 +130,13 @@ const PublicVolunteerProfile: React.FC = () => {
   const gigsRing = Math.min((stats.completed / 10) * 100, 100);
   const certsRing = Math.min((certificates.length / 5) * 100, 100);
 
+  const getTier = (completed: number) => {
+    if (completed >= 25) return 'Super Volunteer';
+    if (completed >= 10) return 'Local Hero';
+    if (completed >= 5) return 'Community Champion';
+    return 'Rising Star';
+  };
+
   return (
     <div style={{ backgroundColor: '#FAFAFA', minHeight: '100vh', paddingBottom: '80px' }}>
       <Helmet>
@@ -149,7 +163,7 @@ const PublicVolunteerProfile: React.FC = () => {
               <div style={{ fontSize: '16px', color: 'var(--muted)', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                 <span>{profile?.location || 'Location Not Set'}</span>
                 &bull;
-                <span style={{ color: 'var(--teal-600)', fontWeight: 600 }}>Diamond Tier Volunteer</span>
+                <span style={{ color: 'var(--teal-600)', fontWeight: 600 }}>{getTier(stats.completed)}</span>
               </div>
             </div>
           </div>

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import LoadingScreen from '../../components/LoadingScreen';
+import { motion } from 'framer-motion';
 
 const VolunteerDashboard: React.FC = () => {
   const { user } = useAuth();
@@ -72,7 +73,12 @@ const VolunteerDashboard: React.FC = () => {
   return (
     <>
       <aside className="context-col">
-        <div className="dash-card">
+        <motion.div 
+          className="dash-card glass-card"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
           <div className="dash-card-padding">
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
               <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--teal-600)' }}></div>
@@ -118,9 +124,14 @@ const VolunteerDashboard: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
         
-        <div className="dash-card">
+        <motion.div 
+          className="dash-card glass-card"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+        >
           <div className="dash-card-padding">
             <h2 className="dash-card-title" style={{ fontSize: '15px', marginBottom: '12px', color: 'var(--ink)' }}>Show all your impact: Track your volunteering outside of Ralvo</h2>
             <button style={{ width: '100%', padding: '10px 16px', backgroundColor: 'var(--white)', border: '1.5px solid #E4E1F5', borderRadius: '8px', color: 'var(--ink)', fontWeight: 600, fontSize: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
@@ -128,12 +139,17 @@ const VolunteerDashboard: React.FC = () => {
               Submit hours
             </button>
           </div>
-        </div>
+        </motion.div>
       </aside>
 
       <div className="main-content">
         
-        <div className="hero-section">
+        <motion.div 
+          className="hero-section"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
           <h1 className="hero-greeting">Let's make a difference, {profile?.full_name ? profile.full_name.split(' ')[0] : 'Volunteer'}!</h1>
           <div className="hero-actions">
             <Link to="/dashboard/volunteer/gigs?type=physical" className="hero-btn">
@@ -149,9 +165,15 @@ const VolunteerDashboard: React.FC = () => {
               Donate
             </button>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="dash-card" style={{ marginBottom: '40px', background: 'linear-gradient(135deg, #1E1B4B 0%, #4C1D95 100%)', border: 'none', color: 'var(--white)', overflow: 'hidden', position: 'relative' }}>
+        <motion.div 
+          className="dash-card glass-card" 
+          style={{ marginBottom: '40px', background: 'linear-gradient(135deg, rgba(30, 27, 75, 0.9) 0%, rgba(76, 29, 149, 0.9) 100%)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--white)', overflow: 'hidden', position: 'relative' }}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
           {/* Decorative Background Elements */}
           <div style={{ position: 'absolute', top: '-50%', right: '-10%', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(139, 92, 246, 0.4) 0%, rgba(139, 92, 246, 0) 70%)', borderRadius: '50%' }}></div>
           <div style={{ position: 'absolute', bottom: '-20%', left: '10%', width: '200px', height: '200px', background: 'radial-gradient(circle, rgba(45, 212, 191, 0.3) 0%, rgba(45, 212, 191, 0) 70%)', borderRadius: '50%' }}></div>
@@ -183,9 +205,14 @@ const VolunteerDashboard: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="gig-carousel-wrapper">
+        <motion.div 
+          className="gig-carousel-wrapper"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
           <div className="gig-carousel-header">
             <h2 className="gig-carousel-title">Recommended for You</h2>
           </div>
@@ -214,7 +241,7 @@ const VolunteerDashboard: React.FC = () => {
               <div style={{ padding: '24px', color: 'var(--muted)', textAlign: 'center', width: '100%' }}>No gigs available at the moment.</div>
             )}
           </div>
-        </div>
+        </motion.div>
 
       </div>
     </>

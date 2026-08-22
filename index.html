@@ -33,6 +33,38 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://www.ralvo.com.ng/#organization",
+            "name": "Ralvo",
+            "url": "https://www.ralvo.com.ng/",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://www.ralvo.com.ng/logo.png"
+            }
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://www.ralvo.com.ng/#website",
+            "url": "https://www.ralvo.com.ng/",
+            "name": "Ralvo",
+            "publisher": {
+              "@id": "https://www.ralvo.com.ng/#organization"
+            },
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://www.ralvo.com.ng/search?q={search_term_string}",
+              "query-input": "required name=search_term_string"
+            }
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

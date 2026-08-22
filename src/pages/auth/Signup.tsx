@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { toast } from 'react-hot-toast';
 import './Signup.css';
 
 const Signup: React.FC = () => {
@@ -17,7 +18,6 @@ const Signup: React.FC = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [selectedChips, setSelectedChips] = useState<string[]>([]);
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -56,12 +56,17 @@ const Signup: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(null);
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
+    
+    if (password.length < 8) {
+      toast.error('Password must be at least 8 characters long.');
+      setLoading(false);
+      return;
+    }
     const fullName = formData.get('fullName') as string;
     const orgType = isOrg ? formData.get('orgType') as string : null;
     const cac = isOrg ? formData.get('cac') as string : null;
@@ -101,10 +106,10 @@ const Signup: React.FC = () => {
           navigate('/verify-contact', { state: { email, role } });
         } else {
           // Likely already verified or another error
-          setError('This email is already registered and verified. Please log in instead.');
+          toast.error('This email is already registered and verified. Please log in instead.');
         }
       } else {
-        setError(err.message || 'An unexpected error occurred during sign up.');
+        toast.error(err.message || 'An unexpected error occurred during sign up.');
       }
     } finally {
       setLoading(false);
@@ -131,7 +136,7 @@ const Signup: React.FC = () => {
       if (error) throw error;
     } catch (err: any) {
       console.error("Google Auth error:", err);
-      setError(err.message || 'Failed to authenticate with Google');
+      toast.error(err.message || 'Failed to authenticate with Google');
       setLoading(false);
     }
   };
@@ -195,8 +200,6 @@ const Signup: React.FC = () => {
               I'm an NGO or company
             </button>
           </div>
-
-          {error && <div className="auth-error-popup">{error}</div>}
 
           <form className="auth-form" onSubmit={handleSubmit}>
             <div className="field">
