@@ -83,10 +83,23 @@ const VolunteerOnboarding: React.FC = () => {
       }, { onConflict: 'user_id' });
 
       await supabase.auth.updateUser({ data: { onboarding_complete: true } });
-      navigate('/dashboard/volunteer', { replace: true });
+      
+      const pendingGigId = localStorage.getItem('pendingGigApply');
+      if (pendingGigId) {
+        localStorage.removeItem('pendingGigApply');
+        navigate(`/dashboard/volunteer/gigs/${pendingGigId}/apply`, { replace: true });
+      } else {
+        navigate('/dashboard/volunteer', { replace: true });
+      }
     } catch (error) {
       console.error("Failed to save profile", error);
-      navigate('/dashboard/volunteer', { replace: true });
+      const pendingGigId = localStorage.getItem('pendingGigApply');
+      if (pendingGigId) {
+        localStorage.removeItem('pendingGigApply');
+        navigate(`/dashboard/volunteer/gigs/${pendingGigId}/apply`, { replace: true });
+      } else {
+        navigate('/dashboard/volunteer', { replace: true });
+      }
     }
   };
 

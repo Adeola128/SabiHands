@@ -25,7 +25,7 @@ const iconConfig = {
 
 const formatTime = (dateString: string) => {
   const date = new Date(dateString);
-  return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  return date.toLocaleDateString("en-NG", { timeZone: "Africa/Lagos" }) + ' ' + date.toLocaleTimeString("en-NG", { hour: '2-digit', minute: '2-digit' });
 };
 
 const Notifications: React.FC = () => {

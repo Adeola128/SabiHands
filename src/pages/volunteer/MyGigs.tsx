@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import LoadingScreen from '../../components/LoadingScreen';
+import EmptyState from '../../components/EmptyState';
 import { MapPin, UploadCloud, Clock, AlertCircle, Award, Star } from 'lucide-react';
 import ReviewModal from '../../components/ReviewModal';
 
@@ -12,6 +13,7 @@ const statusStyles: Record<string, { bg: string; color: string; label: string }>
   active:    { bg: '#D4EDDA', color: '#155724', label: 'Check-In Open' },
   upcoming:  { bg: '#FFF3CD', color: '#856404', label: 'Pending / Confirmed' },
   completed: { bg: '#D4EDDA', color: '#155724', label: 'Completed' },
+  past:      { bg: '#F8FAFC', color: '#64748B', label: 'Closed' },
 };
 
 const MyGigs: React.FC = () => {
@@ -107,7 +109,25 @@ const MyGigs: React.FC = () => {
               certCode = att.certificates[0].verification_code;
             }
           }
-          
+          let isPast = false;
+          if (app.gigs.date_end) {
+            isPast = new Date(app.gigs.date_end) < new Date();
+          } else if (app.gigs.date_start) {
+            // Assume end of day if end date missing
+            const end = new Date(app.gigs.date_start);
+            end.setHours(23, 59, 59, 999);
+            isPast = end < new Date();
+          }
+
+          let currentStatus = 'upcoming';
+          if (hasCert) {
+            currentStatus = 'completed';
+          } else if (app.status === 'accepted') {
+            currentStatus = isPast ? 'past' : 'active';
+          } else if (app.status === 'completed') {
+            currentStatus = 'completed';
+          }
+
           const mappedGig = {
             id: app.gigs.id,
             app_id: app.id,
@@ -115,9 +135,9 @@ const MyGigs: React.FC = () => {
             org: app.gigs.organizations?.name || 'Organization',
             org_id: app.gigs.organizations?.user_id,
             location: app.gigs.location,
-            date: app.gigs.date_start ? gigDate.toLocaleDateString() : 'TBD',
-            time: app.gigs.date_start ? gigDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '',
-            status: hasCert ? 'completed' : (app.status === 'accepted' ? 'active' : 'upcoming'),
+            date: app.gigs.date_start ? gigDate.toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos' }) : 'TBD',
+            time: app.gigs.date_start ? gigDate.toLocaleTimeString('en-NG', { hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Lagos' }) : '',
+            status: currentStatus,
             coverImg: app.gigs.image_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(app.gigs.title)}&background=random&size=400`,
             orgImg: `https://ui-avatars.com/api/?name=${encodeURIComponent(app.gigs.organizations?.name || 'Org')}&background=random`,
             description: app.gigs.description,
@@ -127,7 +147,7 @@ const MyGigs: React.FC = () => {
             certCode: certCode
           };
 
-          if (hasCert || app.status === 'completed') {
+          if (hasCert || app.status === 'completed' || currentStatus === 'past') {
             completed.push(mappedGig);
           } else {
             // ONLY show accepted in My Gigs (pending goes to My Applications)
@@ -356,9 +376,12 @@ const MyGigs: React.FC = () => {
                 </div>
               ))
             ) : (
-              <div style={{ padding: '40px 24px', textAlign: 'center', color: 'var(--muted)' }}>
-                No completed gigs to show yet.
-              </div>
+              <EmptyState 
+                icon={<Award size={48} color="var(--purple-500)" />}
+                title="No Completed Gigs"
+                description="You haven't completed any gigs yet. Once you check in and finish a gig, it will appear here along with your certificate."
+                actionButton={<Link to="/dashboard/volunteer/gigs" style={{ display: 'inline-block', padding: '12px 24px', backgroundColor: 'var(--purple-600)', color: 'white', textDecoration: 'none', borderRadius: '10px', fontWeight: 700, boxShadow: '0 4px 12px rgba(83,74,183,0.3)' }}>Explore Gigs</Link>}
+              />
             )
           )}
         </div>

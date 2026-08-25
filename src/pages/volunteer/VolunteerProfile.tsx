@@ -300,7 +300,7 @@ const VolunteerProfile: React.FC = () => {
                 </div>
                 <div>
                   <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--ink)' }}>Completion Badge</div>
-                  <div style={{ fontSize: '12px', color: 'var(--muted)' }}>Issued: {new Date(cert.issued_at || cert.created_at).toLocaleDateString()}</div>
+                  <div style={{ fontSize: '12px', color: 'var(--muted)' }}>Issued: {new Date(cert.issued_at || cert.created_at).toLocaleDateString("en-NG", { timeZone: "Africa/Lagos" })}</div>
                 </div>
               </div>
             )) : <p style={{ color: 'var(--muted)', margin: 0 }}>No certificates yet.</p>}

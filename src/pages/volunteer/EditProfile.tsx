@@ -212,11 +212,10 @@ const EditProfile: React.FC = () => {
         <div style={{ flex: '1', display: 'flex', flexDirection: 'column', gap: '24px' }}>
           
           {activeTab === 'profile' && (
-            <div className="vol-card">
-              <h2 style={{ fontSize: '20px', color: 'var(--ink)', marginBottom: '8px', fontFamily: 'var(--display)' }}>Public Profile</h2>
-              <p style={{ color: 'var(--body)', marginBottom: '32px', fontSize: '15px' }}>This is how you will appear to organizations on the platform.</p>
-
-              <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '80px' }}>
+              <div className="vol-card">
+                <h2 style={{ fontSize: '20px', color: 'var(--ink)', marginBottom: '8px', fontFamily: 'var(--display)' }}>Basic Information</h2>
+                <p style={{ color: 'var(--body)', marginBottom: '32px', fontSize: '15px' }}>This is how you will appear to organizations on the platform.</p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '20px', paddingBottom: '24px', borderBottom: '1px solid #E4E1F5', marginBottom: '24px' }}>
                   <div style={{ width: '80px', height: '80px', borderRadius: '50%', backgroundColor: 'var(--purple-100)', color: 'var(--purple-700)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '24px', fontFamily: 'var(--display)', overflow: 'hidden' }}>
                     {profile.avatar_url ? (
@@ -299,8 +298,14 @@ const EditProfile: React.FC = () => {
                   </div>
                 </div>
 
+                </div>
+              </div>
+
+              <div className="vol-card">
+                <h2 style={{ fontSize: '20px', color: 'var(--ink)', marginBottom: '32px', fontFamily: 'var(--display)' }}>Professional Background</h2>
+                
                 <div className="premium-form-group" style={{ marginBottom: '24px' }}>
-                  <label className="premium-label">Professional Background</label>
+                  <label className="premium-label">Professional Summary</label>
                   <textarea name="bio" className="premium-input" value={profile.bio} onChange={handleChange} rows={4} placeholder="Describe your career history, expertise, and what you do best..."></textarea>
                 </div>
 
@@ -361,13 +366,17 @@ const EditProfile: React.FC = () => {
                     )}
                   </div>
                 </div>
+              </div>
 
+              <div className="vol-card">
+                <h2 style={{ fontSize: '20px', color: 'var(--ink)', marginBottom: '32px', fontFamily: 'var(--display)' }}>Links & Interests</h2>
+                
                 <div className="premium-form-group" style={{ marginBottom: '24px' }}>
                   <label className="premium-label">Causes I Care About (comma separated)</label>
                   <input type="text" name="interests" className="premium-input" value={profile.interests} onChange={handleChange} placeholder="e.g. Education, Environment, Health" />
                 </div>
 
-                <div className="grid-2col" style={{ gap: '24px', marginBottom: '40px' }}>
+                <div className="grid-2col" style={{ gap: '24px', marginBottom: '24px' }}>
                   <div className="premium-form-group">
                     <label className="premium-label">LinkedIn URL</label>
                     <input type="url" name="linkedin_url" className="premium-input" value={profile.linkedin_url} onChange={handleChange} placeholder="https://linkedin.com/in/yourprofile" />
@@ -378,13 +387,15 @@ const EditProfile: React.FC = () => {
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <button type="submit" className="btn-primary" disabled={saving}>
-                    {saving ? 'Saving...' : 'Save Profile'}
-                  </button>
                 </div>
-              </form>
-            </div>
+              </div>
+
+              <div style={{ position: 'fixed', bottom: '32px', right: '32px', left: 'calc(250px + 32px + 32px)', zIndex: 10, padding: '16px 24px', backgroundColor: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(12px)', border: '1px solid #E4E1F5', borderRadius: '12px', display: 'flex', justifyContent: 'flex-end', boxShadow: '0 8px 32px rgba(38, 33, 92, 0.08)' }}>
+                <button type="submit" className="btn-primary" disabled={saving}>
+                  {saving ? 'Saving...' : 'Save Profile'}
+                </button>
+              </div>
+            </form>
           )}
 
           {activeTab === 'preferences' && (

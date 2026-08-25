@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import LoadingScreen from '../../components/LoadingScreen';
 import { motion } from 'framer-motion';
+import GigCard from '../../components/GigCard';
 
 const VolunteerDashboard: React.FC = () => {
   const { user } = useAuth();
@@ -30,7 +31,7 @@ const VolunteerDashboard: React.FC = () => {
         .from('applications')
         .select('*', { count: 'exact', head: true })
         .eq('volunteer_id', user.id)
-        .in('status', ['accepted', 'completed', 'certified']);
+        .in('status', ['completed', 'certified']);
 
       const { count: certs } = await supabase
         .from('certificates')
@@ -273,47 +274,9 @@ const VolunteerDashboard: React.FC = () => {
             <h2 className="gig-carousel-title">Recommended for You</h2>
           </div>
           
-          <div className="gig-carousel">
+          <div className="gig-carousel" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
             {recommended.length > 0 ? recommended.map(gig => (
-              <div key={gig.id} className="gig-media-card-horizontal">
-                <div className="gig-media-cover-horizontal" style={{ backgroundImage: `url(${gig.image_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(gig.title)}&background=random&size=400`})` }}></div>
-                <div className="gig-media-body-horizontal">
-                  <Link to={`/dashboard/volunteer/gigs/${gig.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                    <h3 className="gig-media-title">{gig.title}</h3>
-                  </Link>
-                  <Link to="/dashboard/organization/profile" className="gig-media-org" style={{ textDecoration: 'none' }}>
-                    <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(gig.organizations?.name || 'Org')}&background=random`} alt={gig.organizations?.name} />
-                    <strong>{gig.organizations?.name || 'Organization'}</strong>
-                  </Link>
-                  <div className="gig-tags" style={{ marginBottom: '12px' }}>
-                    <span className={`tag ${gig.type === 'skilled' ? 'skilled' : 'physical'}`}>
-                      {gig.type === 'skilled' ? 'Skilled' : 'Physical'}
-                    </span>
-                    <span className="tag physical">{gig.location}</span>
-                  </div>
-
-                  {gig.matchScore !== undefined && (
-                    <div style={{ padding: '12px', backgroundColor: '#F3F2F9', borderRadius: '8px', borderLeft: '3px solid var(--purple-600)' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                        <span style={{ fontSize: '12px', fontWeight: 700, padding: '2px 8px', borderRadius: '99px', backgroundColor: 'var(--purple-600)', color: 'white' }}>
-                          {gig.matchScore}% Match
-                        </span>
-                        <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ink)' }}>Why this gig?</span>
-                      </div>
-                      <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '13px', color: 'var(--body)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                        {gig.locationFit && <li>Matches your location preference</li>}
-                        {gig.openToAllSkills ? (
-                          <li>Open to all skill levels</li>
-                        ) : gig.matchedSkills && gig.matchedSkills.length > 0 ? (
-                          <li>Matches your skills: <strong>{gig.matchedSkills.join(', ')}</strong></li>
-                        ) : (
-                          <li>No exact skill match, but great for broad impact</li>
-                        )}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              </div>
+              <GigCard key={gig.id} gig={gig} userRole="volunteer" layout="grid" />
             )) : (
               <div style={{ padding: '24px', color: 'var(--muted)', textAlign: 'center', width: '100%' }}>No gigs available at the moment.</div>
             )}

@@ -200,7 +200,7 @@ const ManageGigs: React.FC = () => {
                       <span className="tag status" style={{ backgroundColor: statusStyle[gig.status]?.bg || '#E4E1F5', color: statusStyle[gig.status]?.color || 'var(--body)' }}>
                         {statusStyle[gig.status]?.label || gig.status}
                       </span>
-                      <div style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '6px' }}>Created {new Date(gig.created_at).toLocaleDateString()}</div>
+                      <div style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '6px' }}>Created {new Date(gig.created_at).toLocaleDateString("en-NG", { timeZone: "Africa/Lagos" })}</div>
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>

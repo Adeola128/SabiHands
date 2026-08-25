@@ -137,7 +137,7 @@ const MyCertificates: React.FC = () => {
                     >
                       {gigType}
                     </span>
-                    <div style={{ fontSize: '12px', color: 'var(--body)', marginTop: '6px' }}>{new Date(cert.issued_at).toLocaleDateString()}</div>
+                    <div style={{ fontSize: '12px', color: 'var(--body)', marginTop: '6px' }}>{new Date(cert.issued_at).toLocaleDateString("en-NG", { timeZone: "Africa/Lagos" })}</div>
                   </div>
                 </div>
 

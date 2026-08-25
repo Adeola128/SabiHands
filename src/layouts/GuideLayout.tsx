@@ -86,7 +86,7 @@ const GuideLayout: React.FC<GuideLayoutProps> = ({
               <span style={{ fontWeight: 600, color: 'var(--ink)' }}>{author}</span>
             </div>
             <span>&bull;</span>
-            <span>{new Date(publishDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+            <span>{new Date(publishDate).toLocaleDateString('en-NG', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
           </div>
         </header>
 

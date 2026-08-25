@@ -132,45 +132,44 @@ const PostGig: React.FC = () => {
       
       {/* ── LEFT SIDEBAR (STICKY) ── */}
       <div className="post-gig-sidebar">
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'url(/images/org_posting_gig.png)', backgroundSize: 'cover', backgroundPosition: 'center' }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(38,33,92,0.85) 0%, rgba(38,33,92,0.98) 100%)' }} />
+        <div style={{ position: 'absolute', inset: 0, backgroundColor: 'var(--white)', borderRight: '1px solid #E4E1F5' }} />
         
         <div style={{ position: 'relative', padding: '40px 32px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <Link to="/dashboard/org/gigs" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'rgba(255,255,255,0.7)', textDecoration: 'none', fontSize: '14px', fontWeight: 600, marginBottom: '48px', transition: 'color 0.2s' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(255,255,255,0.7)'}>
+          <Link to="/dashboard/org/gigs" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'var(--muted)', textDecoration: 'none', fontSize: '14px', fontWeight: 600, marginBottom: '48px', transition: 'color 0.2s' }} onMouseOver={e => e.currentTarget.style.color = 'var(--ink)'} onMouseOut={e => e.currentTarget.style.color = 'var(--muted)'}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
             Cancel & Back
           </Link>
 
-          <h1 style={{ fontSize: '28px', fontFamily: 'var(--display)', color: 'white', marginBottom: '8px', lineHeight: 1.2 }}>Create a New Gig</h1>
-          <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.8)', marginBottom: '48px', lineHeight: 1.6 }}>Find the perfect volunteers to help your organization scale its impact.</p>
+          <h1 style={{ fontSize: '28px', fontFamily: 'var(--display)', color: 'var(--ink)', marginBottom: '8px', lineHeight: 1.2 }}>Create a New Gig</h1>
+          <p style={{ fontSize: '15px', color: 'var(--body)', marginBottom: '48px', lineHeight: 1.6 }}>Find the perfect volunteers to help your organization scale its impact.</p>
 
           {/* Vertical Stepper */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
             {steps.map((s, i) => (
               <div key={s.n} style={{ display: 'flex', gap: '16px', position: 'relative', paddingBottom: i < steps.length - 1 ? '32px' : '0' }}>
                 {i < steps.length - 1 && (
-                  <div style={{ position: 'absolute', left: '15px', top: '32px', bottom: '8px', width: '2px', backgroundColor: step > s.n ? 'var(--teal-400)' : 'rgba(255,255,255,0.1)', zIndex: 0, transition: 'background-color 0.3s' }} />
+                  <div style={{ position: 'absolute', left: '15px', top: '32px', bottom: '8px', width: '2px', backgroundColor: step > s.n ? 'var(--teal-400)' : '#E4E1F5', zIndex: 0, transition: 'background-color 0.3s' }} />
                 )}
                 
-                <div style={{ width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: 700, transition: 'all 0.3s', backgroundColor: step > s.n ? 'var(--teal-400)' : step === s.n ? 'var(--purple-400)' : 'transparent', color: step >= s.n ? '#ffffff' : 'rgba(255,255,255,0.4)', border: step < s.n ? '2px solid rgba(255,255,255,0.2)' : 'none', zIndex: 1, boxShadow: step === s.n ? '0 0 0 4px rgba(127,119,221,0.2)' : 'none' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: 700, transition: 'all 0.3s', backgroundColor: step > s.n ? 'var(--teal-600)' : step === s.n ? 'var(--purple-600)' : 'transparent', color: step >= s.n ? '#ffffff' : 'var(--muted)', border: step < s.n ? '2px solid #E4E1F5' : 'none', zIndex: 1, boxShadow: step === s.n ? '0 0 0 4px var(--purple-100)' : 'none' }}>
                   {step > s.n ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg> : s.n}
                 </div>
                 
                 <div style={{ paddingTop: '4px' }}>
-                  <div style={{ fontSize: '15px', fontWeight: 700, color: step >= s.n ? 'white' : 'rgba(255,255,255,0.5)', transition: 'color 0.3s', marginBottom: '4px' }}>{s.label}</div>
-                  <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', transition: 'color 0.3s' }}>{s.desc}</div>
+                  <div style={{ fontSize: '15px', fontWeight: 700, color: step >= s.n ? 'var(--ink)' : 'var(--muted)', transition: 'color 0.3s', marginBottom: '4px' }}>{s.label}</div>
+                  <div style={{ fontSize: '13px', color: step >= s.n ? 'var(--body)' : 'var(--muted)', transition: 'color 0.3s' }}>{s.desc}</div>
                 </div>
               </div>
             ))}
           </div>
 
           {/* Dynamic Helper Tips */}
-          <div style={{ marginTop: 'auto', backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: '12px', padding: '16px', border: '1px solid rgba(255,255,255,0.1)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--teal-200)', marginBottom: '8px', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <div style={{ marginTop: 'auto', backgroundColor: '#FAFAFC', borderRadius: '12px', padding: '16px', border: '1px solid #E4E1F5' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--purple-700)', marginBottom: '8px', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
               Quick Tip
             </div>
-            <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.85)', margin: 0, lineHeight: 1.5 }}>
+            <p style={{ fontSize: '13px', color: 'var(--body)', margin: 0, lineHeight: 1.5 }}>
               {step === 1 && "A clear, exciting title and detailed description can increase your applications by up to 300%."}
               {step === 2 && "If the work doesn't require physical presence, marking it as 'Remote' opens it up to a nationwide talent pool."}
               {step === 3 && "Determine how volunteers will deliver their completed work so it meets your needs."}
@@ -272,10 +271,17 @@ const PostGig: React.FC = () => {
                   <textarea value={form.description} onChange={e => update('description', e.target.value)} placeholder="Describe the problem, what the volunteer will do, and the impact they will have..." rows={6} style={{ width: '100%', padding: '16px 20px', borderRadius: '12px', border: '2px solid transparent', boxShadow: '0 0 0 1px #E4E1F5', fontSize: '16px', color: 'var(--ink)', outline: 'none', fontFamily: 'var(--sans)', resize: 'vertical', lineHeight: 1.6, backgroundColor: 'var(--white)', transition: 'all 0.2s' }} onFocus={e => e.currentTarget.style.boxShadow = '0 0 0 2px var(--purple-400)'} onBlur={e => e.currentTarget.style.boxShadow = '0 0 0 1px #E4E1F5'} />
                 </div>
 
-                <div style={{ marginTop: '16px', borderTop: '1px solid #E4E1F5', paddingTop: '32px', display: 'flex', justifyContent: 'flex-end' }}>
-                  <button onClick={() => setStep(2)} style={{ padding: '14px 40px', backgroundColor: 'var(--purple-600)', color: '#ffffff', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 6px 20px rgba(83,74,183,0.3)', transition: 'transform 0.2s, box-shadow 0.2s' }} onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(83,74,183,0.4)'; }} onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(83,74,183,0.3)'; }}>
-                    Next: Logistics →
-                  </button>
+                <div className="post-gig-action-bar">
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%', maxWidth: '640px', margin: '0 auto' }}>
+                    <button onClick={() => {
+                      if (!form.title.trim()) return alert('Please provide a gig title.');
+                      if (!form.description.trim()) return alert('Please provide a gig description.');
+                      if (!form.category) return alert('Please select a category.');
+                      setStep(2);
+                    }} style={{ padding: '14px 40px', backgroundColor: 'var(--purple-600)', color: '#ffffff', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 6px 20px rgba(83,74,183,0.3)', transition: 'transform 0.2s, box-shadow 0.2s' }} onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(83,74,183,0.4)'; }} onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(83,74,183,0.3)'; }}>
+                      Next: Logistics →
+                    </button>
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -472,23 +478,37 @@ const PostGig: React.FC = () => {
                   </div>
                 </div>
 
-                <div style={{ marginTop: '16px', borderTop: '1px solid #E4E1F5', paddingTop: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <button onClick={() => setStep(1)} style={{ padding: '14px 24px', backgroundColor: 'var(--white)', color: 'var(--body)', border: '1px solid #E4E1F5', borderRadius: '12px', fontSize: '15px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }} onMouseOver={e => e.currentTarget.style.backgroundColor = '#FAFAFC'} onMouseOut={e => e.currentTarget.style.backgroundColor = 'var(--white)'}>
-                    ← Back
-                  </button>
-                  <button onClick={() => {
-                    if (form.type === 'physical' && form.remote) {
-                      alert('Physical gigs cannot be remote. Please uncheck "Remote Gig" or change the gig type to Skilled.');
-                      return;
-                    }
-                    if (!form.remote && !form.location.trim()) {
-                      alert('Please enter a location for this gig.');
-                      return;
-                    }
-                    setStep(form.type === 'skilled' ? 3 : 4);
-                  }} style={{ padding: '14px 40px', backgroundColor: 'var(--purple-600)', color: '#ffffff', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 6px 20px rgba(83,74,183,0.3)', transition: 'transform 0.2s, box-shadow 0.2s' }} onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(83,74,183,0.4)'; }} onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(83,74,183,0.3)'; }}>
-                    Next →
-                  </button>
+                <div className="post-gig-action-bar">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', maxWidth: '640px', margin: '0 auto' }}>
+                    <button onClick={() => setStep(1)} style={{ padding: '14px 24px', backgroundColor: 'var(--white)', color: 'var(--body)', border: '1px solid #E4E1F5', borderRadius: '12px', fontSize: '15px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }} onMouseOver={e => e.currentTarget.style.backgroundColor = '#FAFAFC'} onMouseOut={e => e.currentTarget.style.backgroundColor = 'var(--white)'}>
+                      ← Back
+                    </button>
+                    <button onClick={() => {
+                      if (form.type === 'physical' && form.remote) {
+                        alert('Physical gigs cannot be remote. Please uncheck "Remote Gig" or change the gig type to Skilled.');
+                        return;
+                      }
+                      if (!form.remote && !form.location.trim()) {
+                        alert('Please enter a location for this gig.');
+                        return;
+                      }
+                      if (!form.date) {
+                        alert('Please provide a date/deadline.');
+                        return;
+                      }
+                      if (!form.duration) {
+                        alert('Please provide an estimated duration in hours.');
+                        return;
+                      }
+                      if (!form.volunteers) {
+                        alert('Please provide the number of volunteers needed.');
+                        return;
+                      }
+                      setStep(form.type === 'skilled' ? 3 : 4);
+                    }} style={{ padding: '14px 40px', backgroundColor: 'var(--purple-600)', color: '#ffffff', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 6px 20px rgba(83,74,183,0.3)', transition: 'transform 0.2s, box-shadow 0.2s' }} onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(83,74,183,0.4)'; }} onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(83,74,183,0.3)'; }}>
+                      Next →
+                    </button>
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -611,22 +631,26 @@ const PostGig: React.FC = () => {
                     </div>
                   </div>
                 </div>
-
-                <div style={{ marginTop: '16px', borderTop: '1px solid #E4E1F5', paddingTop: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <button onClick={() => setStep(2)} style={{ padding: '14px 24px', backgroundColor: 'var(--white)', color: 'var(--body)', border: '1px solid #E4E1F5', borderRadius: '12px', fontSize: '15px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }} onMouseOver={e => e.currentTarget.style.backgroundColor = '#FAFAFC'} onMouseOut={e => e.currentTarget.style.backgroundColor = 'var(--white)'}>
-                    ← Edit Logistics
-                  </button>
-                  <div style={{ display: 'flex', gap: '16px' }}>
-                    <button style={{ padding: '14px 24px', backgroundColor: 'var(--white)', color: 'var(--ink)', border: '1px solid #E4E1F5', borderRadius: '12px', fontSize: '15px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }} onMouseOver={e => e.currentTarget.style.backgroundColor = '#FAFAFC'} onMouseOut={e => e.currentTarget.style.backgroundColor = 'var(--white)'}>
-                      Save Draft
+                <div className="post-gig-action-bar">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', maxWidth: '640px', margin: '0 auto' }}>
+                    <button onClick={() => setStep(form.type === 'skilled' ? 3 : 2)} style={{ padding: '14px 24px', backgroundColor: 'var(--white)', color: 'var(--body)', border: '1px solid #E4E1F5', borderRadius: '12px', fontSize: '15px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }} onMouseOver={e => e.currentTarget.style.backgroundColor = '#FAFAFC'} onMouseOut={e => e.currentTarget.style.backgroundColor = 'var(--white)'} disabled={isPublishing}>
+                      ← Back
                     </button>
-                    <button disabled={isPublishing} onClick={handlePublish} style={{ padding: '14px 40px', background: 'linear-gradient(135deg, var(--teal-400), var(--teal-600))', color: '#ffffff', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: 700, cursor: isPublishing ? 'default' : 'pointer', boxShadow: '0 8px 24px rgba(29,158,117,0.3)', transition: 'transform 0.2s, box-shadow 0.2s', display: 'flex', alignItems: 'center', gap: '8px', opacity: isPublishing ? 0.7 : 1 }} onMouseOver={e => { if(!isPublishing){ e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 10px 28px rgba(29,158,117,0.4)';} }} onMouseOut={e => { if(!isPublishing){ e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(29,158,117,0.3)';} }}>
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                      {isPublishing ? 'Publishing...' : 'Publish Gig'}
+                    <button onClick={handlePublish} disabled={isPublishing} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '14px 40px', backgroundColor: 'var(--teal-600)', color: '#ffffff', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: 700, cursor: isPublishing ? 'not-allowed' : 'pointer', boxShadow: '0 6px 20px rgba(13,148,136,0.3)', transition: 'all 0.2s', opacity: isPublishing ? 0.7 : 1 }} onMouseOver={e => { if (!isPublishing) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(13,148,136,0.4)'; } }} onMouseOut={e => { if (!isPublishing) { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(13,148,136,0.3)'; } }}>
+                      {isPublishing ? (
+                        <>
+                          <svg className="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                          Publishing...
+                        </>
+                      ) : (
+                        <>
+                          Publish Gig
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                        </>
+                      )}
                     </button>
                   </div>
                 </div>
-
               </div>
             </motion.div>
           )}

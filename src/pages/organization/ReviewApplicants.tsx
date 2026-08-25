@@ -211,62 +211,76 @@ const ReviewApplicants: React.FC = () => {
                     )}
                   </div>
                   <div className="gig-media-body" style={{ padding: '20px 20px 16px 16px' }}>
-                    <div className="gig-media-header" style={{ marginBottom: '10px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
                       <div>
-                        <h3 className="gig-media-title" style={{ fontSize: '16px', marginBottom: '4px' }}>
-                          <Link to={`/volunteer/${generateSeoUrl(name, a.volunteer_id)}`} style={{ color: 'var(--ink)', textDecoration: 'none' }}>{name}</Link>
+                        <h3 className="gig-media-title" style={{ fontSize: '18px', marginBottom: '4px' }}>
+                          <Link to={`/dashboard/org/volunteers/${a.volunteer_id}`} style={{ color: 'var(--ink)', textDecoration: 'none' }}>{name}</Link>
                         </h3>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '13px', color: 'var(--body)' }}>
-                          <span>Applied on {new Date(a.applied_at).toLocaleDateString()}</span>
+                          <span>Applied {new Date(a.applied_at).toLocaleDateString("en-NG", { timeZone: "Africa/Lagos" })}</span>
                         </div>
                       </div>
-                      <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                        <span className="tag status" style={{ backgroundColor: statusStyle[a.status]?.bg || '#eee', color: statusStyle[a.status]?.color || '#333' }}>{statusStyle[a.status]?.label || a.status}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <span className="tag status" style={{ backgroundColor: statusStyle[a.status]?.bg || '#eee', color: statusStyle[a.status]?.color || '#333', fontSize: '13px', padding: '6px 12px' }}>{statusStyle[a.status]?.label || a.status}</span>
+                        <Link to={`/dashboard/org/volunteers/${a.volunteer_id}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 16px', backgroundColor: 'var(--purple-50)', color: 'var(--purple-700)', borderRadius: '8px', fontSize: '13px', fontWeight: 600, textDecoration: 'none', border: '1px solid var(--purple-200)', transition: 'all 0.2s' }} onMouseOver={e => e.currentTarget.style.backgroundColor = 'var(--purple-100)'} onMouseOut={e => e.currentTarget.style.backgroundColor = 'var(--purple-50)'}>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                          Open Profile
+                        </Link>
                       </div>
                     </div>
                     
-                    {a.pitch ? (
-                      <div style={{ padding: '16px', backgroundColor: '#FAFAFC', borderRadius: '12px', marginBottom: '16px', border: '1px solid #E4E1F5' }}>
-                        <h4 style={{ fontSize: '12px', fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Their Pitch</h4>
-                        <p style={{ fontSize: '14px', color: 'var(--ink)', lineHeight: 1.6, margin: 0, whiteSpace: 'pre-line' }}>{a.pitch}</p>
+                    <div style={{ border: '1px solid #E4E1F5', borderRadius: '12px', overflow: 'hidden', marginBottom: '20px' }}>
+                      <div style={{ backgroundColor: '#FAFAFC', padding: '12px 16px', borderBottom: '1px solid #E4E1F5', fontSize: '12px', fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        Candidate Evidence
                       </div>
-                    ) : null}
+                      <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        {a.pitch && (
+                          <div>
+                            <h4 style={{ fontSize: '13px', fontWeight: 700, color: 'var(--ink)', marginBottom: '4px' }}>Cover Letter / Pitch</h4>
+                            <p style={{ fontSize: '14px', color: 'var(--body)', lineHeight: 1.6, margin: 0, whiteSpace: 'pre-line' }}>{a.pitch}</p>
+                          </div>
+                        )}
 
-                    {a.application_answers && a.application_answers.length > 0 && (
-                      <div style={{ padding: '16px', backgroundColor: '#FAFAFC', borderRadius: '12px', marginBottom: '16px', border: '1px solid #E4E1F5', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        {a.application_answers.map((ans: any) => {
-                          const q = gigQuestions.find(q => q.id === ans.question_id);
-                          if (!q) return null;
-                          return (
-                            <div key={ans.question_id}>
-                              <h4 style={{ fontSize: '13px', fontWeight: 700, color: 'var(--ink)', marginBottom: '4px' }}>{q.question_text}</h4>
-                              <p style={{ fontSize: '14px', color: 'var(--body)', margin: 0 }}>{ans.answer_text || <span style={{ color: 'var(--muted)', fontStyle: 'italic' }}>No answer</span>}</p>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
+                        {a.application_answers && a.application_answers.length > 0 && (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingTop: a.pitch ? '16px' : '0', borderTop: a.pitch ? '1px dashed #E4E1F5' : 'none' }}>
+                            {a.application_answers.map((ans: any) => {
+                              const q = gigQuestions.find(q => q.id === ans.question_id);
+                              if (!q) return null;
+                              return (
+                                <div key={ans.question_id}>
+                                  <h4 style={{ fontSize: '13px', fontWeight: 700, color: 'var(--ink)', marginBottom: '4px' }}>{q.question_text}</h4>
+                                  <p style={{ fontSize: '14px', color: 'var(--body)', margin: 0 }}>{ans.answer_text || <span style={{ color: 'var(--muted)', fontStyle: 'italic' }}>No answer</span>}</p>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
 
-                    {(a.cv_url || a.resume_url || a.linkedin_url || a.portfolio_url) && (
-                      <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '16px' }}>
-                        {(a.cv_url || a.resume_url) && (
-                          <a href={a.cv_url || a.resume_url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 600, color: 'var(--purple-600)', backgroundColor: 'var(--purple-50)', padding: '6px 12px', borderRadius: '8px', textDecoration: 'none' }}>
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                            View Resume/CV
-                          </a>
+                        {(a.cv_url || a.resume_url || a.linkedin_url || a.portfolio_url) && (
+                          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', paddingTop: (a.pitch || (a.application_answers && a.application_answers.length > 0)) ? '16px' : '0', borderTop: (a.pitch || (a.application_answers && a.application_answers.length > 0)) ? '1px dashed #E4E1F5' : 'none' }}>
+                            {(a.cv_url || a.resume_url) && (
+                              <a href={a.cv_url || a.resume_url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 600, color: 'var(--purple-700)', backgroundColor: 'var(--purple-50)', padding: '6px 12px', borderRadius: '6px', textDecoration: 'none', border: '1px solid var(--purple-200)' }}>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                Resume/CV
+                              </a>
+                            )}
+                            {a.linkedin_url && (
+                              <a href={a.linkedin_url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 600, color: '#0A66C2', backgroundColor: '#F0F6FC', padding: '6px 12px', borderRadius: '6px', textDecoration: 'none', border: '1px solid #D5E4F2' }}>
+                                LinkedIn
+                              </a>
+                            )}
+                            {a.portfolio_url && (
+                              <a href={a.portfolio_url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 600, color: 'var(--teal-800)', backgroundColor: 'var(--teal-50)', padding: '6px 12px', borderRadius: '6px', textDecoration: 'none', border: '1px solid var(--teal-200)' }}>
+                                Portfolio
+                              </a>
+                            )}
+                          </div>
                         )}
-                        {a.linkedin_url && (
-                          <a href={a.linkedin_url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 600, color: '#0A66C2', backgroundColor: '#F0F6FC', padding: '6px 12px', borderRadius: '8px', textDecoration: 'none' }}>
-                            LinkedIn
-                          </a>
-                        )}
-                        {a.portfolio_url && (
-                          <a href={a.portfolio_url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 600, color: 'var(--teal-700)', backgroundColor: 'var(--teal-50)', padding: '6px 12px', borderRadius: '8px', textDecoration: 'none' }}>
-                            Portfolio
-                          </a>
+                        {!a.pitch && !(a.application_answers && a.application_answers.length > 0) && !(a.cv_url || a.resume_url || a.linkedin_url || a.portfolio_url) && (
+                          <div style={{ fontSize: '13px', color: 'var(--muted)', fontStyle: 'italic' }}>No additional evidence provided.</div>
                         )}
                       </div>
-                    )}
+                    </div>
                     
                     {profile.interests && profile.interests.length > 0 && (
                       <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '20px' }}>
@@ -277,21 +291,22 @@ const ReviewApplicants: React.FC = () => {
                     <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', paddingTop: '16px', borderTop: '1px dashed #E4E1F5' }}>
                       {a.status === 'pending' && (
                         <>
-                          <button onClick={() => handleStatusUpdate(a.id, 'accepted')} className="gig-action" style={{ backgroundColor: 'var(--teal-600)', color: 'white', border: 'none', padding: '8px 20px', fontSize: '13px', cursor: 'pointer' }}>Accept Applicant</button>
-                          <button onClick={() => handleStatusUpdate(a.id, 'declined')} className="gig-action" style={{ background: 'none', border: '1.5px solid #E4E1F5', color: 'var(--body)', padding: '8px 20px', fontSize: '13px', cursor: 'pointer' }}>Decline</button>
+                          <button onClick={() => handleStatusUpdate(a.id, 'accepted')} style={{ backgroundColor: 'var(--teal-600)', color: 'white', border: 'none', padding: '10px 24px', borderRadius: '8px', fontSize: '14px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px', transition: 'all 0.2s' }} onMouseOver={e => e.currentTarget.style.backgroundColor = 'var(--teal-700)'} onMouseOut={e => e.currentTarget.style.backgroundColor = 'var(--teal-600)'}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                            Accept Applicant
+                          </button>
+                          <button onClick={() => handleStatusUpdate(a.id, 'declined')} style={{ background: 'var(--white)', border: '1.5px solid #E4E1F5', color: 'var(--ink)', padding: '10px 24px', borderRadius: '8px', fontSize: '14px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }} onMouseOver={e => e.currentTarget.style.backgroundColor = '#FAFAFC'} onMouseOut={e => e.currentTarget.style.backgroundColor = 'var(--white)'}>Decline</button>
                         </>
                       )}
                       {a.status === 'accepted' && (
                         <button 
                           onClick={() => handleMessageVolunteer(a.volunteer_id)}
                           disabled={isMessaging === a.volunteer_id}
-                          className="gig-action" 
-                          style={{ background: 'none', border: '1.5px solid #E4E1F5', color: 'var(--body)', padding: '8px 20px', fontSize: '13px', cursor: 'pointer', opacity: isMessaging === a.volunteer_id ? 0.7 : 1 }}
+                          style={{ background: 'var(--purple-600)', border: 'none', color: '#fff', padding: '10px 24px', borderRadius: '8px', fontSize: '14px', fontWeight: 600, cursor: 'pointer', opacity: isMessaging === a.volunteer_id ? 0.7 : 1, transition: 'all 0.2s' }} onMouseOver={e => { if (isMessaging !== a.volunteer_id) e.currentTarget.style.backgroundColor = 'var(--purple-700)' }} onMouseOut={e => { if (isMessaging !== a.volunteer_id) e.currentTarget.style.backgroundColor = 'var(--purple-600)' }}
                         >
                           {isMessaging === a.volunteer_id ? 'Starting...' : 'Message Volunteer'}
                         </button>
                       )}
-                      <Link to={`/volunteer/${generateSeoUrl(name, a.volunteer_id)}`} className="gig-action" style={{ background: 'none', border: 'none', color: 'var(--purple-600)', padding: '8px 12px', fontSize: '13px', marginLeft: 'auto', textDecoration: 'none', fontWeight: 600 }}>View Full Profile →</Link>
                     </div>
                   </div>
                 </div>

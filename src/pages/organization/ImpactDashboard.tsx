@@ -32,11 +32,12 @@ const ImpactDashboard: React.FC = () => {
           return;
         }
 
-        // 2. Fetch Gigs
+        // 2. Fetch Gigs (only published or completed)
         const { data: gigs } = await supabase
           .from('gigs')
           .select('id, duration, skills_required')
-          .eq('organization_id', orgData.id);
+          .eq('organization_id', orgData.id)
+          .in('status', ['published', 'completed']);
 
         const gigIds = gigs?.map((g: any) => g.id) || [];
         const totalGigs = gigs?.length || 0;
@@ -53,7 +54,7 @@ const ImpactDashboard: React.FC = () => {
             .from('applications')
             .select('gig_id, volunteer_id, status')
             .in('gig_id', gigIds)
-            .in('status', ['accepted', 'completed']);
+            .in('status', ['completed', 'certified']);
 
           if (applications) {
             // Unique volunteers that were accepted or completed

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import LoadingScreen from '../../components/LoadingScreen';
 import EmptyState from '../../components/EmptyState';
+import GigCard from '../../components/GigCard';
 
 const NIGERIA_STATES = [
   'Remote', 'Abia', 'Adamawa', 'Akwa Ibom', 'Anambra', 'Bauchi', 'Bayelsa',
@@ -269,40 +270,7 @@ const BrowseGigs: React.FC = () => {
           ) : (
             <>
               {paginatedGigs.map(gig => (
-                <div key={gig.id} className="gig-media-card">
-                <div className="gig-media-cover" style={{ backgroundImage: `url(${gig.image_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(gig.title)}&background=random&size=400`})` }} />
-                <div className="gig-media-body">
-                  <div className="gig-media-header">
-                    <div>
-                      <h3 className="gig-media-title">{gig.title}</h3>
-                      <Link to={`/organization/${gig.organizations?.slug || gig.organization_id}`} className="gig-media-org" style={{ textDecoration: 'none' }}>
-                        <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(gig.organizations?.name || 'Org')}&background=random`} alt={gig.organizations?.name} />
-                        <strong>{gig.organizations?.name || 'Organization'}</strong>
-                        <span style={{ color: '#D1CEDF', margin: '0 4px' }}>•</span>
-                        <span style={{ color: 'var(--body)' }}>
-                          {gig.location === 'Remote' ? '🌐 Remote' : `📍 ${gig.location || 'Nigeria'}`}
-                        </span>
-                      </Link>
-                    </div>
-                    <Link to={`/dashboard/volunteer/gigs/${gig.id}/apply`} className="gig-action">Apply Now</Link>
-                  </div>
-                  <p style={{ fontSize: '14px', color: 'var(--body)', margin: '0 0 16px 0', lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', whiteSpace: 'pre-wrap' }}>
-                    {gig.description}
-                  </p>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
-                    <div className="gig-tags" style={{ margin: 0 }}>
-                      <span className={`tag ${gig.type === 'skilled' ? 'skilled' : 'physical'}`}>
-                        {gig.type === 'skilled' ? 'Skilled' : 'Physical'}
-                      </span>
-                      {gig.location === 'Remote' && <span className="tag physical">Remote</span>}
-                    </div>
-                    <div style={{ fontSize: '12px', color: 'var(--body)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                      {gig.date_start ? new Date(gig.date_start).toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Date TBD'}
-                    </div>
-                  </div>
-                </div>
-                </div>
+                <GigCard key={gig.id} gig={gig} userRole="volunteer" />
               ))}
               
               {/* Pagination Controls */}

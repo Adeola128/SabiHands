@@ -130,7 +130,7 @@ const MyApplications: React.FC = () => {
                         {app.status}
                       </span>
                       <div style={{ fontSize: '12px', color: 'var(--body)', marginTop: '8px' }}>
-                        Applied {app.applied_at ? new Date(app.applied_at).toLocaleDateString() : ''}
+                        Applied {app.applied_at ? new Date(app.applied_at).toLocaleDateString("en-NG", { timeZone: "Africa/Lagos" }) : ''}
                       </div>
                     </div>
                   </div>
@@ -140,6 +140,47 @@ const MyApplications: React.FC = () => {
                     {app.status === 'declined' && 'Unfortunately, the organization decided to move forward with other candidates at this time.'}
                     {app.status === 'withdrawn' && 'You have withdrawn this application.'}
                   </p>
+
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '4px', marginBottom: '24px', padding: '16px', backgroundColor: '#FAFAFC', borderRadius: '12px', border: '1px solid #E4E1F5' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: 'var(--purple-600)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                        <div style={{ height: '2px', flex: 1, backgroundColor: 'var(--purple-600)', marginLeft: '4px' }}></div>
+                      </div>
+                      <div>
+                        <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--ink)' }}>Applied</div>
+                        <div style={{ fontSize: '11px', color: 'var(--muted)' }}>{app.applied_at ? new Date(app.applied_at).toLocaleDateString("en-NG", { timeZone: "Africa/Lagos", month: 'short', day: 'numeric' }) : ''}</div>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: (app.status !== 'withdrawn') ? 'var(--purple-600)' : '#E4E1F5', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                           {(app.status === 'accepted' || app.status === 'declined') ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg> : <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'white' }}></div>}
+                        </div>
+                        <div style={{ height: '2px', flex: 1, backgroundColor: (app.status === 'accepted' || app.status === 'declined') ? 'var(--purple-600)' : '#E4E1F5', marginLeft: '4px' }}></div>
+                      </div>
+                      <div>
+                        <div style={{ fontSize: '13px', fontWeight: 700, color: (app.status !== 'withdrawn') ? 'var(--ink)' : 'var(--muted)' }}>Under Review</div>
+                        <div style={{ fontSize: '11px', color: 'var(--muted)' }}>Organization viewing</div>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 0.3 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: app.status === 'accepted' ? '#10B981' : app.status === 'declined' ? '#EF4444' : app.status === 'withdrawn' ? '#6B7280' : '#E4E1F5', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          {(app.status === 'accepted' || app.status === 'declined' || app.status === 'withdrawn') && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
+                        </div>
+                      </div>
+                      <div>
+                        <div style={{ fontSize: '13px', fontWeight: 700, color: (app.status === 'accepted' || app.status === 'declined' || app.status === 'withdrawn') ? 'var(--ink)' : 'var(--muted)' }}>Decision</div>
+                        <div style={{ fontSize: '11px', color: 'var(--muted)' }}>{app.status === 'accepted' ? 'Accepted' : app.status === 'declined' ? 'Declined' : app.status === 'withdrawn' ? 'Withdrawn' : 'Pending'}</div>
+                      </div>
+                    </div>
+                  </div>
+
                   <div style={{ display: 'flex', gap: '12px' }}>
                     <Link to={`/dashboard/volunteer/gigs/${app.gigs?.id}`} className="gig-action" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>View Gig Details</Link>
                     {(app.status === 'pending' || app.status === 'accepted') && (

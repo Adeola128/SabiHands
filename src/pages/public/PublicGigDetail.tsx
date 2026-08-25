@@ -230,7 +230,7 @@ const PublicGigDetail: React.FC = () => {
               </div>
               <div className="gig-summary-item">
                 <span className="gig-summary-label">Date</span>
-                <span className="gig-summary-value">{gig.date_start ? new Date(gig.date_start).toLocaleDateString() : 'Ongoing'}</span>
+                <span className="gig-summary-value">{gig.date_start ? new Date(gig.date_start).toLocaleDateString("en-NG", { timeZone: "Africa/Lagos" }) : 'Ongoing'}</span>
               </div>
               <div className="gig-summary-item">
                 <span className="gig-summary-label">Format</span>

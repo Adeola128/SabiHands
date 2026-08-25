@@ -36,7 +36,7 @@ type Message = {
 };
 
 const Messages: React.FC = () => {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -360,9 +360,9 @@ const Messages: React.FC = () => {
     const today = new Date();
     
     if (date.toDateString() === today.toDateString()) {
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      return date.toLocaleTimeString("en-NG", { hour: '2-digit', minute: '2-digit' });
     }
-    return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    return date.toLocaleDateString("en-NG", { month: 'short', day: 'numeric' });
   };
 
   if (loading) {
@@ -394,7 +394,9 @@ const Messages: React.FC = () => {
         <div className="messages-list">
           {conversations.length === 0 ? (
             <div style={{ padding: '20px', textAlign: 'center', color: 'var(--muted)' }}>
-              No conversations yet. Apply to a gig to start chatting!
+              {role === 'organization' 
+                ? 'No conversations yet. Conversations begin after an application is received or a candidate is shortlisted.'
+                : 'No conversations yet. Apply to a gig to start chatting!'}
             </div>
           ) : (
             conversations.map((conv) => {
@@ -509,7 +511,7 @@ const Messages: React.FC = () => {
                   <React.Fragment key={msg.id}>
                     {showDivider && (
                       <div className="chat-divider">
-                        <span>{new Date(msg.created_at).toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' })}</span>
+                        <span>{new Date(msg.created_at).toLocaleDateString("en-NG", { weekday: 'long', month: 'short', day: 'numeric' })}</span>
                       </div>
                     )}
                     <div className={`chat-bubble-wrapper ${isMine ? 'sent' : 'received'}`}>
@@ -520,7 +522,7 @@ const Messages: React.FC = () => {
                         {msg.content}
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
-                        <span className="chat-time">{new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                        <span className="chat-time">{new Date(msg.created_at).toLocaleTimeString("en-NG", { hour: '2-digit', minute: '2-digit' })}</span>
                         {!isMine && (
                           <button 
                             onClick={() => { setReportingMsgId(msg.id); setShowReportModal(true); }}

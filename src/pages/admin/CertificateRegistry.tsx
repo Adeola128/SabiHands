@@ -86,7 +86,7 @@ const CertificateRegistry: React.FC = () => {
                 const volName = cert.users?.volunteer_profiles?.[0]?.full_name || 'Unknown Volunteer';
                 const orgName = cert.gigs?.organizations?.name || 'Unknown Organization';
                 const gigTitle = cert.gigs?.title || 'Unknown Gig';
-                const date = new Date(cert.issued_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                const date = new Date(cert.issued_at).toLocaleDateString('en-NG', { year: 'numeric', month: 'short', day: 'numeric' });
 
                 return (
                   <tr key={cert.id}>

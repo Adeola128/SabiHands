@@ -229,7 +229,7 @@ const OrganizationProfile: React.FC = () => {
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #E4E1F5', paddingTop: '16px', marginTop: 'auto' }}>
                         <span style={{ fontSize: '13px', color: 'var(--body)' }}>
-                          {new Date(gig.created_at).toLocaleDateString()}
+                          {new Date(gig.created_at).toLocaleDateString("en-NG", { timeZone: "Africa/Lagos" })}
                         </span>
                         <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--purple-600)' }}>Manage &rarr;</span>
                       </div>

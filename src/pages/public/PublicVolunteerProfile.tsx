@@ -40,7 +40,7 @@ const PublicVolunteerProfile: React.FC = () => {
         const { data, error: fetchError } = await supabase
           .from('volunteer_profiles')
           .select('*')
-          .or(`id.eq.${actualId},user_id.eq.${actualId}`)
+          .eq('user_id', actualId)
           .single();
           
         if (fetchError || !data) {
@@ -268,7 +268,7 @@ const PublicVolunteerProfile: React.FC = () => {
                 </div>
                 <div>
                   <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--ink)' }}>Completion Badge</div>
-                  <div style={{ fontSize: '12px', color: 'var(--muted)' }}>Issued: {new Date(cert.issued_at || cert.created_at).toLocaleDateString()}</div>
+                  <div style={{ fontSize: '12px', color: 'var(--muted)' }}>Issued: {new Date(cert.issued_at || cert.created_at).toLocaleDateString("en-NG", { timeZone: "Africa/Lagos" })}</div>
                 </div>
               </div>
             )) : <p style={{ color: 'var(--muted)', margin: 0 }}>No certificates yet.</p>}

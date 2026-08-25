@@ -49,3 +49,24 @@
     grid-template-columns: 1fr !important;
   }
 }
+
+.post-gig-action-bar {
+  margin-top: 16px;
+  padding: 24px;
+  display: flex;
+  background-color: var(--paper);
+  border-top: 1px solid #E4E1F5;
+  position: sticky;
+  bottom: -48px;
+  z-index: 10;
+  margin-left: -64px;
+  margin-right: -64px;
+}
+
+@media (max-width: 992px) {
+  .post-gig-action-bar {
+    margin-left: -24px;
+    margin-right: -24px;
+    bottom: -32px;
+  }
+}

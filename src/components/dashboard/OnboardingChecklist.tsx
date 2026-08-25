@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useOrgOnboardingState } from '../../hooks/useOrgOnboardingState';
 interface ChecklistItem {
   id: string;
   title: string;
@@ -18,17 +19,32 @@ const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({ organization,
   const [isDismissed, setIsDismissed] = useState(false);
 
   // Derive completed status from data
-  const isVerified = organization?.verification_status === 'verified';
-  const hasGigs = stats.activeGigs > 0;
+  const { hasProfile, hasContact, hasDocs, hasGigs } = useOrgOnboardingState(organization, stats);
 
   const items: ChecklistItem[] = [
     {
+      id: 'profile',
+      title: 'Complete Profile',
+      description: 'Add a bio and logo so volunteers know who you are.',
+      link: '/dashboard/org/settings',
+      linkText: 'Edit Profile',
+      isComplete: hasProfile
+    },
+    {
+      id: 'contact',
+      title: 'Add Contact Info',
+      description: 'Provide phone and location details.',
+      link: '/dashboard/org/settings',
+      linkText: 'Update Info',
+      isComplete: hasContact
+    },
+    {
       id: 'verify',
       title: 'Get Verified',
-      description: 'Upload your documents so volunteers know you are a legit NGO.',
+      description: 'Upload your CAC documents to get verified.',
       link: '/dashboard/org/settings',
       linkText: 'Upload Docs',
-      isComplete: isVerified
+      isComplete: hasDocs
     },
     {
       id: 'gig',
@@ -37,14 +53,6 @@ const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({ organization,
       link: '/dashboard/org/gigs/new',
       linkText: 'Post a Gig',
       isComplete: hasGigs
-    },
-    {
-      id: 'team',
-      title: 'Invite your Team',
-      description: 'Collaborate with your colleagues on Ralvo.',
-      link: '/dashboard/org/team',
-      linkText: 'Invite Members',
-      isComplete: (stats?.teamMembers || 0) > 1
     }
   ];
 

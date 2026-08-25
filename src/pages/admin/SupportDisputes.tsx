@@ -151,7 +151,7 @@ const SupportDisputes: React.FC = () => {
                     {msg.text}
                   </div>
                   <div style={{ fontSize: '11px', color: '#94A3B8', marginTop: '6px', margin: isSupport ? '0 4px 0 0' : '0 0 0 4px' }}>
-                    {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} &middot; {isSupport ? 'You' : 'Visitor'}
+                    {new Date(msg.timestamp).toLocaleTimeString("en-NG", { hour: '2-digit', minute: '2-digit' })} &middot; {isSupport ? 'You' : 'Visitor'}
                   </div>
                 </div>
               );

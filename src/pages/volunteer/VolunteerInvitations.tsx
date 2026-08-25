@@ -88,7 +88,7 @@ const VolunteerInvitations: React.FC = () => {
                          {inv.gigs?.organizations?.name}
                        </Link>
                        <span>|</span>
-                       <span>Date: {inv.gigs?.date_start ? new Date(inv.gigs.date_start).toLocaleDateString() : 'TBD'}</span>
+                       <span>Date: {inv.gigs?.date_start ? new Date(inv.gigs.date_start).toLocaleDateString("en-NG", { timeZone: "Africa/Lagos" }) : 'TBD'}</span>
                      </div>
                    </div>
                    <div style={{ display: 'flex', gap: '12px' }}>

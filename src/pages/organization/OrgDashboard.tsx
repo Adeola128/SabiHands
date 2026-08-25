@@ -5,7 +5,6 @@ import { useAuth } from '../../contexts/AuthContext';
 import LoadingScreen from '../../components/LoadingScreen';
 import EmptyState from '../../components/EmptyState';
 import OnboardingChecklist from '../../components/dashboard/OnboardingChecklist';
-import OrgOnboarding from '../../components/OrgOnboarding';
 import { motion } from 'framer-motion';
 
 const OrgDashboard: React.FC = () => {
@@ -140,73 +139,42 @@ const OrgDashboard: React.FC = () => {
             </div>
           </div>
         </motion.div>
-
-        {/* Quick Actions */}
-        <motion.div 
-          className="dash-card glass-card"
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
-        >
-          <div className="dash-card-padding">
-            <h2 className="dash-card-title" style={{ fontSize: '15px', marginBottom: '14px' }}>Quick Actions</h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <Link to="/dashboard/org/gigs/new" style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', padding: '10px 16px', backgroundColor: 'var(--purple-600)', borderRadius: '8px', color: '#ffffff', fontWeight: 600, fontSize: '14px', textDecoration: 'none' }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                Post a New Gig
-              </Link>
-              <Link to="/dashboard/org/impact" style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', padding: '10px 16px', backgroundColor: 'var(--paper)', borderRadius: '8px', color: 'var(--ink)', fontWeight: 600, fontSize: '14px', textDecoration: 'none', border: '1.5px solid #E4E1F5' }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-                Impact Dashboard
-              </Link>
-              <Link to="/dashboard/org/settings" style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', padding: '10px 16px', backgroundColor: 'var(--paper)', borderRadius: '8px', color: 'var(--ink)', fontWeight: 600, fontSize: '14px', textDecoration: 'none', border: '1.5px solid #E4E1F5' }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                Organization Settings
-              </Link>
-            </div>
-          </div>
-        </motion.div>
       </aside>
 
       {/* ── MAIN CONTENT ── */}
       <div className="main-content">
-        {/* Welcome hero */}
+        {/* Compact Page Header */}
         <motion.div 
-          className="hero-section"
+          style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '32px' }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h1 className="hero-greeting">Welcome back, {org?.name || 'Organization'}!</h1>
-          <div className="hero-actions">
-            <Link to="/dashboard/org/gigs/new" className="hero-btn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <div>
+            <h1 style={{ fontSize: '24px', fontFamily: 'var(--display)', color: 'var(--ink)', marginBottom: '4px' }}>Welcome back, {org?.name || 'Organization'}!</h1>
+            <p style={{ fontSize: '15px', color: 'var(--body)', margin: 0 }}>Here is what's happening today.</p>
+          </div>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <Link to="/dashboard/org/gigs/new" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 16px', backgroundColor: 'var(--purple-600)', color: 'white', borderRadius: '8px', fontSize: '14px', fontWeight: 600, textDecoration: 'none', boxShadow: '0 4px 12px rgba(83,74,183,0.2)' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               Post a gig
-            </Link>
-            <Link to="/dashboard/org/gigs" className="hero-btn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-              Manage gigs
-            </Link>
-            <Link to="/dashboard/org/impact" className="hero-btn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-              View impact
             </Link>
           </div>
         </motion.div>
 
         <OnboardingChecklist organization={org} stats={stats} />
 
-        {/* Action Required — Pending Applicants & Submissions */}
+        {/* Today's Queue — Pending Applicants & Submissions */}
         <motion.div 
           className="dash-card glass-card" 
-          style={{ marginBottom: '32px' }}
+          style={{ marginBottom: '32px', borderTop: '4px solid var(--amber-500)' }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
           <div className="dash-card-header">
-            <h2 className="dash-card-title">Action Required</h2>
-            <span style={{ fontSize: '13px', fontWeight: 600, backgroundColor: 'var(--purple-50)', color: 'var(--purple-600)', padding: '4px 10px', borderRadius: '99px' }}>{pendingApplicants.length + pendingSubmissions.length} pending</span>
+            <h2 className="dash-card-title">Today's Queue</h2>
+            <span style={{ fontSize: '13px', fontWeight: 600, backgroundColor: 'var(--amber-50)', color: 'var(--amber-700)', padding: '4px 10px', borderRadius: '99px' }}>{pendingApplicants.length + pendingSubmissions.length} tasks</span>
           </div>
           {pendingApplicants.length === 0 && pendingSubmissions.length === 0 ? (
             <EmptyState 
@@ -233,7 +201,7 @@ const OrgDashboard: React.FC = () => {
                           <p className="gig-media-org" style={{ fontSize: '13px' }}>Applied for <strong>{a.gigs?.title}</strong></p>
                         </div>
                         <span style={{ fontSize: '12px', color: 'var(--muted)', flexShrink: 0 }}>
-                          {new Date(a.applied_at).toLocaleDateString()}
+                          {new Date(a.applied_at).toLocaleDateString("en-NG", { timeZone: "Africa/Lagos" })}
                         </span>
                       </div>
                     </div>
@@ -260,7 +228,7 @@ const OrgDashboard: React.FC = () => {
                           <p className="gig-media-org" style={{ fontSize: '13px' }}>Submitted work for <strong>{s.gigs?.title}</strong></p>
                         </div>
                         <span style={{ fontSize: '12px', color: 'var(--muted)', flexShrink: 0 }}>
-                          {new Date(s.created_at).toLocaleDateString()}
+                          {new Date(s.created_at).toLocaleDateString("en-NG", { timeZone: "Africa/Lagos" })}
                         </span>
                       </div>
                     </div>
@@ -312,7 +280,6 @@ const OrgDashboard: React.FC = () => {
           </div>
         </motion.div>
       </div>
-      <OrgOnboarding organization={org} stats={stats} />
     </>
   );
 };

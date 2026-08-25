@@ -78,7 +78,7 @@ const CertificateDetail: React.FC = () => {
           gig: gig?.title,
           org: org?.name,
           org_logo: org?.logo_url,
-          date: new Date(data.issued_at).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase(),
+          date: new Date(data.issued_at).toLocaleDateString('en-NG', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase(),
           type: gig?.type,
           hours: attendance?.hours || 0,
           code: data.verification_code

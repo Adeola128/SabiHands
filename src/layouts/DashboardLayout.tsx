@@ -14,6 +14,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ role = 'volunteer' })
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [checkingProfile, setCheckingProfile] = useState(true);
   const [isProfileIncomplete, setIsProfileIncomplete] = useState(false);
+  const [isBannerDismissed, setIsBannerDismissed] = useState(false);
 
   const { user, loading, signOut } = useAuth();
 
@@ -135,12 +136,25 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ role = 'volunteer' })
         </div>
       </header>
 
-      {isVolunteer && isProfileIncomplete && (
-        <div style={{ backgroundColor: 'var(--pink-500)', color: 'white', padding: '12px 24px', textAlign: 'center', fontSize: '14px', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
-          <span>Your profile is incomplete! Add a bio, skills, and an avatar to stand out to organizations.</span>
-          <Link to="/dashboard/volunteer/settings" style={{ backgroundColor: 'white', color: 'var(--pink-600)', padding: '6px 16px', borderRadius: '99px', textDecoration: 'none', fontSize: '13px', fontWeight: 700 }}>
-            Complete Profile
-          </Link>
+      {isVolunteer && isProfileIncomplete && !isBannerDismissed && (
+        <div className="profile-incomplete-wrapper">
+          <div className="profile-incomplete-banner">
+            <button onClick={() => setIsBannerDismissed(true)} style={{ position: 'absolute', top: '12px', right: '12px', background: 'none', border: 'none', color: 'var(--amber-500)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', transition: 'background-color 0.2s' }} onMouseOver={e => e.currentTarget.style.backgroundColor = 'var(--amber-100)'} onMouseOut={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <div className="profile-incomplete-content">
+              <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'var(--amber-100)', color: 'var(--amber-600)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              </div>
+              <div>
+                <h4 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--amber-900)', margin: '0 0 4px 0' }}>Your profile is incomplete!</h4>
+                <p style={{ fontSize: '14px', color: 'var(--amber-800)', margin: 0 }}>Add a bio, skills, and an avatar to stand out.</p>
+              </div>
+            </div>
+            <Link to="/dashboard/volunteer/settings" className="profile-incomplete-btn">
+              Complete Profile
+            </Link>
+          </div>
         </div>
       )}
 

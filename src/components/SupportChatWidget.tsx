@@ -460,7 +460,7 @@ const SupportChatWidget: React.FC = () => {
                     )}
                     
                     <div style={{ fontSize: '11px', color: '#94A3B8', marginTop: '2px', alignSelf: isUser ? 'flex-end' : 'flex-start', margin: isUser ? '0 40px 0 0' : '0 0 0 40px' }}>
-                      {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {new Date(msg.timestamp).toLocaleTimeString("en-NG", { hour: '2-digit', minute: '2-digit' })}
                     </div>
                   </div>
                 );

@@ -50,10 +50,10 @@ const CertificateVerification: React.FC = () => {
 
         setCert({
           name: certName || 'Volunteer',
-          gig: gig?.title,
-          org: org?.name,
-          date: new Date(data.issued_at).toLocaleDateString(),
-          code: data.verification_code
+          gig: gig?.title || 'Verified Gig',
+          org: org?.name || 'Verified Organization',
+          date: (data.issued_at || data.created_at) ? new Date(data.issued_at || data.created_at).toLocaleDateString("en-NG", { timeZone: "Africa/Lagos" }) : 'Recently',
+          code: data.verification_code || code
         });
       }
       setLoading(false);

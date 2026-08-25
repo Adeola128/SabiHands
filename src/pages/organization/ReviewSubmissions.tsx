@@ -158,7 +158,7 @@ const ReviewSubmissions: React.FC = () => {
                           {sub.applications?.volunteer_profiles?.full_name}
                         </Link>
                       </h3>
-                      <p style={{ fontSize: '13px', color: 'var(--muted)', margin: 0 }}>Submitted on {new Date(sub.submitted_at).toLocaleDateString()}</p>
+                      <p style={{ fontSize: '13px', color: 'var(--muted)', margin: 0 }}>Submitted on {new Date(sub.submitted_at).toLocaleDateString("en-NG", { timeZone: "Africa/Lagos" })}</p>
                     </div>
                   </div>
                   
@@ -229,7 +229,7 @@ const ReviewSubmissions: React.FC = () => {
                           {sub.applications?.volunteer_profiles?.full_name}
                         </Link>
                       </h3>
-                      <p style={{ fontSize: '13px', color: 'var(--muted)', margin: 0 }}>Reviewed on {new Date(sub.reviewed_at).toLocaleDateString()}</p>
+                      <p style={{ fontSize: '13px', color: 'var(--muted)', margin: 0 }}>Reviewed on {new Date(sub.reviewed_at).toLocaleDateString("en-NG", { timeZone: "Africa/Lagos" })}</p>
                     </div>
                     <span className="tag status" style={{ backgroundColor: sub.status === 'approved' ? '#D4EDDA' : '#F8D7DA', color: sub.status === 'approved' ? '#155724' : '#721C24', textTransform: 'capitalize' }}>
                       {sub.status}

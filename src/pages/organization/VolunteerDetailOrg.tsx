@@ -271,7 +271,7 @@ const VolunteerDetailOrg: React.FC = () => {
                     <div>
                       <h4 style={{ margin: '0 0 4px', fontSize: '15px' }}>{gig.title}</h4>
                       <span style={{ fontSize: '12px', color: 'var(--muted)' }}>
-                        {gig.date_start ? new Date(gig.date_start).toLocaleDateString() : 'TBD'}
+                        {gig.date_start ? new Date(gig.date_start).toLocaleDateString("en-NG", { timeZone: "Africa/Lagos" }) : 'TBD'}
                       </span>
                     </div>
                     <button 

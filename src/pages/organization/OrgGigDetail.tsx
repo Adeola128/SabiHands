@@ -87,7 +87,7 @@ const OrgGigDetail: React.FC = () => {
               {[
                 { label: 'Applicants', value: `${applicants.length}` },
                 { label: 'Spots', value: gig.type === 'skilled' ? '1 filled' : 'Unlimited' },
-                { label: 'Date', value: gig.date_start ? new Date(gig.date_start).toLocaleDateString() : 'TBD' },
+                { label: 'Date', value: gig.date_start ? new Date(gig.date_start).toLocaleDateString("en-NG", { timeZone: "Africa/Lagos" }) : 'TBD' },
               ].map(r => (
                 <div key={r.label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
                   <span style={{ color: 'var(--muted)', fontWeight: 500 }}>{r.label}</span>
@@ -149,7 +149,7 @@ const OrgGigDetail: React.FC = () => {
           </div>
           <div style={{ padding: '16px 24px', borderBottom: '1px solid #E4E1F5', display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
             {[
-              { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>, text: gig.date_start ? new Date(gig.date_start).toLocaleDateString() : 'TBD' },
+              { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>, text: gig.date_start ? new Date(gig.date_start).toLocaleDateString("en-NG", { timeZone: "Africa/Lagos" }) : 'TBD' },
               { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>, text: gig.location || 'Remote' },
             ].map((m, i) => (
               <span key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: 'var(--body)', fontWeight: 500 }}>{m.icon}{m.text}</span>
@@ -198,7 +198,7 @@ const OrgGigDetail: React.FC = () => {
                     </div>
                     <div style={{ textAlign: 'right', flexShrink: 0 }}>
                       <span className="tag status" style={{ backgroundColor: statusStyle[a.status]?.bg || '#E4E1F5', color: statusStyle[a.status]?.color || 'var(--body)', textTransform: 'capitalize' }}>{a.status}</span>
-                      <div style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '4px' }}>{new Date(a.applied_at).toLocaleDateString()}</div>
+                      <div style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '4px' }}>{new Date(a.applied_at).toLocaleDateString("en-NG", { timeZone: "Africa/Lagos" })}</div>
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>

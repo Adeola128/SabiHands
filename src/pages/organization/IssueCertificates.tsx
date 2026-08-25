@@ -405,7 +405,7 @@ const IssueCertificates: React.FC = () => {
                           </div>
                           
                           <div style={{ flex: 1, textAlign: 'center' }}>
-                            <div style={{ fontSize: '0.55rem', fontWeight: 700, color: 'var(--ink)' }}>{new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase()}</div>
+                            <div style={{ fontSize: '0.55rem', fontWeight: 700, color: 'var(--ink)' }}>{new Date().toLocaleDateString('en-NG', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase()}</div>
                             <div style={{ fontSize: '0.45rem', color: 'var(--muted)' }}>Issue Date</div>
                           </div>
                           
