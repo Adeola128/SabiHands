@@ -14,12 +14,26 @@ const Footer: React.FC = () => {
             </Link>
             <p className="footer-tagline">A Lagos-first marketplace for real gigs and real proof.</p>
           </div>
-          
           <div className="footer-nav">
-
+            <h4 style={{ color: 'var(--purple-900)', fontSize: '14px', marginBottom: '12px' }}>Platform</h4>
             <Link to="/volunteers">For volunteers</Link>
             <Link to="/organizations">For NGOs &amp; companies</Link>
             <Link to="/verify">Verify certificate</Link>
+          </div>
+          
+          <div className="footer-nav">
+            <h4 style={{ color: 'var(--purple-900)', fontSize: '14px', marginBottom: '12px' }}>Opportunities</h4>
+            <Link to="/volunteer-opportunities/nigeria">Volunteer in Nigeria</Link>
+            <Link to="/volunteer-opportunities/remote">Remote Volunteering</Link>
+            <Link to="/nysc-volunteer-opportunities">NYSC / Graduate</Link>
+            <Link to="/volunteer-opportunities/ngo/nigeria">NGO Roles</Link>
+          </div>
+
+          <div className="footer-nav">
+            <h4 style={{ color: 'var(--purple-900)', fontSize: '14px', marginBottom: '12px' }}>Resources</h4>
+            <Link to="/guides">Practical Guides</Link>
+            <Link to="/guides/volunteer-in-nigeria-with-no-experience">Volunteer with no experience</Link>
+            <Link to="/guides/verify-ngo">How to verify NGOs</Link>
           </div>
         </div>
 

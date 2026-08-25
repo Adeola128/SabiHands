@@ -82,8 +82,8 @@ const ImpactDashboard: React.FC = () => {
           }
         }
 
-        // 4. Calculate Economic Value
-        const economicValue = hoursContributed * 1500;
+        // 4. Calculate Points Earned
+        const economicValue = hoursContributed * 100;
 
         // 5. Process Top Skills
         const totalSkillEntries = Object.values(skillCounts).reduce((a, b) => a + b, 0);
@@ -124,12 +124,8 @@ const ImpactDashboard: React.FC = () => {
 
   if (loading) return <LoadingScreen message="Calculating your impact..." />;
 
-  // Format the monetary value
-  const formattedValue = new Intl.NumberFormat('en-NG', {
-    style: 'currency',
-    currency: 'NGN',
-    maximumFractionDigits: 0
-  }).format(stats.economicValue);
+  // Format the points value
+  const formattedValue = new Intl.NumberFormat('en-NG').format(stats.economicValue) + ' RC';
 
   return (
     <>
@@ -231,9 +227,9 @@ const ImpactDashboard: React.FC = () => {
         <div className="dash-card" style={{ background: 'linear-gradient(135deg, var(--teal-900) 0%, var(--teal-600) 100%)', color: 'white', marginBottom: '24px' }}>
           <div className="dash-card-padding" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
-              <h3 style={{ fontSize: '14px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--teal-50)', marginBottom: '8px' }}>Estimated Economic Value</h3>
+              <h3 style={{ fontSize: '14px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--teal-50)', marginBottom: '8px' }}>Total Ralvo Coins Earned</h3>
               <div style={{ fontSize: '48px', fontFamily: 'var(--display)', fontWeight: 700, lineHeight: 1 }}>{formattedValue}</div>
-              <p style={{ fontSize: '14px', color: 'var(--teal-50)', marginTop: '8px', opacity: 0.9 }}>Based on a standard baseline of ₦1,500 hourly rates for skills provided by your volunteers.</p>
+              <p style={{ fontSize: '14px', color: 'var(--teal-50)', marginTop: '8px', opacity: 0.9 }}>Based on a standard baseline of 100 RC per hour of volunteering.</p>
             </div>
             <div style={{ width: '120px', height: '120px', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>

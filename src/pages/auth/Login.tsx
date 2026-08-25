@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import './Login.css';
 
@@ -7,7 +7,15 @@ const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    const gigId = searchParams.get('gig');
+    if (gigId) {
+      localStorage.setItem('pendingGigApply', gigId);
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -42,7 +50,13 @@ const Login: React.FC = () => {
       } else if (role === 'admin') {
         navigate('/hq');
       } else {
-        navigate('/dashboard/volunteer');
+        const pendingGigId = localStorage.getItem('pendingGigApply');
+        if (pendingGigId) {
+          localStorage.removeItem('pendingGigApply');
+          navigate(`/dashboard/volunteer/gigs/${pendingGigId}/apply`);
+        } else {
+          navigate('/dashboard/volunteer');
+        }
       }
     } catch (err: any) {
       setError(err.message || 'Invalid email or password');
@@ -107,7 +121,7 @@ const Login: React.FC = () => {
                 <path d="M19 12H5M12 19l-7-7 7-7" />
               </svg> Back to home
             </Link>
-            <span className="login-hint">New to Ralvo? <Link to="/signup">Sign up</Link></span>
+            <span className="login-hint">New to Ralvo? <Link to={searchParams.get('gig') ? `/signup?gig=${searchParams.get('gig')}` : "/signup"}>Sign up</Link></span>
           </div>
 
           <div className="auth-eyebrow">Log in to your account</div>

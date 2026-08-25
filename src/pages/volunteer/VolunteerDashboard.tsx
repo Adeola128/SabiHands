@@ -30,7 +30,7 @@ const VolunteerDashboard: React.FC = () => {
         .from('applications')
         .select('*', { count: 'exact', head: true })
         .eq('volunteer_id', user.id)
-        .eq('status', 'accepted');
+        .in('status', ['accepted', 'completed', 'certified']);
 
       const { count: certs } = await supabase
         .from('certificates')
@@ -47,9 +47,65 @@ const VolunteerDashboard: React.FC = () => {
         .from('gigs')
         .select('*, organizations(name)')
         .eq('status', 'published')
-        .limit(3);
+        .limit(10); // fetch more to allow filtering
 
-      if (gigsData) setRecommended(gigsData);
+      if (gigsData) {
+        const filteredGigs = gigsData
+          .filter((g: any) => g.title && g.title.length >= 5 && g.description && g.description.length >= 20)
+          .map((g: any) => {
+            let score = 0;
+            let matchedSkills: string[] = [];
+            // Skill match (70%)
+            const rawGigSkills = Array.isArray(g.skills_required) ? g.skills_required : [];
+            const gigSkills = rawGigSkills.filter((s: string) => s && s.trim().length > 0);
+            
+            let rawVolSkills: string[] = [];
+            if (typeof profileData?.skills === 'string') {
+              rawVolSkills = profileData.skills.split(',');
+            } else if (Array.isArray(profileData?.skills)) {
+              rawVolSkills = profileData.skills;
+            }
+            const volSkills = rawVolSkills.map((s: string) => s.trim()).filter(s => s.length > 0);
+              
+            let openToAllSkills = false;
+
+            if (gigSkills.length > 0) {
+              if (volSkills.length > 0) {
+                matchedSkills = gigSkills.filter((s: string) => volSkills.includes(s));
+                score += (matchedSkills.length / gigSkills.length) * 70;
+              } else {
+                score += 0;
+              }
+            } else {
+              // No specific skills listed for the gig
+              if (g.type === 'skilled') {
+                score += 0; // It's a skilled gig, but skills are missing. Cannot assume match.
+              } else {
+                score += 70; // Physical/event gig with no skills is open to all
+                openToAllSkills = true;
+              }
+            }
+            
+            // Location match (30%)
+            let locationFit = false;
+            if (g.location === 'Remote' || g.location?.toLowerCase() === profileData?.state?.toLowerCase()) {
+              score += 30;
+              locationFit = true;
+            }
+            
+            return {
+              ...g,
+              matchScore: Math.round(score),
+              matchedSkills,
+              locationFit,
+              openToAllSkills
+            };
+          })
+          .sort((a: any, b: any) => b.matchScore - a.matchScore)
+          .slice(0, 3);
+          
+        setRecommended(filteredGigs);
+      }
       setLoading(false);
     };
 
@@ -88,7 +144,7 @@ const VolunteerDashboard: React.FC = () => {
             <h2 className="dash-card-title" style={{ fontSize: '16px', marginBottom: '16px' }}>Your Impact</h2>
             
             <div style={{ marginBottom: '24px' }}>
-              <h3 style={{ fontSize: '32px', fontWeight: 700, fontFamily: 'var(--display)', color: 'var(--ink)', margin: '0 0 16px 0', letterSpacing: '-0.02em' }}>$0</h3>
+              <h3 style={{ fontSize: '32px', fontWeight: 700, fontFamily: 'var(--display)', color: 'var(--ink)', margin: '0 0 16px 0', letterSpacing: '-0.02em' }}>0 RC</h3>
               
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', backgroundColor: '#FAFAFC', borderRadius: '12px' }}>
@@ -96,7 +152,7 @@ const VolunteerDashboard: React.FC = () => {
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                   </div>
                   <div>
-                    <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink)' }}>$0</div>
+                    <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink)' }}>0 RC</div>
                     <div style={{ fontSize: '13px', color: 'var(--body)' }}>from volunteering</div>
                   </div>
                 </div>
@@ -106,7 +162,7 @@ const VolunteerDashboard: React.FC = () => {
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
                   </div>
                   <div>
-                    <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink)' }}>$0</div>
+                    <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink)' }}>0 RC</div>
                     <div style={{ fontSize: '13px', color: 'var(--body)' }}>from giving</div>
                   </div>
                 </div>
@@ -229,12 +285,33 @@ const VolunteerDashboard: React.FC = () => {
                     <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(gig.organizations?.name || 'Org')}&background=random`} alt={gig.organizations?.name} />
                     <strong>{gig.organizations?.name || 'Organization'}</strong>
                   </Link>
-                  <div className="gig-tags">
+                  <div className="gig-tags" style={{ marginBottom: '12px' }}>
                     <span className={`tag ${gig.type === 'skilled' ? 'skilled' : 'physical'}`}>
                       {gig.type === 'skilled' ? 'Skilled' : 'Physical'}
                     </span>
                     <span className="tag physical">{gig.location}</span>
                   </div>
+
+                  {gig.matchScore !== undefined && (
+                    <div style={{ padding: '12px', backgroundColor: '#F3F2F9', borderRadius: '8px', borderLeft: '3px solid var(--purple-600)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 700, padding: '2px 8px', borderRadius: '99px', backgroundColor: 'var(--purple-600)', color: 'white' }}>
+                          {gig.matchScore}% Match
+                        </span>
+                        <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ink)' }}>Why this gig?</span>
+                      </div>
+                      <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '13px', color: 'var(--body)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        {gig.locationFit && <li>Matches your location preference</li>}
+                        {gig.openToAllSkills ? (
+                          <li>Open to all skill levels</li>
+                        ) : gig.matchedSkills && gig.matchedSkills.length > 0 ? (
+                          <li>Matches your skills: <strong>{gig.matchedSkills.join(', ')}</strong></li>
+                        ) : (
+                          <li>No exact skill match, but great for broad impact</li>
+                        )}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               </div>
             )) : (

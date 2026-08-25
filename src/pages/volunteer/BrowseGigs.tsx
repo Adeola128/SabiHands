@@ -40,6 +40,7 @@ const BrowseGigs: React.FC = () => {
 
   const filtered = gigs
     .filter(g => typeFilter.includes(g.type))
+    .filter(g => g.title && g.title.length >= 5 && g.description && g.description.length >= 20)
     .filter(g =>
       !locationFilter ||
       g.location?.toLowerCase().includes(locationFilter.toLowerCase())
@@ -285,7 +286,7 @@ const BrowseGigs: React.FC = () => {
                     </div>
                     <Link to={`/dashboard/volunteer/gigs/${gig.id}/apply`} className="gig-action">Apply Now</Link>
                   </div>
-                  <p style={{ fontSize: '14px', color: 'var(--body)', margin: '0 0 16px 0', lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                  <p style={{ fontSize: '14px', color: 'var(--body)', margin: '0 0 16px 0', lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', whiteSpace: 'pre-wrap' }}>
                     {gig.description}
                   </p>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>

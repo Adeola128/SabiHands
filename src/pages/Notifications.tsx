@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 import './Notifications.css';
 
 type Tab = 'all' | 'unread' | 'applications' | 'system';
 
 interface Notification {
-  id: number;
+  id: string;
   type: 'application' | 'badge' | 'system' | 'reminder';
   title: string;
   body: string;
@@ -14,15 +16,6 @@ interface Notification {
   tab: 'applications' | 'system';
 }
 
-const notifications: Notification[] = [
-  { id: 1, type: 'application', title: 'Application Approved', body: 'Tech for Good Nigeria has approved your application for the "React Developer" gig. You\'re in!', time: '2 hours ago', unread: true, tab: 'applications' },
-  { id: 2, type: 'badge', title: 'Badge Unlocked: Community Champion 🏅', body: "Congratulations! You've completed 5 gigs this month and unlocked the Community Champion badge.", time: '5 hours ago', unread: true, tab: 'system' },
-  { id: 3, type: 'reminder', title: 'Check-In Reminder', body: 'Your gig "Beach Cleanup & Awareness Drive" starts tomorrow at 8:00 AM. Don\'t forget to check in!', time: 'Yesterday', unread: false, tab: 'applications' },
-  { id: 4, type: 'system', title: 'New Gig Recommendation', body: 'Based on your React and Node.js skills, we found 3 new gigs that might be a perfect fit for you.', time: '2 days ago', unread: false, tab: 'system' },
-  { id: 5, type: 'application', title: 'Application Declined', body: 'HealthFirst Initiative was unable to accept your application for "Medical Outreach Support" at this time.', time: '3 days ago', unread: false, tab: 'applications' },
-  { id: 6, type: 'system', title: 'Certificate Issued', body: 'Your certificate for "Food Drive Packaging" with Lagos Food Bank has been issued and is ready to share.', time: '5 days ago', unread: false, tab: 'system' },
-];
-
 const iconConfig = {
   application: { bg: 'var(--teal-50)', color: 'var(--teal-600)', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> },
   badge:       { bg: 'var(--purple-50)', color: 'var(--purple-600)', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 15V3m0 12l-4-4m4 4l4-4M2 17l.621 2.485A2 2 0 0 0 4.561 21h14.878a2 2 0 0 0 1.94-1.515L22 17"/></svg> },
@@ -30,19 +23,89 @@ const iconConfig = {
   system:      { bg: 'var(--purple-50)', color: 'var(--purple-600)', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg> },
 };
 
+const formatTime = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+};
+
 const Notifications: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>('all');
-  const [dismissed, setDismissed] = useState<number[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (!user) return;
+    const fetchNotifications = async () => {
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (data && !error) {
+        const formatted = data.map((n: any): Notification => {
+          let title = 'Notification';
+          let body = 'You have a new notification';
+          let type: 'application' | 'badge' | 'system' | 'reminder' = 'system';
+          let tab: 'applications' | 'system' = 'system';
+
+          if (n.type === 'application_accepted') {
+            title = 'Application Approved';
+            body = 'Your gig application has been approved.';
+            type = 'application';
+            tab = 'applications';
+          } else if (n.type === 'application_declined') {
+            title = 'Application Declined';
+            body = 'Your gig application was declined.';
+            type = 'application';
+            tab = 'applications';
+          } else if (n.type === 'new_message') {
+            title = 'New Message';
+            body = 'You received a new message.';
+            type = 'system';
+            tab = 'system';
+          } else if (n.type && n.type.includes('application')) {
+            title = 'Application Update';
+            body = 'There is an update to your application.';
+            type = 'application';
+            tab = 'applications';
+          }
+
+          return {
+            id: n.id,
+            type,
+            title,
+            body,
+            time: formatTime(n.created_at),
+            unread: !n.is_read,
+            tab
+          };
+        });
+        setNotifications(formatted);
+      }
+    };
+    fetchNotifications();
+  }, [user]);
+
+  const markAllRead = async () => {
+    if (!user) return;
+    setNotifications(prev => prev.map(n => ({ ...n, unread: false })));
+    await supabase.from('notifications').update({ is_read: true }).eq('user_id', user.id).eq('is_read', false);
+  };
+
+  const dismissNotification = async (id: string) => {
+    setNotifications(prev => prev.filter(n => n.id !== id));
+    await supabase.from('notifications').update({ is_read: true }).eq('id', id);
+  };
 
   const tabCounts = {
-    all: notifications.filter(n => !dismissed.includes(n.id)).length,
-    unread: notifications.filter(n => n.unread && !dismissed.includes(n.id)).length,
-    applications: notifications.filter(n => n.tab === 'applications' && !dismissed.includes(n.id)).length,
-    system: notifications.filter(n => n.tab === 'system' && !dismissed.includes(n.id)).length,
+    all: notifications.length,
+    unread: notifications.filter(n => n.unread).length,
+    applications: notifications.filter(n => n.tab === 'applications').length,
+    system: notifications.filter(n => n.tab === 'system').length,
   };
 
   const filtered = notifications.filter(n => {
-    if (dismissed.includes(n.id)) return false;
     if (activeTab === 'all') return true;
     if (activeTab === 'unread') return n.unread;
     return n.tab === activeTab;
@@ -60,7 +123,7 @@ const Notifications: React.FC = () => {
             )}
           </div>
           <button
-            onClick={() => setDismissed(notifications.map(n => n.id))}
+            onClick={markAllRead}
             className="notifications-mark-read"
           >
             Mark all read
@@ -96,7 +159,7 @@ const Notifications: React.FC = () => {
               </motion.div>
             ) : (
               filtered.map((n, i) => {
-                const icon = iconConfig[n.type];
+                const icon = iconConfig[n.type] || iconConfig['system'];
                 return (
                   <motion.div
                     key={n.id}
@@ -125,7 +188,7 @@ const Notifications: React.FC = () => {
 
                     {/* Dismiss */}
                     <button
-                      onClick={() => setDismissed(prev => [...prev, n.id])}
+                      onClick={() => dismissNotification(n.id)}
                       title="Dismiss"
                       className="notification-dismiss"
                     >

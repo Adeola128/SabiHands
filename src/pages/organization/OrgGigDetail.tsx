@@ -48,7 +48,12 @@ const OrgGigDetail: React.FC = () => {
         .eq('id', id)
         .single();
         
-      if (gigData) setGig(gigData);
+      if (gigData) {
+        if (gigData.status === 'published' && gigData.date_end && new Date(gigData.date_end) < new Date()) {
+          gigData.status = 'completed';
+        }
+        setGig(gigData);
+      }
 
       const { data: appsData } = await supabase
         .from('applications')
@@ -156,7 +161,7 @@ const OrgGigDetail: React.FC = () => {
         <div className="dash-card" style={{ marginBottom: '24px' }}>
           <div className="dash-card-padding">
             <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--ink)', marginBottom: '14px' }}>About this Gig</h2>
-            <p style={{ fontSize: '15px', color: 'var(--body)', lineHeight: 1.7, marginBottom: '16px' }}>{gig.description}</p>
+            <p style={{ fontSize: '15px', color: 'var(--body)', lineHeight: 1.7, marginBottom: '16px', whiteSpace: 'pre-wrap' }}>{gig.description}</p>
           </div>
         </div>
 

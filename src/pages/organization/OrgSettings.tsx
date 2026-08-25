@@ -45,7 +45,7 @@ const OrgSettings: React.FC = () => {
           bio: data.bio || '',
           org_type: data.org_type || '',
           website: data.website || '',
-          contact_email: data.contact_email || '',
+          contact_email: data.contact_email || user.email || '',
           contact_phone: data.contact_phone || '',
           location: data.location || '',
           logo_url: data.logo_url || '',

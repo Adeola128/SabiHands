@@ -513,7 +513,17 @@ const EditGig: React.FC = () => {
                   <button onClick={() => setStep(1)} style={{ padding: '14px 24px', backgroundColor: 'var(--white)', color: 'var(--body)', border: '1px solid #E4E1F5', borderRadius: '12px', fontSize: '15px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }} onMouseOver={e => e.currentTarget.style.backgroundColor = '#FAFAFC'} onMouseOut={e => e.currentTarget.style.backgroundColor = 'var(--white)'}>
                     ← Back
                   </button>
-                  <button onClick={() => setStep(3)} style={{ padding: '14px 40px', backgroundColor: 'var(--purple-600)', color: '#ffffff', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 6px 20px rgba(83,74,183,0.3)', transition: 'transform 0.2s, box-shadow 0.2s' }} onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(83,74,183,0.4)'; }} onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(83,74,183,0.3)'; }}>
+                  <button onClick={() => {
+                    if (form.type === 'physical' && form.remote) {
+                      alert('Physical gigs cannot be remote. Please uncheck "Remote Gig" or change the gig type to Skilled.');
+                      return;
+                    }
+                    if (!form.remote && !form.location.trim()) {
+                      alert('Please enter a location for this gig.');
+                      return;
+                    }
+                    setStep(3);
+                  }} style={{ padding: '14px 40px', backgroundColor: 'var(--purple-600)', color: '#ffffff', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 6px 20px rgba(83,74,183,0.3)', transition: 'transform 0.2s, box-shadow 0.2s' }} onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(83,74,183,0.4)'; }} onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(83,74,183,0.3)'; }}>
                     Next: Review →
                   </button>
                 </div>

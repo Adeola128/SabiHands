@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../contexts/AuthContext';
 import LoadingScreen from '../../components/LoadingScreen';
 import ShareGigButton from '../../components/ShareGigButton';
 import './PublicGigDetail.css';
 
 const PublicGigDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const { user } = useAuth();
   const [gig, setGig] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -59,6 +61,11 @@ const PublicGigDetail: React.FC = () => {
     );
   }
 
+  // Redirect to slug URL if accessed via UUID and slug exists
+  if (gig.slug && id !== gig.slug) {
+    return <Navigate to={`/gig/${gig.slug}`} replace />;
+  }
+
   const gigImageUrl = gig.image_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(gig.title)}&background=random&size=800`;
   const urlSlug = gig.slug || gig.id;
   const canonicalUrl = `${window.location.origin}/gig/${urlSlug}`;
@@ -83,7 +90,7 @@ const PublicGigDetail: React.FC = () => {
               "@context": "https://schema.org/",
               "@type": "JobPosting",
               "title": ${JSON.stringify(gig.title)},
-              "description": ${JSON.stringify(gig.description)},
+              "description": ${JSON.stringify(gig.description ? gig.description.replace(/\n/g, '<br>') : '')},
               "identifier": {
                 "@type": "PropertyValue",
                 "name": ${JSON.stringify(gig.organizations?.name || 'Ralvo')},
@@ -110,15 +117,27 @@ const PublicGigDetail: React.FC = () => {
                 "name": "Nigeria"
               }
               ${gig.location === 'Remote' ? ',"jobLocationType": "TELECOMMUTE"' : ''}
+              ${gig.skills_required && gig.skills_required.length > 0 ? `,"skills": ${JSON.stringify(gig.skills_required.join(', '))}` : ''}
+              ${gig.volunteers_needed ? `,"totalJobOpenings": ${gig.volunteers_needed}` : ''}
               ${gig.date_end ? `,"validThrough": "${gig.date_end}"` : ''}
             }
           `}
         </script>
       </Helmet>
       
+      {/* ── BREADCRUMBS ── */}
+      <nav aria-label="breadcrumb" className="gig-breadcrumbs" style={{ padding: '24px 0 0 24px', fontSize: '14px', color: 'var(--muted)', display: 'flex', gap: '8px', alignItems: 'center' }}>
+        <Link to="/" style={{ color: 'var(--purple-600)', textDecoration: 'none', fontWeight: 600 }}>Home</Link>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+        <Link to="/opportunities" style={{ color: 'var(--purple-600)', textDecoration: 'none', fontWeight: 600 }}>Opportunities</Link>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+        <span style={{ color: 'var(--ink)' }}>{gig.title}</span>
+      </nav>
+
       {/* ── HERO SECTION ── */}
       <motion.div 
         className="gig-hero-card"
+        style={{ marginTop: '16px' }}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -128,7 +147,9 @@ const PublicGigDetail: React.FC = () => {
           <div className="gig-hero-tag">
             {gig.type === 'skilled' ? '✨ Skilled Role' : '🤝 Physical Event Support'}
           </div>
-          <h1 className="gig-hero-title">{gig.title}</h1>
+          <h1 className="gig-hero-title">
+            {gig.title} Volunteer Opportunity {gig.location === 'Remote' ? 'Remote' : `in ${gig.location || 'Nigeria'}`}
+          </h1>
           <div className="gig-hero-meta">
             <div className="gig-hero-meta-item">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="9" width="18" height="13" rx="2"/><path d="M8 9V5a2 2 0 0 1 4 0v4"/></svg>
@@ -180,6 +201,18 @@ const PublicGigDetail: React.FC = () => {
                 <svg className="gig-req-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                 <span>Upon completion, volunteers will receive a verified <strong>Certificate of Completion</strong>.</span>
               </li>
+              {gig.skills_required && gig.skills_required.length > 0 && (
+                <li className="gig-req-item">
+                  <svg className="gig-req-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  <span><strong>Skills Required:</strong> {gig.skills_required.join(', ')}</span>
+                </li>
+              )}
+              {gig.volunteers_needed && (
+                <li className="gig-req-item">
+                  <svg className="gig-req-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  <span><strong>Capacity:</strong> Looking for {gig.volunteers_needed} volunteer(s).</span>
+                </li>
+              )}
             </ul>
           </div>
 
@@ -209,7 +242,7 @@ const PublicGigDetail: React.FC = () => {
               </div>
             </div>
 
-            <Link to="/signup" className="gig-apply-btn">
+            <Link to={user ? `/dashboard/volunteer/gigs/${gig.id}/apply` : `/signup?gig=${gig.id}`} className="gig-apply-btn">
               Apply Now
             </Link>
             
@@ -218,7 +251,7 @@ const PublicGigDetail: React.FC = () => {
             </div>
             
             <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>
-              Already have an account? <Link to="/login" style={{ color: 'white', fontWeight: 600, textDecoration: 'underline' }}>Log In</Link>
+              Already have an account? <Link to={`/login?gig=${gig.id}`} style={{ color: 'white', fontWeight: 600, textDecoration: 'underline' }}>Log In</Link>
             </div>
           </div>
 

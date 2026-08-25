@@ -75,7 +75,7 @@ const PublicVolunteerProfile: React.FC = () => {
 
         // Fetch completed gigs
         const { data: applications } = await supabase
-          .from('gig_applications')
+          .from('applications')
           .select('id, status, gigs(duration_hours)')
           .eq('volunteer_id', actualId)
           .in('status', ['accepted', 'completed', 'certified']);

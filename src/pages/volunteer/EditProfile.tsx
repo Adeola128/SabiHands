@@ -14,6 +14,8 @@ const EditProfile: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
+  const [uploadingResume, setUploadingResume] = useState(false);
+  const [skillInput, setSkillInput] = useState('');
 
   // Form State
   const [profile, setProfile] = useState({
@@ -22,12 +24,19 @@ const EditProfile: React.FC = () => {
     location: '',
     phone: '',
     bio: '',
-    skills: '', // We'll keep this as a comma-separated string for editing
-    interests: '', // We'll keep this as a comma-separated string for editing
+    motivation: '',
+    education: '',
+    resume_url: '',
+    skills: [] as string[],
+    interests: '',
     linkedin_url: '',
     portfolio_url: '',
     avatar_url: '',
-    cover_url: ''
+    cover_url: '',
+    pref_causes: '',
+    pref_gig_type: 'any',
+    pref_work_mode: 'any',
+    pref_availability: 'any'
   });
 
   useEffect(() => {
@@ -47,12 +56,19 @@ const EditProfile: React.FC = () => {
           location: data.location || '',
           phone: data.phone || '',
           bio: data.bio || '',
-          skills: Array.isArray(data.skills) ? data.skills.join(', ') : (data.skills || ''),
+          motivation: data.motivation || '',
+          education: data.education || '',
+          resume_url: data.resume_url || '',
+          skills: Array.isArray(data.skills) ? data.skills : (typeof data.skills === 'string' ? data.skills.split(',').map((s: string) => s.trim()).filter(Boolean) : []),
           interests: Array.isArray(data.interests) ? data.interests.join(', ') : (data.interests || ''),
           linkedin_url: data.linkedin_url || '',
           portfolio_url: data.portfolio_url || '',
           avatar_url: data.avatar_url || '',
-          cover_url: data.cover_url || ''
+          cover_url: data.cover_url || '',
+          pref_causes: Array.isArray(data.pref_causes) ? data.pref_causes.join(', ') : (data.pref_causes || ''),
+          pref_gig_type: data.pref_gig_type || 'any',
+          pref_work_mode: data.pref_work_mode || 'any',
+          pref_availability: data.pref_availability || 'any'
         });
       } else {
         // If no profile exists, create one from user metadata (onboarding data)
@@ -87,12 +103,19 @@ const EditProfile: React.FC = () => {
       location: profile.location,
       phone: profile.phone,
       bio: profile.bio,
-      skills: typeof profile.skills === 'string' ? profile.skills.split(',').map(s => s.trim()).filter(Boolean) : profile.skills,
+      motivation: profile.motivation,
+      education: profile.education,
+      resume_url: profile.resume_url,
+      skills: profile.skills,
       interests: typeof profile.interests === 'string' ? profile.interests.split(',').map(s => s.trim()).filter(Boolean) : profile.interests,
       linkedin_url: profile.linkedin_url,
       portfolio_url: profile.portfolio_url,
       avatar_url: profile.avatar_url,
       cover_url: profile.cover_url,
+      pref_causes: typeof profile.pref_causes === 'string' ? profile.pref_causes.split(',').map(s => s.trim()).filter(Boolean) : profile.pref_causes,
+      pref_gig_type: profile.pref_gig_type,
+      pref_work_mode: profile.pref_work_mode,
+      pref_availability: profile.pref_availability,
     };
 
     const { error } = await supabase
@@ -277,19 +300,71 @@ const EditProfile: React.FC = () => {
                 </div>
 
                 <div className="premium-form-group" style={{ marginBottom: '24px' }}>
-                  <label className="premium-label">About Me (Bio)</label>
-                  <textarea name="bio" className="premium-input" value={profile.bio} onChange={handleChange} rows={5} placeholder="Tell organizations a bit about yourself and what you are passionate about..."></textarea>
+                  <label className="premium-label">Professional Background</label>
+                  <textarea name="bio" className="premium-input" value={profile.bio} onChange={handleChange} rows={4} placeholder="Describe your career history, expertise, and what you do best..."></textarea>
                 </div>
 
                 <div className="grid-2col" style={{ gap: '24px', marginBottom: '24px' }}>
                   <div className="premium-form-group">
-                    <label className="premium-label">Skills (comma separated)</label>
-                    <input type="text" name="skills" className="premium-input" value={profile.skills} onChange={handleChange} placeholder="e.g. Photography, Logistics, Web Design" />
+                    <label className="premium-label">Why I Volunteer (Motivation)</label>
+                    <textarea name="motivation" className="premium-input" value={profile.motivation} onChange={handleChange} rows={3} placeholder="What drives you to give back?"></textarea>
                   </div>
                   <div className="premium-form-group">
-                    <label className="premium-label">Causes I Care About (comma separated)</label>
-                    <input type="text" name="interests" className="premium-input" value={profile.interests} onChange={handleChange} placeholder="e.g. Education, Environment, Health" />
+                    <label className="premium-label">Education / Qualifications</label>
+                    <textarea name="education" className="premium-input" value={profile.education} onChange={handleChange} rows={3} placeholder="Your relevant degrees, certifications, or training..."></textarea>
                   </div>
+                </div>
+
+                <div className="grid-2col" style={{ gap: '24px', marginBottom: '24px' }}>
+                  <div className="premium-form-group">
+                    <label className="premium-label">Skills</label>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
+                      {profile.skills.map((skill: string) => (
+                        <span key={skill} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '4px 10px', backgroundColor: 'var(--purple-100)', color: 'var(--purple-700)', borderRadius: '99px', fontSize: '13px', fontWeight: 600 }}>
+                          {skill}
+                          <button type="button" onClick={() => setProfile(prev => ({ ...prev, skills: prev.skills.filter(s => s !== skill) }))} style={{ background: 'none', border: 'none', color: 'var(--purple-500)', cursor: 'pointer', padding: 0, display: 'flex' }}>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                    <input type="text" className="premium-input" value={skillInput} onChange={e => setSkillInput(e.target.value)} onKeyDown={(e) => {
+                      if (e.key === 'Enter' && skillInput.trim()) {
+                        e.preventDefault();
+                        if (!profile.skills.includes(skillInput.trim())) setProfile(prev => ({ ...prev, skills: [...prev.skills, skillInput.trim()] }));
+                        setSkillInput('');
+                      }
+                    }} placeholder="Type a skill and press Enter..." />
+                  </div>
+                  
+                  <div className="premium-form-group">
+                    <label className="premium-label">Resume Upload (PDF/DOC)</label>
+                    {profile.resume_url ? (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', border: '1px solid #E4E1F5', borderRadius: '8px', backgroundColor: 'var(--white)' }}>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--purple-600)" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        <a href={profile.resume_url} target="_blank" rel="noreferrer" style={{ fontSize: '13px', fontWeight: 600, color: 'var(--purple-600)', textDecoration: 'none', flex: 1 }}>View Uploaded Resume</a>
+                        <button type="button" onClick={() => setProfile(prev => ({ ...prev, resume_url: '' }))} style={{ background: 'none', border: 'none', color: 'var(--muted)', cursor: 'pointer', fontWeight: 500, fontSize: '13px' }}>Remove</button>
+                      </div>
+                    ) : (
+                      <label style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '100%', padding: '10px 16px', backgroundColor: 'var(--white)', border: '1.5px dashed #D1CEDF', borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: 'pointer', color: 'var(--ink)' }}>
+                        {uploadingResume ? 'Uploading...' : 'Upload Resume'}
+                        <input type="file" accept=".pdf,.doc,.docx" style={{ display: 'none' }} onChange={async (e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            setUploadingResume(true);
+                            try {
+                              const url = await uploadImage(e.target.files[0], 'volunteer-resumes');
+                              setProfile(prev => ({ ...prev, resume_url: url }));
+                            } catch (err: any) { toast.error(err.message); } finally { setUploadingResume(false); }
+                          }
+                        }} disabled={uploadingResume} />
+                      </label>
+                    )}
+                  </div>
+                </div>
+
+                <div className="premium-form-group" style={{ marginBottom: '24px' }}>
+                  <label className="premium-label">Causes I Care About (comma separated)</label>
+                  <input type="text" name="interests" className="premium-input" value={profile.interests} onChange={handleChange} placeholder="e.g. Education, Environment, Health" />
                 </div>
 
                 <div className="grid-2col" style={{ gap: '24px', marginBottom: '40px' }}>
@@ -314,8 +389,51 @@ const EditProfile: React.FC = () => {
 
           {activeTab === 'preferences' && (
             <div className="vol-card">
-              <h2 style={{ fontSize: '20px', color: 'var(--ink)', marginBottom: '32px', fontFamily: 'var(--display)' }}>Preferences</h2>
-              <p style={{ color: 'var(--body)' }}>Notification and matching preferences coming soon.</p>
+              <h2 style={{ fontSize: '20px', color: 'var(--ink)', marginBottom: '8px', fontFamily: 'var(--display)' }}>Matching Preferences</h2>
+              <p style={{ color: 'var(--body)', marginBottom: '32px', fontSize: '15px' }}>Help us recommend the best opportunities for you.</p>
+              
+              <form onSubmit={handleSubmit}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px' }}>
+                  <div className="field">
+                    <label className="premium-label">Causes you care about (comma separated)</label>
+                    <input type="text" name="pref_causes" className="premium-input" value={profile.pref_causes} onChange={handleChange} placeholder="e.g. Education, Health, Environment" />
+                  </div>
+                  
+                  <div className="field">
+                    <label className="premium-label">Preferred Gig Type</label>
+                    <select name="pref_gig_type" className="premium-input" value={profile.pref_gig_type} onChange={handleChange}>
+                      <option value="any">Open to anything</option>
+                      <option value="skilled">Skilled roles only</option>
+                      <option value="physical">Physical/Event roles only</option>
+                    </select>
+                  </div>
+                  
+                  <div className="field">
+                    <label className="premium-label">Preferred Work Mode</label>
+                    <select name="pref_work_mode" className="premium-input" value={profile.pref_work_mode} onChange={handleChange}>
+                      <option value="any">Any (Remote or On-site)</option>
+                      <option value="remote">Remote</option>
+                      <option value="hybrid">Hybrid</option>
+                      <option value="in_person">On-site</option>
+                    </select>
+                  </div>
+                  
+                  <div className="field">
+                    <label className="premium-label">Availability</label>
+                    <select name="pref_availability" className="premium-input" value={profile.pref_availability} onChange={handleChange}>
+                      <option value="any">Flexible</option>
+                      <option value="weekdays">Weekdays</option>
+                      <option value="weekends">Weekends</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div style={{ marginTop: '32px', display: 'flex', justifyContent: 'flex-end' }}>
+                  <button type="submit" className="btn-primary" disabled={saving}>
+                    {saving ? 'Saving...' : 'Save Preferences'}
+                  </button>
+                </div>
+              </form>
             </div>
           )}
 

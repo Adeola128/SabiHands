@@ -14,6 +14,10 @@ const Signup: React.FC = () => {
     if (urlRole === 'volunteer' || urlRole === 'org') {
       setRole(urlRole);
     }
+    const gigId = searchParams.get('gig');
+    if (gigId) {
+      localStorage.setItem('pendingGigApply', gigId);
+    }
   }, [searchParams]);
 
   const [showPassword, setShowPassword] = useState(false);
@@ -176,7 +180,7 @@ const Signup: React.FC = () => {
                 <path d="M19 12H5M12 19l-7-7 7-7" />
               </svg> Back to home
             </Link>
-            <span className="login-hint">Have an account? <Link to="/login">Log in</Link></span>
+            <span className="login-hint">Have an account? <Link to={searchParams.get('gig') ? `/login?gig=${searchParams.get('gig')}` : "/login"}>Log in</Link></span>
           </div>
 
           <div className="auth-eyebrow">Create your account</div>

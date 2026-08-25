@@ -44,7 +44,7 @@ const OrganizationProfile: React.FC = () => {
             .from('applications')
             .select('volunteer_id, gigs!inner(organization_id)')
             .eq('gigs.organization_id', data.id)
-            .eq('status', 'accepted');
+            .in('status', ['accepted', 'completed', 'certified']);
             
           if (appsData) {
             volunteersCount = new Set(appsData.map(a => a.volunteer_id)).size;

@@ -76,7 +76,14 @@ const DashboardRedirect: React.FC = () => {
           if (!metadataRole) {
               await supabase.auth.updateUser({ data: { role: 'volunteer' } });
           }
-          navigate('/dashboard/volunteer', { replace: true });
+          
+          const pendingGigId = localStorage.getItem('pendingGigApply');
+          if (pendingGigId) {
+            localStorage.removeItem('pendingGigApply');
+            navigate(`/dashboard/volunteer/gigs/${pendingGigId}/apply`, { replace: true });
+          } else {
+            navigate('/dashboard/volunteer', { replace: true });
+          }
         }
         
       } catch (err) {

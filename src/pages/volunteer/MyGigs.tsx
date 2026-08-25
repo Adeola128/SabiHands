@@ -258,7 +258,7 @@ const MyGigs: React.FC = () => {
                         <div style={{ fontSize: '12px', color: 'var(--body)', marginTop: '6px' }}>{gig.date} • {gig.time}</div>
                       </div>
                     </div>
-                    <p style={{ color: 'var(--body)', fontSize: '14px', margin: '0 0 16px 0', lineHeight: 1.6, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}>{gig.description}</p>
+                    <p style={{ color: 'var(--body)', fontSize: '14px', margin: '0 0 16px 0', lineHeight: 1.6, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'pre-wrap' }}>{gig.description}</p>
                     <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                       {gig.status === 'active' && gig.type !== 'skilled' && (
                         <Link to="/dashboard/volunteer/check-in" className="gig-action" style={{ background: 'var(--purple-600)', color: 'white', border: 'none', boxShadow: '0 4px 12px rgba(124,58,237,0.25)', textDecoration: 'none', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -286,8 +286,39 @@ const MyGigs: React.FC = () => {
                 </div>
               ))
             ) : (
-              <div style={{ padding: '40px 24px', textAlign: 'center', color: 'var(--muted)' }}>
-                You don't have any upcoming gigs yet. <Link to="/dashboard/volunteer/gigs" style={{ color: 'var(--purple-600)' }}>Find one today!</Link>
+              <div style={{ padding: '60px 24px', textAlign: 'center', backgroundColor: 'var(--white)', borderRadius: '16px', border: '1px solid #E4E1F5', margin: '24px 0' }}>
+                <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: 'var(--purple-50)', color: 'var(--purple-600)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                </div>
+                <h3 style={{ fontSize: '24px', color: 'var(--ink)', fontFamily: 'var(--display)', marginBottom: '12px', fontWeight: 800 }}>Ready to Make an Impact?</h3>
+                <p style={{ color: 'var(--body)', fontSize: '16px', maxWidth: '480px', margin: '0 auto 40px', lineHeight: 1.6 }}>You don't have any active gigs yet. Here is how your volunteering journey will unfold:</p>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px', textAlign: 'left', maxWidth: '800px', margin: '0 auto 48px' }}>
+                  <div style={{ padding: '24px', backgroundColor: '#F8FAFC', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                    <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--purple-600)', marginBottom: '8px' }}>Step 1</div>
+                    <div style={{ fontSize: '16px', fontWeight: 700, color: 'var(--ink)', marginBottom: '8px' }}>Apply</div>
+                    <div style={{ fontSize: '14px', color: 'var(--body)', lineHeight: 1.5 }}>Browse our gig board and apply to opportunities that match your skills.</div>
+                  </div>
+                  <div style={{ padding: '24px', backgroundColor: '#F8FAFC', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                    <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--teal-600)', marginBottom: '8px' }}>Step 2</div>
+                    <div style={{ fontSize: '16px', fontWeight: 700, color: 'var(--ink)', marginBottom: '8px' }}>Get Accepted</div>
+                    <div style={{ fontSize: '14px', color: 'var(--body)', lineHeight: 1.5 }}>Organizations will review your profile and accept your application.</div>
+                  </div>
+                  <div style={{ padding: '24px', backgroundColor: '#F8FAFC', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                    <div style={{ fontSize: '14px', fontWeight: 700, color: '#EA580C', marginBottom: '8px' }}>Step 3</div>
+                    <div style={{ fontSize: '16px', fontWeight: 700, color: 'var(--ink)', marginBottom: '8px' }}>Check-in & Submit</div>
+                    <div style={{ fontSize: '14px', color: 'var(--body)', lineHeight: 1.5 }}>Check-in to physical gigs or submit your work for remote roles.</div>
+                  </div>
+                  <div style={{ padding: '24px', backgroundColor: '#F8FAFC', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                    <div style={{ fontSize: '14px', fontWeight: 700, color: '#F59E0B', marginBottom: '8px' }}>Step 4</div>
+                    <div style={{ fontSize: '16px', fontWeight: 700, color: 'var(--ink)', marginBottom: '8px' }}>Earn Certificates</div>
+                    <div style={{ fontSize: '14px', color: 'var(--body)', lineHeight: 1.5 }}>Get recognized for your impact and build your volunteer resume.</div>
+                  </div>
+                </div>
+
+                <Link to="/dashboard/volunteer/gigs" className="btn-primary" style={{ display: 'inline-flex', padding: '12px 32px', fontSize: '16px' }}>
+                  Find Gigs Now
+                </Link>
               </div>
             )
           ) : (
@@ -309,7 +340,7 @@ const MyGigs: React.FC = () => {
                         <div style={{ fontSize: '12px', color: 'var(--body)', marginTop: '6px' }}>{gig.date}</div>
                       </div>
                     </div>
-                    <p style={{ color: 'var(--body)', fontSize: '14px', margin: '0 0 16px 0', lineHeight: 1.6, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}>{gig.description}</p>
+                    <p style={{ color: 'var(--body)', fontSize: '14px', margin: '0 0 16px 0', lineHeight: 1.6, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'pre-wrap' }}>{gig.description}</p>
                     <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                       {gig.certCode && (
                         <Link to={`/dashboard/volunteer/certificates/${gig.certCode}`} className="gig-action" style={{ background: 'var(--purple-600)', color: 'white', border: 'none', boxShadow: '0 4px 12px rgba(124,58,237,0.25)', textDecoration: 'none', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>

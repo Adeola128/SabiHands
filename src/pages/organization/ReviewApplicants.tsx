@@ -79,10 +79,11 @@ const ReviewApplicants: React.FC = () => {
     if (!user) return;
     setIsMessaging(volunteerId);
     try {
-      // Check if conversation already exists
+      // Check if conversation already exists for this gig
       const { data: existing } = await supabase
         .from('conversations')
         .select('id')
+        .eq('gig_id', id)
         .or(`and(user1_id.eq.${user.id},user2_id.eq.${volunteerId}),and(user1_id.eq.${volunteerId},user2_id.eq.${user.id})`)
         .limit(1);
 
@@ -94,7 +95,8 @@ const ReviewApplicants: React.FC = () => {
           .from('conversations')
           .insert({
             user1_id: user.id,
-            user2_id: volunteerId
+            user2_id: volunteerId,
+            gig_id: id
           });
         
         if (error) throw error;

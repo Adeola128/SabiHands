@@ -27,60 +27,65 @@ import OrganizationOnboarding from './pages/auth/OrganizationOnboarding';
 import OrgVerificationPending from './pages/auth/OrgVerificationPending';
 import JoinTeam from './pages/auth/JoinTeam';
 
-import DashboardLayout from './layouts/DashboardLayout';
-import DashboardRedirect from './components/DashboardRedirect';
-import VolunteerDashboard from './pages/volunteer/VolunteerDashboard';
-import BrowseGigs from './pages/volunteer/BrowseGigs';
-import MyApplications from './pages/volunteer/MyApplications';
-import VolunteerInvitations from './pages/volunteer/VolunteerInvitations';
-import ApplyGig from './pages/volunteer/ApplyGig';
-import GigDetail from './pages/volunteer/GigDetail';
-import MyGigs from './pages/volunteer/MyGigs';
-import GigCheckIn from './pages/volunteer/GigCheckIn';
-import MyCertificates from './pages/volunteer/MyCertificates';
-import CertificateDetail from './pages/volunteer/CertificateDetail';
-import VolunteerProfile from './pages/volunteer/VolunteerProfile';
-import EditProfile from './pages/volunteer/EditProfile';
-import SubmitWork from './pages/volunteer/SubmitWork';
-import OrgDashboard from './pages/organization/OrgDashboard';
-import ManageGigs from './pages/organization/ManageGigs';
-import PostGig from './pages/organization/PostGig';
-import EditGig from './pages/organization/EditGig';
-import ReviewSubmissions from './pages/organization/ReviewSubmissions';
-import OrgGigDetail from './pages/organization/OrgGigDetail';
-import ReviewApplicants from './pages/organization/ReviewApplicants';
-import VolunteerDetailOrg from './pages/organization/VolunteerDetailOrg';
-import MarkAttendance from './pages/organization/MarkAttendance';
-import IssueCertificates from './pages/organization/IssueCertificates';
-import OrgSettings from './pages/organization/OrgSettings';
-import TeamMembers from './pages/organization/TeamMembers';
-import ImpactDashboard from './pages/organization/ImpactDashboard';
-import Notifications from './pages/Notifications';
-import Messages from './pages/Messages';
-import OrganizationProfile from './pages/organization/OrganizationProfile';
+const DashboardLayout = React.lazy(() => import('./layouts/DashboardLayout'));
+const DashboardRedirect = React.lazy(() => import('./components/DashboardRedirect'));
+const VolunteerDashboard = React.lazy(() => import('./pages/volunteer/VolunteerDashboard'));
+const BrowseGigs = React.lazy(() => import('./pages/volunteer/BrowseGigs'));
+const MyApplications = React.lazy(() => import('./pages/volunteer/MyApplications'));
+const VolunteerInvitations = React.lazy(() => import('./pages/volunteer/VolunteerInvitations'));
+const ApplyGig = React.lazy(() => import('./pages/volunteer/ApplyGig'));
+const GigDetail = React.lazy(() => import('./pages/volunteer/GigDetail'));
+const MyGigs = React.lazy(() => import('./pages/volunteer/MyGigs'));
+const GigCheckIn = React.lazy(() => import('./pages/volunteer/GigCheckIn'));
+const MyCertificates = React.lazy(() => import('./pages/volunteer/MyCertificates'));
+const CertificateDetail = React.lazy(() => import('./pages/volunteer/CertificateDetail'));
+const VolunteerProfile = React.lazy(() => import('./pages/volunteer/VolunteerProfile'));
+const EditProfile = React.lazy(() => import('./pages/volunteer/EditProfile'));
+const SubmitWork = React.lazy(() => import('./pages/volunteer/SubmitWork'));
+const OrgDashboard = React.lazy(() => import('./pages/organization/OrgDashboard'));
+const ManageGigs = React.lazy(() => import('./pages/organization/ManageGigs'));
+const PostGig = React.lazy(() => import('./pages/organization/PostGig'));
+const EditGig = React.lazy(() => import('./pages/organization/EditGig'));
+const ReviewSubmissions = React.lazy(() => import('./pages/organization/ReviewSubmissions'));
+const OrgGigDetail = React.lazy(() => import('./pages/organization/OrgGigDetail'));
+const ReviewApplicants = React.lazy(() => import('./pages/organization/ReviewApplicants'));
+const VolunteerDetailOrg = React.lazy(() => import('./pages/organization/VolunteerDetailOrg'));
+const MarkAttendance = React.lazy(() => import('./pages/organization/MarkAttendance'));
+const IssueCertificates = React.lazy(() => import('./pages/organization/IssueCertificates'));
+const OrgSettings = React.lazy(() => import('./pages/organization/OrgSettings'));
+const TeamMembers = React.lazy(() => import('./pages/organization/TeamMembers'));
+const ImpactDashboard = React.lazy(() => import('./pages/organization/ImpactDashboard'));
+const Notifications = React.lazy(() => import('./pages/Notifications'));
+const Messages = React.lazy(() => import('./pages/Messages'));
+const OrganizationProfile = React.lazy(() => import('./pages/organization/OrganizationProfile'));
 import PublicVolunteerProfile from './pages/public/PublicVolunteerProfile';
 import PublicOrganizationProfile from './pages/public/PublicOrganizationProfile';
 import PublicGigDetail from './pages/public/PublicGigDetail';
+import ProgrammaticLandingPage from './pages/public/ProgrammaticLandingPage';
+import GuidesDirectory from './pages/public/guides/GuidesDirectory';
+import VolunteerNoExperience from './pages/public/guides/VolunteerNoExperience';
+import VerifyNGO from './pages/public/guides/VerifyNGO';
 
 import AdminLogin from './pages/auth/AdminLogin';
-import AdminLayout from './layouts/AdminLayout';
-import AdminDashboard from './pages/admin/AdminDashboard';
-import OrgVerificationQueue from './pages/admin/OrgVerificationQueue';
-import UserManagement from './pages/admin/UserManagement';
-import GigModeration from './pages/admin/GigModeration';
-import CertificateRegistry from './pages/admin/CertificateRegistry';
-import SupportDisputes from './pages/admin/SupportDisputes';
-import ReportsAnalytics from './pages/admin/ReportsAnalytics';
+const AdminLayout = React.lazy(() => import('./layouts/AdminLayout'));
+const AdminDashboard = React.lazy(() => import('./pages/admin/AdminDashboard'));
+const OrgVerificationQueue = React.lazy(() => import('./pages/admin/OrgVerificationQueue'));
+const UserManagement = React.lazy(() => import('./pages/admin/UserManagement'));
+const GigModeration = React.lazy(() => import('./pages/admin/GigModeration'));
+const CertificateRegistry = React.lazy(() => import('./pages/admin/CertificateRegistry'));
+const SupportDisputes = React.lazy(() => import('./pages/admin/SupportDisputes'));
+const ReportsAnalytics = React.lazy(() => import('./pages/admin/ReportsAnalytics'));
 
 import PermissionDenied from './pages/system/PermissionDenied';
 import Maintenance from './pages/system/Maintenance';
 
-import SupportChatWidget from './components/SupportChatWidget';
+const SupportChatWidget = React.lazy(() => import('./components/SupportChatWidget'));
 
 const App: React.FC = () => {
   return (
     <ErrorBoundary>
       <BrowserRouter>
+        <React.Suspense fallback={<div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>Loading...</div>}>
         <Routes>
           <Route path="/" element={<MainLayout />} errorElement={<ErrorPage />}>
           <Route index element={<Home />} />
@@ -98,6 +103,21 @@ const App: React.FC = () => {
           <Route path="volunteer/:id" element={<PublicVolunteerProfile />} />
           <Route path="organization/:id" element={<PublicOrganizationProfile />} />
           <Route path="gig/:id" element={<PublicGigDetail />} />
+          
+          {/* Programmatic SEO Hubs */}
+          <Route path="volunteer-opportunities/nigeria" element={<ProgrammaticLandingPage type="nigeria" />} />
+          <Route path="volunteer-opportunities/ngo/nigeria" element={<ProgrammaticLandingPage type="ngo" />} />
+          <Route path="volunteer-opportunities/remote" element={<ProgrammaticLandingPage type="remote" />} />
+          <Route path="nysc-volunteer-opportunities" element={<ProgrammaticLandingPage type="graduate" />} />
+          <Route path="nysc-volunteer-opportunities" element={<ProgrammaticLandingPage type="graduate" />} />
+          <Route path="locations/:location/volunteer-opportunities" element={<ProgrammaticLandingPage type="location" />} />
+          <Route path="skills/:skill" element={<ProgrammaticLandingPage type="skill" />} />
+
+          {/* Practical Guides */}
+          <Route path="guides" element={<GuidesDirectory />} />
+          <Route path="guides/volunteer-in-nigeria-with-no-experience" element={<VolunteerNoExperience />} />
+          <Route path="guides/verify-ngo" element={<VerifyNGO />} />
+
           <Route path="*" element={<NotFound />} />
         </Route>
 
@@ -171,6 +191,7 @@ const App: React.FC = () => {
         <Route path="/403" element={<PermissionDenied />} />
         <Route path="/maintenance" element={<Maintenance />} />
       </Routes>
+        </React.Suspense>
       <Toaster 
         position="bottom-right" 
         toastOptions={{ 
@@ -178,7 +199,7 @@ const App: React.FC = () => {
           style: { borderRadius: '12px', padding: '16px', color: 'var(--ink)' }
         }} 
       />
-        <SupportChatWidget />
+        <React.Suspense fallback={null}><SupportChatWidget /></React.Suspense>
       </BrowserRouter>
     </ErrorBoundary>
   );

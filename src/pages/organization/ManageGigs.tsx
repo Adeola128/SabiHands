@@ -45,7 +45,13 @@ const ManageGigs: React.FC = () => {
         .order('date_start', { ascending: false });
 
       if (data) {
-        setGigs(data);
+        const parsedGigs = data.map(g => {
+          if (g.status === 'published' && g.date_end && new Date(g.date_end) < new Date()) {
+            return { ...g, status: 'completed' };
+          }
+          return g;
+        });
+        setGigs(parsedGigs);
       }
       setLoading(false);
     };
@@ -194,7 +200,7 @@ const ManageGigs: React.FC = () => {
                       <span className="tag status" style={{ backgroundColor: statusStyle[gig.status]?.bg || '#E4E1F5', color: statusStyle[gig.status]?.color || 'var(--body)' }}>
                         {statusStyle[gig.status]?.label || gig.status}
                       </span>
-                      <div style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '6px' }}>Created {new Date(gig.date_start).toLocaleDateString()}</div>
+                      <div style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '6px' }}>Created {new Date(gig.created_at).toLocaleDateString()}</div>
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>

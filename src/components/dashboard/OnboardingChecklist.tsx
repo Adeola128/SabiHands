@@ -44,7 +44,7 @@ const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({ organization,
       description: 'Collaborate with your colleagues on Ralvo.',
       link: '/dashboard/org/team',
       linkText: 'Invite Members',
-      isComplete: false // Assuming we prompt them anyway
+      isComplete: (stats?.teamMembers || 0) > 1
     }
   ];
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, Navigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import LoadingScreen from '../../components/LoadingScreen';
 import ShareGigButton from '../../components/ShareGigButton';
@@ -92,6 +92,11 @@ const PublicOrganizationProfile: React.FC = () => {
     );
   }
 
+  // Redirect to slug URL if accessed via UUID and slug exists
+  if (org.slug && id !== org.slug) {
+    return <Navigate to={`/org/${org.slug}`} replace />;
+  }
+
   const initials = org?.name?.substring(0, 2).toUpperCase() || 'OG';
 
   return (
@@ -102,8 +107,50 @@ const PublicOrganizationProfile: React.FC = () => {
         <meta property="og:title" content={`${org?.name || 'Organization'} &mdash; Ralvo`} />
         <meta property="og:description" content={`Check out volunteer opportunities with ${org?.name || 'this organization'} on Ralvo.`} />
         <meta property="og:image" content={org?.cover_url || org?.logo_url || "https://www.ralvo.com.ng/og-image.png"} />
+        <script type="application/ld+json">
+          {`
+            {
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "Organization",
+                  "@id": "https://www.ralvo.com.ng/organization/${org?.slug || org?.user_id}",
+                  "name": ${JSON.stringify(org?.name || 'Organization')},
+                  "url": "https://www.ralvo.com.ng/organization/${org?.slug || org?.user_id}",
+                  "logo": ${JSON.stringify(org?.logo_url || '')},
+                  "description": ${JSON.stringify(org?.bio || '')},
+                  "address": {
+                    "@type": "PostalAddress",
+                    "addressLocality": ${JSON.stringify(org?.location || '')},
+                    "addressCountry": "NG"
+                  }
+                  ${org?.website ? `,"sameAs": "${org.website}"` : ''}
+                },
+                {
+                  "@type": "ItemList",
+                  "itemListElement": [
+                    ${gigs.map((g, i) => `{
+                      "@type": "ListItem",
+                      "position": ${i + 1},
+                      "url": "https://www.ralvo.com.ng/gig/${g.slug || g.id}"
+                    }`).join(',\n                    ')}
+                  ]
+                }
+              ]
+            }
+          `}
+        </script>
       </Helmet>
       
+      {/* ── BREADCRUMBS ── */}
+      <nav aria-label="breadcrumb" className="public-breadcrumbs" style={{ padding: '0 0 24px 0', fontSize: '14px', color: 'var(--muted)', display: 'flex', gap: '8px', alignItems: 'center' }}>
+        <Link to="/" style={{ color: 'var(--purple-600)', textDecoration: 'none', fontWeight: 600 }}>Home</Link>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+        <Link to="/organizations" style={{ color: 'var(--purple-600)', textDecoration: 'none', fontWeight: 600 }}>Organizations</Link>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+        <span style={{ color: 'var(--ink)' }}>{org?.name}</span>
+      </nav>
+
       {/* ── HERO SECTION ── */}
       <div className="public-hero-card">
         {/* Cover Photo */}

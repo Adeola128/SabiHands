@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 
 import './Home.css';
+import { supabase } from '../lib/supabase';
 
 const fadeUpVariant: Variants = {
   hidden: { opacity: 0, y: 30 },
@@ -33,7 +34,12 @@ const scaleUpVariant: Variants = {
 };
 
 const Home: React.FC = () => {
+  const [volunteerCount, setVolunteerCount] = useState(10000);
+
   useEffect(() => {
+    supabase.from('volunteer_profiles').select('id', { count: 'exact', head: true }).then(({count}) => {
+      if (count !== null) setVolunteerCount(10000 + count);
+    });
     // Parallax logic for floating elements (if not reduced motion)
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (!prefersReduced) {
@@ -68,14 +74,30 @@ const Home: React.FC = () => {
           {`
             {
               "@context": "https://schema.org",
-              "@type": "WebSite",
-              "name": "Ralvo",
-              "url": "https://www.ralvo.com.ng/",
-              "potentialAction": {
-                "@type": "SearchAction",
-                "target": "https://www.ralvo.com.ng/volunteers?q={search_term_string}",
-                "query-input": "required name=search_term_string"
-              }
+              "@graph": [
+                {
+                  "@type": "WebSite",
+                  "name": "Ralvo",
+                  "url": "https://www.ralvo.com.ng/",
+                  "potentialAction": {
+                    "@type": "SearchAction",
+                    "target": "https://www.ralvo.com.ng/opportunities?q={search_term_string}",
+                    "query-input": "required name=search_term_string"
+                  }
+                },
+                {
+                  "@type": "Organization",
+                  "name": "Ralvo",
+                  "url": "https://www.ralvo.com.ng/",
+                  "logo": "https://www.ralvo.com.ng/logo.png",
+                  "description": "Ralvo connects NGOs with young volunteers in Lagos and across Nigeria.",
+                  "address": {
+                    "@type": "PostalAddress",
+                    "addressLocality": "Lagos",
+                    "addressCountry": "NG"
+                  }
+                }
+              ]
             }
           `}
         </script>
@@ -298,7 +320,7 @@ const Home: React.FC = () => {
                 Post a Gig as an NGO
               </Link>
             </div>
-            <p style={{ marginTop: '24px', fontSize: '14px', color: 'rgba(255, 255, 255, 0.5)' }}>100% free for volunteers. Join 10,000+ others in Lagos.</p>
+            <p style={{ marginTop: '24px', fontSize: '14px', color: 'rgba(255, 255, 255, 0.5)' }}>100% free for volunteers. Join {volunteerCount.toLocaleString()}+ others in Lagos.</p>
             <p style={{ marginTop: '24px', fontSize: '12px', color: 'rgba(255, 255, 255, 0.4)', maxWidth: '600px', margin: '24px auto 0 auto', lineHeight: '1.6' }}>
               <strong>About Ralvo:</strong> Ralvo is an application designed to connect verified non-governmental organizations (NGOs) with volunteers across Nigeria. By using our platform, volunteers can find physical and skilled opportunities, while NGOs can easily manage and issue completion certificates. We use authentication services (like Google OAuth) solely to verify user identity securely and ensure a trustworthy community environment.
             </p>

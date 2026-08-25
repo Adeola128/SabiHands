@@ -65,22 +65,20 @@ const IssueCertificates: React.FC = () => {
       const issuedVolunteerIds = new Set(existingCerts?.map(c => c.volunteer_id) || []);
 
       const { data: attendanceData } = await supabase
-        .from('attendance')
+        .from('applications')
         .select(`
           *,
-          applications!inner(
-            volunteer_id,
-            volunteer_profiles(full_name)
-          )
+          volunteer_profiles(full_name),
+          attendance!inner(id, attended)
         `)
-        .eq('applications.gig_id', id)
-        .eq('attended', true);
+        .eq('gig_id', id)
+        .eq('status', 'accepted')
+        .eq('attendance.attended', true);
 
       if (attendanceData) {
         // Filter out those who already have a certificate
-        const eligibleAttendees = attendanceData.filter(a => {
-          const application = Array.isArray(a.applications) ? a.applications[0] : a.applications;
-          return application?.volunteer_id && !issuedVolunteerIds.has(application.volunteer_id);
+        const eligibleAttendees = attendanceData.filter(app => {
+          return app.volunteer_id && !issuedVolunteerIds.has(app.volunteer_id);
         });
         
         setAttendees(eligibleAttendees);
@@ -90,25 +88,23 @@ const IssueCertificates: React.FC = () => {
         }
 
         const initialNames: Record<string, string> = {};
-        for (const a of eligibleAttendees) {
-          const application = Array.isArray(a.applications) ? a.applications[0] : a.applications;
-          const profiles = application?.volunteer_profiles;
+        for (const app of eligibleAttendees) {
+          const profiles = app.volunteer_profiles;
           const profile = Array.isArray(profiles) ? profiles[0] : profiles;
           let name = profile?.full_name;
           
-          if (!name && application?.volunteer_id) {
-            const { data: vp } = await supabase.from('volunteer_profiles').select('full_name').eq('user_id', application.volunteer_id).maybeSingle();
+          if (!name && app.volunteer_id) {
+            const { data: vp } = await supabase.from('volunteer_profiles').select('full_name').eq('user_id', app.volunteer_id).maybeSingle();
             if (vp?.full_name) name = vp.full_name;
           }
           
-          if (application?.volunteer_id) {
-            initialNames[application.volunteer_id] = name || 'Volunteer';
+          if (app.volunteer_id) {
+            initialNames[app.volunteer_id] = name || 'Volunteer';
           }
         }
         setNames(initialNames);
         if (eligibleAttendees.length > 0) {
-          const firstApp = Array.isArray(eligibleAttendees[0].applications) ? eligibleAttendees[0].applications[0] : eligibleAttendees[0].applications;
-          setPreviewId(firstApp?.volunteer_id || null);
+          setPreviewId(eligibleAttendees[0].volunteer_id || null);
         }
       }
       setLoading(false);
@@ -145,13 +141,13 @@ const IssueCertificates: React.FC = () => {
     setIssuing(true);
     
     // Generate certificates
-    const certificates = attendees.map(a => {
-      const application = Array.isArray(a.applications) ? a.applications[0] : a.applications;
-      const volId = application?.volunteer_id;
+    const certificates = attendees.map(app => {
+      const volId = app.volunteer_id;
+      const attendanceId = app.attendance?.[0]?.id || app.attendance?.id;
       return {
-        attendance_id: a.id,
-        volunteer_id: volId,
+        attendance_id: attendanceId,
         gig_id: gig.id,
+        volunteer_id: volId,
         verification_code: `SH-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
         issued_at: new Date().toISOString(),
         recipient_name: volId ? (names[volId] || 'Volunteer') : 'Volunteer'
@@ -292,14 +288,13 @@ const IssueCertificates: React.FC = () => {
                       <h3 style={{ fontSize: '14px', fontWeight: 700, color: 'var(--ink)', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Recipients</h3>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         {attendees.length === 0 && <div style={{ fontSize: '13px', color: 'var(--muted)' }}>No attendees marked present.</div>}
-                        {attendees.map(a => {
-                          const application = Array.isArray(a.applications) ? a.applications[0] : a.applications;
-                          const volId = application?.volunteer_id || a.id;
+                        {attendees.map(app => {
+                          const volId = app.volunteer_id || app.id;
                           const name = names[volId] || 'Volunteer';
                           const initials = name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase();
                           const isPreview = previewId === volId;
                           return (
-                          <div key={a.id} onClick={() => setPreviewId(volId)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', backgroundColor: isPreview ? 'var(--purple-50)' : 'var(--paper)', borderRadius: '10px', border: `1px solid ${isPreview ? 'var(--purple-400)' : '#E4E1F5'}`, cursor: 'pointer', transition: 'all 0.2s' }}>
+                          <div key={app.id} onClick={() => setPreviewId(volId)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', backgroundColor: isPreview ? 'var(--purple-50)' : 'var(--paper)', borderRadius: '10px', border: `1px solid ${isPreview ? 'var(--purple-400)' : '#E4E1F5'}`, cursor: 'pointer', transition: 'all 0.2s' }}>
                             <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'var(--purple-100)', color: 'var(--purple-700)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '12px', fontFamily: 'var(--display)', flexShrink: 0 }}>
                               {initials}
                             </div>

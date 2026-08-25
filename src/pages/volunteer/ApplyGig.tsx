@@ -180,7 +180,7 @@ const ApplyGig: React.FC = () => {
             </div>
           </div>
 
-          <p className="gig-desc">{gig.description}</p>
+          <p className="gig-desc" style={{ whiteSpace: 'pre-wrap' }}>{gig.description}</p>
         </aside>
 
         {/* Right column: Application Form */}
@@ -331,7 +331,9 @@ const ApplyGig: React.FC = () => {
 
                 <div className="consent">
                   <input type="checkbox" id="f-consent" required />
-                  <label htmlFor="f-consent">I agree to let Ralvo share this application with {gig.organizations?.name || 'the organization'}, and to be contacted about this gig.</label>
+                  <label htmlFor="f-consent">
+                    I consent to share my application details and profile with <strong>{gig.organizations?.name || 'the receiving organization'}</strong> for volunteer screening. I understand this data will be used to contact me regarding this opportunity, and I may withdraw my application or request data deletion at any time via my dashboard.
+                  </label>
                 </div>
 
                 <div className="submit-row">

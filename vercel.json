@@ -25,6 +25,10 @@
   ],
   "rewrites": [
     { "source": "/sitemap.xml", "destination": "/api/sitemap" },
+    { "source": "/sitemaps/static.xml", "destination": "/api/sitemap-static" },
+    { "source": "/sitemaps/opportunities.xml", "destination": "/api/sitemap-opportunities" },
+    { "source": "/sitemaps/organizations.xml", "destination": "/api/sitemap-organizations" },
+    { "source": "/sitemaps/guides.xml", "destination": "/api/sitemap-guides" },
     {
       "source": "/(.*)",
       "has": [

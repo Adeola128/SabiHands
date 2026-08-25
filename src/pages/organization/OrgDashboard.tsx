@@ -11,7 +11,7 @@ import { motion } from 'framer-motion';
 const OrgDashboard: React.FC = () => {
   const { user } = useAuth();
   const [org, setOrg] = useState<any>(null);
-  const [stats, setStats] = useState({ activeGigs: 0, pending: 0, pendingSubs: 0, volunteersEngaged: 0, certsIssued: 0 });
+  const [stats, setStats] = useState({ activeGigs: 0, pending: 0, pendingSubs: 0, volunteersEngaged: 0, certsIssued: 0, teamMembers: 0 });
   const [pendingApplicants, setPendingApplicants] = useState<any[]>([]);
   const [pendingSubmissions, setPendingSubmissions] = useState<any[]>([]);
   const [activeGigs, setActiveGigs] = useState<any[]>([]);
@@ -39,7 +39,14 @@ const OrgDashboard: React.FC = () => {
         .order('created_at', { ascending: false })
         .limit(3);
 
-      setActiveGigs(activeGigsData || []);
+      const parsedActiveGigs = (activeGigsData || []).map(g => {
+        if (g.status === 'published' && g.date_end && new Date(g.date_end) < new Date()) {
+          return { ...g, status: 'completed' };
+        }
+        return g;
+      }).filter(g => g.status === 'published' || g.status === 'active');
+
+      setActiveGigs(parsedActiveGigs);
 
       // Fetch pending applications count & top 5
       const { data: pendingAppsData, count: pendingAppsCount } = await supabase
@@ -78,12 +85,19 @@ const OrgDashboard: React.FC = () => {
         .select('id, gigs!inner(organization_id)', { count: 'exact', head: true })
         .eq('gigs.organization_id', orgData.id);
 
+      // Fetch team members
+      const { count: teamCount } = await supabase
+        .from('organization_members')
+        .select('*', { count: 'exact', head: true })
+        .eq('organization_id', orgData.id);
+
       setStats({
         activeGigs: activeGigsCount || 0,
         pending: pendingAppsCount || 0,
         pendingSubs: pendingSubsCount || 0,
         volunteersEngaged: uniqueVolunteers,
-        certsIssued: certsCount || 0
+        certsIssued: certsCount || 0,
+        teamMembers: teamCount || 0
       });
       setLoading(false);
     };

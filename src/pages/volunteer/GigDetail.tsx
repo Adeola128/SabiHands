@@ -47,10 +47,11 @@ const GigDetail: React.FC = () => {
     setIsMessaging(true);
     try {
       const orgUserId = gig.organizations.user_id;
-      // Check if conversation already exists
+      // Check if conversation already exists for this gig
       const { data: existing } = await supabase
         .from('conversations')
         .select('id')
+        .eq('gig_id', gig.id)
         .or(`and(user1_id.eq.${user.id},user2_id.eq.${orgUserId}),and(user1_id.eq.${orgUserId},user2_id.eq.${user.id})`)
         .limit(1);
 
@@ -62,7 +63,8 @@ const GigDetail: React.FC = () => {
           .from('conversations')
           .insert({
             user1_id: user.id,
-            user2_id: orgUserId
+            user2_id: orgUserId,
+            gig_id: gig.id
           });
         
         if (error) throw error;
@@ -162,8 +164,8 @@ const GigDetail: React.FC = () => {
                   <div style={{ fontSize: '13px', color: 'var(--muted)' }}>{gig.organizations?.org_type || 'NGO'}</div>
                 </div>
               </Link>
-            <p style={{ fontSize: '13px', color: 'var(--body)', lineHeight: 1.6, marginBottom: '12px' }}>
-              An NGO dedicated to environmental sustainability and waste management across Lagos State.
+            <p style={{ fontSize: '13px', color: 'var(--body)', lineHeight: 1.6, marginBottom: '12px', whiteSpace: 'pre-wrap', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+              {gig.organizations?.bio || 'No bio provided.'}
             </p>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: 'var(--teal-600)', fontWeight: 600 }}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
@@ -215,6 +217,9 @@ const GigDetail: React.FC = () => {
               <span className={`tag ${gig.type === 'skilled' ? 'skilled' : 'physical'}`}>{gig.type === 'skilled' ? 'Skilled' : 'Physical'}</span>
               <span className="tag category">Environment</span>
               <span className="tag skilled" style={{ backgroundColor: '#D4EDDA', color: '#155724' }}>Open to all</span>
+              <span className="tag physical" style={{ backgroundColor: '#F3F2F9', color: '#534AB7' }}>
+                {(gig.location || 'Remote') === 'Remote' ? '🌐 Remote' : `📍 ${gig.location}`}
+              </span>
             </div>
           </div>
 
@@ -222,7 +227,7 @@ const GigDetail: React.FC = () => {
           <div className="dash-card">
             <div className="dash-card-padding">
               <h2 style={{ fontSize: '20px', fontWeight: 700, color: 'var(--ink)', marginBottom: '16px' }}>About this Gig</h2>
-              <p style={{ color: 'var(--body)', lineHeight: 1.7, marginBottom: '16px', fontSize: '15px' }}>
+              <p style={{ color: 'var(--body)', lineHeight: 1.7, marginBottom: '16px', fontSize: '15px', whiteSpace: 'pre-wrap' }}>
                 {gig.description}
               </p>
             </div>

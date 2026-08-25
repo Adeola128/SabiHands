@@ -15,6 +15,7 @@ type Profile = {
 type Conversation = {
   id: string;
   otherUser: Profile;
+  gig?: { title: string } | null;
   lastMessage?: {
     content: string;
     image_url?: string;
@@ -135,6 +136,8 @@ const Messages: React.FC = () => {
           id,
           user1_id,
           user2_id,
+          gig_id,
+          gigs ( title ),
           messages (
             content,
             image_url,
@@ -185,6 +188,7 @@ const Messages: React.FC = () => {
           return {
             id: conv.id,
             otherUser,
+            gig: conv.gigs,
             lastMessage: sortedMessages.length > 0 ? sortedMessages[0] : undefined
           };
         }));
@@ -409,11 +413,21 @@ const Messages: React.FC = () => {
                   />
                   <div className="contact-info">
                     <div className="contact-header">
-                      <span className="contact-name">{conv.otherUser.name}</span>
+                      <span className="contact-name">
+                        {conv.otherUser.name}
+                        <span style={{ fontSize: '11px', backgroundColor: 'var(--paper)', padding: '2px 6px', borderRadius: '4px', color: 'var(--muted)', marginLeft: '6px', fontWeight: 600, verticalAlign: 'middle' }}>
+                          {conv.otherUser.type === 'organization' ? 'Org' : 'Vol'}
+                        </span>
+                      </span>
                       {conv.lastMessage && (
                         <span className="contact-time">{formatTime(conv.lastMessage.created_at)}</span>
                       )}
                     </div>
+                    {conv.gig && (
+                      <div style={{ fontSize: '12px', color: 'var(--purple-600)', fontWeight: 600, marginBottom: '4px' }}>
+                        Regarding: {conv.gig.title}
+                      </div>
+                    )}
                     <div className={`contact-preview ${unread ? 'unread' : ''}`}>
                       {conv.lastMessage ? conv.lastMessage.content : 'No messages yet...'}
                     </div>
@@ -443,7 +457,10 @@ const Messages: React.FC = () => {
               />
               <div className="chat-status">
                 <span className="chat-status-name">{activeConv.otherUser.name}</span>
-                <span className="chat-status-text">{activeConv.otherUser.type === 'organization' ? 'Organization' : 'Volunteer'}</span>
+                <span className="chat-status-text">
+                  {activeConv.otherUser.type === 'organization' ? 'Organization' : 'Volunteer'}
+                  {activeConv.gig && <span style={{ color: 'var(--purple-600)', fontWeight: 600 }}> • Regarding: {activeConv.gig.title}</span>}
+                </span>
               </div>
             </div>
             <div className="chat-header-actions" style={{ display: 'flex', gap: '12px', position: 'relative' }}>
