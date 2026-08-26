@@ -297,9 +297,8 @@ const EditProfile: React.FC = () => {
                     </select>
                   </div>
                 </div>
-
-                </div>
               </div>
+
 
               <div className="vol-card">
                 <h2 style={{ fontSize: '20px', color: 'var(--ink)', marginBottom: '32px', fontFamily: 'var(--display)' }}>Professional Background</h2>
@@ -386,9 +385,8 @@ const EditProfile: React.FC = () => {
                     <input type="url" name="portfolio_url" className="premium-input" value={profile.portfolio_url} onChange={handleChange} placeholder="https://yourwebsite.com" />
                   </div>
                 </div>
-
-                </div>
               </div>
+
 
               <div style={{ position: 'fixed', bottom: '32px', right: '32px', left: 'calc(250px + 32px + 32px)', zIndex: 10, padding: '16px 24px', backgroundColor: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(12px)', border: '1px solid #E4E1F5', borderRadius: '12px', display: 'flex', justifyContent: 'flex-end', boxShadow: '0 8px 32px rgba(38, 33, 92, 0.08)' }}>
                 <button type="submit" className="btn-primary" disabled={saving}>

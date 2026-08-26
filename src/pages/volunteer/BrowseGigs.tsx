@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import LoadingScreen from '../../components/LoadingScreen';
 import EmptyState from '../../components/EmptyState';

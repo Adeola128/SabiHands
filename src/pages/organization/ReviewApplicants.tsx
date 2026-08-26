@@ -3,7 +3,6 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'react-hot-toast';
-import { generateSeoUrl } from '../../utils/url';
 import LoadingScreen from '../../components/LoadingScreen';
 
 type Filter = 'pending' | 'accepted' | 'declined';
