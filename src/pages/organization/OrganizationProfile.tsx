@@ -13,7 +13,7 @@ const OrganizationProfile: React.FC = () => {
   const [org, setOrg] = useState<any>(null);
   const [gigs, setGigs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({ volunteers: 0, gigs: 0 });
+  const [stats, setStats] = useState({ volunteers: 0, gigs: 0, followers: 0 });
 
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
