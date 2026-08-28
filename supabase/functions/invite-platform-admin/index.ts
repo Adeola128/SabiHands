@@ -63,7 +63,7 @@ serve(async (req: Request) => {
     const token = inviteData.invite_token;
     
     // Use Origin header to construct link
-    const origin = req.headers.get('origin') || 'https://sabihands.com';
+    const origin = req.headers.get('origin') || 'https://ralvo.com';
     const inviteLink = `${origin}/join-team?admin_token=${token}`;
     const subject = `You've been invited as a Platform Admin on Ralvo`;
     

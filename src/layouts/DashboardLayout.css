@@ -20,7 +20,7 @@
 
 .dashboard-header-inner {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1280px;
   padding: 0 32px;
   display: flex;
   align-items: center;
@@ -133,7 +133,7 @@
 }
 .dashboard-secondary-nav-inner {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1280px;
   padding: 0 32px;
   display: flex;
   gap: 16px;
@@ -176,14 +176,36 @@
   height: calc(100vh - 128px); /* Account for header and secondary nav heights */
 }
 
+.dashboard-main.community-main {
+  background-color: #F4F2EE; /* LinkedIn background color */
+  min-height: calc(100vh - 128px);
+  padding: 24px 32px 40px 32px;
+}
+
+@media (max-width: 768px) {
+  .dashboard-main.community-main {
+    padding: 16px 16px 24px 16px;
+  }
+}
+
 /* Updated grid layout - Sidebar left, Main right */
 .dashboard-grid-immersive {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1280px;
   display: grid;
   gap: 40px;
   align-items: start;
   grid-template-columns: 300px 1fr;
+}
+
+/* 3-Column LinkedIn style layout */
+.dashboard-grid-community {
+  width: 100%;
+  max-width: 1128px;
+  display: grid;
+  gap: 24px;
+  align-items: start;
+  grid-template-columns: 225px 1fr 315px;
 }
 
 .context-col {
@@ -208,6 +230,10 @@
   .dashboard-grid-immersive {
     grid-template-columns: 1fr;
     gap: 24px;
+  }
+  .dashboard-grid-community {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
   .settings-layout {
     flex-direction: column;
@@ -585,7 +611,7 @@
 .profile-incomplete-banner {
   position: relative;
   width: 100%;
-  max-width: 1200px;
+  max-width: 1280px;
   background-color: var(--amber-50);
   border: 1px solid var(--amber-200);
   border-radius: 12px;

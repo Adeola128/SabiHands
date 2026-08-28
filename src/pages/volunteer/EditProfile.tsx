@@ -36,7 +36,8 @@ const EditProfile: React.FC = () => {
     pref_causes: '',
     pref_gig_type: 'any',
     pref_work_mode: 'any',
-    pref_availability: 'any'
+    pref_availability: 'any',
+    slug: ''
   });
 
   useEffect(() => {
@@ -59,7 +60,7 @@ const EditProfile: React.FC = () => {
           motivation: data.motivation || '',
           education: data.education || '',
           resume_url: data.resume_url || '',
-          skills: Array.isArray(data.skills) ? data.skills : (typeof data.skills === 'string' ? data.skills.split(',').map((s: string) => s.trim()).filter(Boolean) : []),
+          skills: Array.isArray(data.skills) ? data.skills : (typeof data.skills === 'string' ? data.skills.replace(/^\{|\}$/g, '').split(',').map((s: string) => s.trim().replace(/^"|"$/g, '')).filter(Boolean) : []),
           interests: Array.isArray(data.interests) ? data.interests.join(', ') : (data.interests || ''),
           linkedin_url: data.linkedin_url || '',
           portfolio_url: data.portfolio_url || '',
@@ -68,7 +69,8 @@ const EditProfile: React.FC = () => {
           pref_causes: Array.isArray(data.pref_causes) ? data.pref_causes.join(', ') : (data.pref_causes || ''),
           pref_gig_type: data.pref_gig_type || 'any',
           pref_work_mode: data.pref_work_mode || 'any',
-          pref_availability: data.pref_availability || 'any'
+          pref_availability: data.pref_availability || 'any',
+          slug: data.slug || ''
         });
       } else {
         // If no profile exists, create one from user metadata (onboarding data)
@@ -97,6 +99,13 @@ const EditProfile: React.FC = () => {
     if (!user) return;
     setSaving(true);
 
+    let finalSkills = [...profile.skills];
+    if (skillInput.trim() && !finalSkills.includes(skillInput.trim())) {
+      finalSkills.push(skillInput.trim());
+      setProfile(prev => ({ ...prev, skills: finalSkills }));
+      setSkillInput('');
+    }
+
     const formattedData = {
       full_name: profile.full_name,
       headline: profile.headline,
@@ -106,7 +115,7 @@ const EditProfile: React.FC = () => {
       motivation: profile.motivation,
       education: profile.education,
       resume_url: profile.resume_url,
-      skills: profile.skills,
+      skills: finalSkills,
       interests: typeof profile.interests === 'string' ? profile.interests.split(',').map(s => s.trim()).filter(Boolean) : profile.interests,
       linkedin_url: profile.linkedin_url,
       portfolio_url: profile.portfolio_url,
@@ -116,6 +125,7 @@ const EditProfile: React.FC = () => {
       pref_gig_type: profile.pref_gig_type,
       pref_work_mode: profile.pref_work_mode,
       pref_availability: profile.pref_availability,
+      slug: profile.slug.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-') || null,
     };
 
     const { error } = await supabase
@@ -134,16 +144,16 @@ const EditProfile: React.FC = () => {
   if (loading) return <LoadingScreen message="Loading profile settings..." fullScreen={false} />;
 
   return (
-    <div className="volunteer-page-container">
-      <div style={{ marginBottom: '40px' }}>
-        <h1 style={{ fontSize: '32px', fontFamily: 'var(--display)', color: 'var(--ink)', marginBottom: '8px' }}>Account Settings</h1>
-        <p style={{ color: 'var(--body)' }}>Manage your personal details, preferences, and security settings.</p>
+    <div style={{ width: '100%', backgroundColor: 'transparent', paddingBottom: '80px', paddingTop: '24px' }}>
+      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px', marginBottom: '24px' }}>
+        <h1 style={{ fontSize: '24px', fontFamily: 'var(--display)', color: 'rgba(0,0,0,0.9)', marginBottom: '4px' }}>Settings & Privacy</h1>
+        <p style={{ color: 'rgba(0,0,0,0.6)', fontSize: '14px', margin: 0 }}>Manage your personal details, preferences, and security settings.</p>
       </div>
       
-      <div className="settings-layout">
+      <div className="linkedin-settings-grid">
         
         {/* Sidebar Nav */}
-        <div className="vol-card" style={{ flex: '0 0 250px', padding: '16px 8px' }}>
+        <div className="linkedin-card" style={{ padding: '16px 8px' }}>
           <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <button 
               onClick={() => setActiveTab('profile')}
@@ -209,68 +219,54 @@ const EditProfile: React.FC = () => {
         </div>
 
         {/* Main Content Area */}
-        <div style={{ flex: '1', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           
           {activeTab === 'profile' && (
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '80px' }}>
-              <div className="vol-card">
-                <h2 style={{ fontSize: '20px', color: 'var(--ink)', marginBottom: '8px', fontFamily: 'var(--display)' }}>Basic Information</h2>
-                <p style={{ color: 'var(--body)', marginBottom: '32px', fontSize: '15px' }}>This is how you will appear to organizations on the platform.</p>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '20px', paddingBottom: '24px', borderBottom: '1px solid #E4E1F5', marginBottom: '24px' }}>
-                  <div style={{ width: '80px', height: '80px', borderRadius: '50%', backgroundColor: 'var(--purple-100)', color: 'var(--purple-700)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '24px', fontFamily: 'var(--display)', overflow: 'hidden' }}>
-                    {profile.avatar_url ? (
-                      <img src={profile.avatar_url} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    ) : (
-                      profile.full_name ? profile.full_name.substring(0, 2).toUpperCase() : 'ME'
-                    )}
-                  </div>
-                  <div>
-                    <label style={{ display: 'inline-block', padding: '8px 16px', backgroundColor: 'var(--white)', border: '1.5px solid #E4E1F5', borderRadius: '8px', fontWeight: 600, fontSize: '13px', cursor: 'pointer', color: 'var(--ink)' }}>
-                      {uploadingAvatar ? 'Uploading...' : 'Upload Avatar'}
-                      <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async (e) => {
-                        if (e.target.files && e.target.files[0]) {
-                          setUploadingAvatar(true);
-                          try {
-                            const url = await uploadImage(e.target.files[0], 'volunteer-avatars');
-                            setProfile(prev => ({ ...prev, avatar_url: url }));
-                          } catch (err: any) {
-                            toast.error(err.message);
-                          } finally {
-                            setUploadingAvatar(false);
-                          }
-                        }
-                      }} disabled={uploadingAvatar} />
-                    </label>
-                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '8px' }}>JPG, PNG or GIF. Max size 2MB.</div>
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '20px', paddingBottom: '24px', borderBottom: '1px solid #E4E1F5', marginBottom: '24px' }}>
-                  <div style={{ flex: 1 }}>
-                    <label className="premium-label" style={{ marginBottom: '8px', display: 'block' }}>Cover Image</label>
-                    {profile.cover_url ? (
-                      <div style={{ width: '100%', height: '120px', borderRadius: '12px', backgroundImage: `url(${profile.cover_url})`, backgroundSize: 'cover', backgroundPosition: 'center', marginBottom: '12px' }} />
-                    ) : (
-                      <div style={{ width: '100%', height: '120px', borderRadius: '12px', backgroundColor: '#FAFAFC', border: '1.5px dashed #D1CEDF', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px', color: 'var(--muted)', fontSize: '13px' }}>No cover image uploaded</div>
-                    )}
-                    <label style={{ display: 'inline-block', padding: '8px 16px', backgroundColor: 'var(--white)', border: '1.5px solid #E4E1F5', borderRadius: '8px', fontWeight: 600, fontSize: '13px', cursor: 'pointer', color: 'var(--ink)' }}>
-                      {uploadingCover ? 'Uploading...' : 'Upload Cover Image'}
+              <div className="linkedin-card">
+                <h2 className="linkedin-card-title">Basic Information</h2>
+                <p style={{ color: 'rgba(0,0,0,0.6)', marginBottom: '32px', fontSize: '14px' }}>This is how you will appear to organizations on the platform.</p>
+                
+                {/* Cover and Avatar Section (Premium LinkedIn Style) */}
+                <div style={{ position: 'relative', marginBottom: '60px' }}>
+                  {/* Cover */}
+                  <div style={{ position: 'relative', width: '100%', height: '160px', backgroundImage: profile.cover_url ? `url(${profile.cover_url})` : 'none', backgroundSize: 'cover', backgroundPosition: 'center', backgroundColor: '#D1CEDF', borderRadius: '12px', overflow: 'hidden', border: '1px solid #EBEBEB' }}>
+                    <label style={{ position: 'absolute', top: '16px', right: '16px', backgroundColor: 'rgba(255, 255, 255, 0.9)', padding: '8px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', color: 'rgba(0,0,0,0.9)', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+                      {uploadingCover ? 'Uploading...' : 'Change Cover'}
                       <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async (e) => {
                         if (e.target.files && e.target.files[0]) {
                           setUploadingCover(true);
                           try {
                             const url = await uploadImage(e.target.files[0], 'volunteer-covers');
                             setProfile(prev => ({ ...prev, cover_url: url }));
-                          } catch (err: any) {
-                            toast.error(err.message);
-                          } finally {
-                            setUploadingCover(false);
-                          }
+                          } catch (err: any) { toast.error(err.message); } finally { setUploadingCover(false); }
                         }
                       }} disabled={uploadingCover} />
                     </label>
                   </div>
+                  
+                  {/* Avatar Overlay */}
+                  <div style={{ position: 'absolute', bottom: '-40px', left: '24px', width: '120px', height: '120px', borderRadius: '50%', border: '4px solid #FFF', backgroundColor: 'var(--purple-100)', color: 'var(--purple-700)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '32px', overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}>
+                    {profile.avatar_url ? (
+                      <img src={profile.avatar_url} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      profile.full_name ? profile.full_name.substring(0, 2).toUpperCase() : 'ME'
+                    )}
+                    <label style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '40px', backgroundColor: 'rgba(0,0,0,0.6)', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 600, cursor: 'pointer', opacity: 0, transition: 'opacity 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.opacity = '1'} onMouseLeave={(e) => e.currentTarget.style.opacity = '0'}>
+                      {uploadingAvatar ? '...' : 'Edit'}
+                      <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async (e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          setUploadingAvatar(true);
+                          try {
+                            const url = await uploadImage(e.target.files[0], 'volunteer-avatars');
+                            setProfile(prev => ({ ...prev, avatar_url: url }));
+                          } catch (err: any) { toast.error(err.message); } finally { setUploadingAvatar(false); }
+                        }
+                      }} disabled={uploadingAvatar} />
+                    </label>
+                  </div>
                 </div>
+
                 <div className="grid-2col" style={{ gap: '24px', marginBottom: '24px' }}>
                   <div className="premium-form-group">
                     <label className="premium-label">Full Name</label>
@@ -280,6 +276,17 @@ const EditProfile: React.FC = () => {
                     <label className="premium-label">Headline (e.g. Digital Marketer)</label>
                     <input type="text" name="headline" className="premium-input" value={profile.headline} onChange={handleChange} placeholder="What do you do best?" />
                   </div>
+                </div>
+                
+                <div className="premium-form-group" style={{ marginBottom: '24px' }}>
+                  <label className="premium-label">Public Profile URL</label>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <span style={{ padding: '12px', backgroundColor: '#F3F2EF', border: '1px solid #D1CEDF', borderRight: 'none', borderRadius: '8px 0 0 8px', color: 'rgba(0,0,0,0.6)', fontSize: '14px' }}>
+                      {window.location.origin}/volunteer/
+                    </span>
+                    <input type="text" name="slug" className="premium-input" style={{ borderRadius: '0 8px 8px 0' }} value={profile.slug} onChange={handleChange} placeholder="your-custom-url" />
+                  </div>
+                  <p style={{ fontSize: '12px', color: 'rgba(0,0,0,0.6)', marginTop: '4px' }}>Customize your public profile URL for better SEO and easier sharing.</p>
                 </div>
 
                 <div className="grid-2col" style={{ gap: '24px', marginBottom: '24px' }}>
@@ -300,8 +307,8 @@ const EditProfile: React.FC = () => {
               </div>
 
 
-              <div className="vol-card">
-                <h2 style={{ fontSize: '20px', color: 'var(--ink)', marginBottom: '32px', fontFamily: 'var(--display)' }}>Professional Background</h2>
+              <div className="linkedin-card">
+                <h2 className="linkedin-card-title" style={{ marginBottom: '32px' }}>Professional Background</h2>
                 
                 <div className="premium-form-group" style={{ marginBottom: '24px' }}>
                   <label className="premium-label">Professional Summary</label>
@@ -367,8 +374,8 @@ const EditProfile: React.FC = () => {
                 </div>
               </div>
 
-              <div className="vol-card">
-                <h2 style={{ fontSize: '20px', color: 'var(--ink)', marginBottom: '32px', fontFamily: 'var(--display)' }}>Links & Interests</h2>
+              <div className="linkedin-card">
+                <h2 className="linkedin-card-title" style={{ marginBottom: '32px' }}>Links & Interests</h2>
                 
                 <div className="premium-form-group" style={{ marginBottom: '24px' }}>
                   <label className="premium-label">Causes I Care About (comma separated)</label>
@@ -388,8 +395,8 @@ const EditProfile: React.FC = () => {
               </div>
 
 
-              <div style={{ position: 'fixed', bottom: '32px', right: '32px', left: 'calc(250px + 32px + 32px)', zIndex: 10, padding: '16px 24px', backgroundColor: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(12px)', border: '1px solid #E4E1F5', borderRadius: '12px', display: 'flex', justifyContent: 'flex-end', boxShadow: '0 8px 32px rgba(38, 33, 92, 0.08)' }}>
-                <button type="submit" className="btn-primary" disabled={saving}>
+              <div style={{ position: 'fixed', bottom: '32px', right: '32px', zIndex: 10 }}>
+                <button type="submit" style={{ padding: '12px 24px', backgroundColor: 'var(--blue-600)', color: 'white', borderRadius: '100px', fontWeight: 600, border: 'none', cursor: 'pointer', boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)' }} disabled={saving}>
                   {saving ? 'Saving...' : 'Save Profile'}
                 </button>
               </div>
@@ -397,8 +404,8 @@ const EditProfile: React.FC = () => {
           )}
 
           {activeTab === 'preferences' && (
-            <div className="vol-card">
-              <h2 style={{ fontSize: '20px', color: 'var(--ink)', marginBottom: '8px', fontFamily: 'var(--display)' }}>Matching Preferences</h2>
+            <div className="linkedin-card">
+              <h2 className="linkedin-card-title">Matching Preferences</h2>
               <p style={{ color: 'var(--body)', marginBottom: '32px', fontSize: '15px' }}>Help us recommend the best opportunities for you.</p>
               
               <form onSubmit={handleSubmit}>
@@ -438,7 +445,7 @@ const EditProfile: React.FC = () => {
                 </div>
 
                 <div style={{ marginTop: '32px', display: 'flex', justifyContent: 'flex-end' }}>
-                  <button type="submit" className="btn-primary" disabled={saving}>
+                  <button type="submit" style={{ padding: '12px 24px', backgroundColor: 'var(--blue-600)', color: 'white', borderRadius: '100px', fontWeight: 600, border: 'none', cursor: 'pointer' }} disabled={saving}>
                     {saving ? 'Saving...' : 'Save Preferences'}
                   </button>
                 </div>
@@ -447,9 +454,9 @@ const EditProfile: React.FC = () => {
           )}
 
           {activeTab === 'security' && (
-            <div className="vol-card">
-              <h2 style={{ fontSize: '20px', color: 'var(--ink)', marginBottom: '32px', fontFamily: 'var(--display)' }}>Security</h2>
-              <p style={{ color: 'var(--body)' }}>Password and security settings coming soon.</p>
+            <div className="linkedin-card">
+              <h2 className="linkedin-card-title" style={{ marginBottom: '32px' }}>Security</h2>
+              <p style={{ color: 'rgba(0,0,0,0.6)' }}>Password and security settings coming soon.</p>
             </div>
           )}
 

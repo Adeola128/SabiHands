@@ -40,14 +40,29 @@ const VolunteerInvitations: React.FC = () => {
     fetchInvitations();
   }, [user]);
 
-  const handleAction = async (id: string, action: 'accepted' | 'declined') => {
+  const handleAction = async (id: string, gigId: string, action: 'accepted' | 'declined') => {
     try {
       const { error } = await supabase
         .from('invitations')
-        .update({ status: action, decided_at: new Date().toISOString() })
+        .update({ status: action })
         .eq('id', id);
         
       if (error) throw error;
+      
+      if (action === 'accepted' && user && gigId) {
+        // Auto-enroll the volunteer into the gig
+        const { error: appError } = await supabase
+          .from('applications')
+          .insert({
+            gig_id: gigId,
+            volunteer_id: user.id,
+            status: 'accepted'
+          });
+          
+        if (appError && appError.code !== '23505') {
+          console.error("Auto-enroll error:", appError);
+        }
+      }
       
       setInvitations(prev => prev.map(inv => inv.id === id ? { ...inv, status: action } : inv));
       toast.success(`Invitation ${action}!`);
@@ -84,17 +99,17 @@ const VolunteerInvitations: React.FC = () => {
                    <div>
                      <h3 style={{ margin: '0 0 8px', fontSize: '18px', color: 'var(--ink)' }}>{inv.gigs?.title}</h3>
                      <div style={{ display: 'flex', gap: '16px', fontSize: '13px', color: 'var(--body)' }}>
-                       <Link to={`/dashboard/organization/profile/${inv.gigs?.organizations?.id}`} style={{ color: 'var(--purple-600)', textDecoration: 'none', fontWeight: 600 }}>
+                       <Link to={`/organization/${inv.gigs?.organizations?.id}`} style={{ color: 'var(--purple-600)', textDecoration: 'none', fontWeight: 600 }}>
                          {inv.gigs?.organizations?.name}
                        </Link>
                        <span>|</span>
                        <span>Date: {inv.gigs?.date_start ? new Date(inv.gigs.date_start).toLocaleDateString("en-NG", { timeZone: "Africa/Lagos" }) : 'TBD'}</span>
                      </div>
                    </div>
-                   <div style={{ display: 'flex', gap: '12px' }}>
-                     <button onClick={() => handleAction(inv.id, 'declined')} style={{ padding: '8px 16px', backgroundColor: 'transparent', border: '1px solid var(--border)', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}>Decline</button>
-                     <button onClick={() => handleAction(inv.id, 'accepted')} style={{ padding: '8px 16px', backgroundColor: 'var(--teal-600)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}>Accept</button>
-                   </div>
+                    <div style={{ display: 'flex', gap: '12px' }}>
+                      <button onClick={() => handleAction(inv.id, inv.gigs?.id, 'declined')} style={{ padding: '8px 16px', backgroundColor: 'transparent', border: '1px solid var(--border)', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}>Decline</button>
+                      <button onClick={() => handleAction(inv.id, inv.gigs?.id, 'accepted')} style={{ padding: '8px 16px', backgroundColor: 'var(--teal-600)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}>Accept</button>
+                    </div>
                  </div>
                ))}
              </div>

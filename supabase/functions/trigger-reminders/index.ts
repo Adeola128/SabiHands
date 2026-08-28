@@ -95,21 +95,21 @@ serve(async (req: Request) => {
                 </div>
 
                 <div style="text-align: center; margin-top: 32px;">
-                  <a href="https://sabihands.com/dashboard/volunteer/gigs/\${gig.id}" style="display: inline-block; background-color: #534AB7; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 15px; box-shadow: 0 4px 6px -1px rgba(83, 74, 183, 0.2);">View Gig Details</a>
+                  <a href="https://ralvo.com/dashboard/volunteer/gigs/\${gig.id}" style="display: inline-block; background-color: #534AB7; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 15px; box-shadow: 0 4px 6px -1px rgba(83, 74, 183, 0.2);">View Gig Details</a>
                 </div>
               </div>
 
               <!-- Footer -->
               <div style="background-color: #F8FAFC; padding: 24px 40px; text-align: center; border-top: 1px solid #E2E8F0;">
                 <p style="margin: 0; font-size: 14px; color: #64748B;">
-                  Thank you for volunteering and making a difference with SabiHands!
+                  Thank you for volunteering and making a difference with Ralvo!
                 </p>
               </div>
 
             </div>
             
             <div style="text-align: center; margin-top: 24px;">
-              <p style="font-size: 12px; color: #94A3B8;">&copy; \${new Date().getFullYear()} SabiHands. All rights reserved.</p>
+              <p style="font-size: 12px; color: #94A3B8;">&copy; \${new Date().getFullYear()} Ralvo. All rights reserved.</p>
             </div>
           </body>
           </html>

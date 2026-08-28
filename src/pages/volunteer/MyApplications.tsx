@@ -120,7 +120,7 @@ const MyApplications: React.FC = () => {
                   <div className="gig-media-header">
                     <div>
                       <h3 className="gig-media-title">{app.gigs?.title}</h3>
-                      <Link to={`/dashboard/organization/profile/${app.gigs?.organizations?.id}`} className="gig-media-org" style={{ textDecoration: 'none' }}>
+                      <Link to={`/organization/${app.gigs?.organizations?.id}`} className="gig-media-org" style={{ textDecoration: 'none' }}>
                         <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(app.gigs?.organizations?.name || 'Org')}&background=random`} alt={app.gigs?.organizations?.name} />
                         <strong>{app.gigs?.organizations?.name || 'Organization'}</strong>
                       </Link>

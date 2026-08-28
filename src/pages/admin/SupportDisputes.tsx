@@ -13,7 +13,7 @@ const SupportDisputes: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem('sabihands_support_chat');
+    const saved = localStorage.getItem('ralvo_support_chat');
     if (saved) {
       setMessages(JSON.parse(saved));
     } else {
@@ -24,11 +24,11 @@ const SupportDisputes: React.FC = () => {
         timestamp: new Date().toISOString()
       };
       setMessages([initMsg]);
-      localStorage.setItem('sabihands_support_chat', JSON.stringify([initMsg]));
+      localStorage.setItem('ralvo_support_chat', JSON.stringify([initMsg]));
     }
 
     const handleStorage = (e: StorageEvent) => {
-      if (e.key === 'sabihands_support_chat' && e.newValue) {
+      if (e.key === 'ralvo_support_chat' && e.newValue) {
         setMessages(JSON.parse(e.newValue));
       }
     };
@@ -36,14 +36,14 @@ const SupportDisputes: React.FC = () => {
     
     // Custom event to catch same-window updates
     const handleCustom = () => {
-      const saved = localStorage.getItem('sabihands_support_chat');
+      const saved = localStorage.getItem('ralvo_support_chat');
       if (saved) setMessages(JSON.parse(saved));
     };
-    window.addEventListener('sabihands_chat_update', handleCustom);
+    window.addEventListener('ralvo_chat_update', handleCustom);
 
     return () => {
       window.removeEventListener('storage', handleStorage);
-      window.removeEventListener('sabihands_chat_update', handleCustom);
+      window.removeEventListener('ralvo_chat_update', handleCustom);
     };
   }, []);
 
@@ -66,8 +66,8 @@ const SupportDisputes: React.FC = () => {
     setMessages(updated);
     setInputText('');
     
-    localStorage.setItem('sabihands_support_chat', JSON.stringify(updated));
-    window.dispatchEvent(new Event('sabihands_chat_update'));
+    localStorage.setItem('ralvo_support_chat', JSON.stringify(updated));
+    window.dispatchEvent(new Event('ralvo_chat_update'));
   };
 
   const oldTickets = [

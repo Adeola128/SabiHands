@@ -35,7 +35,7 @@ const ImpactDashboard: React.FC = () => {
         // 2. Fetch Gigs (only published or completed)
         const { data: gigs } = await supabase
           .from('gigs')
-          .select('id, duration, skills_required')
+          .select('id, hours_required, skills_required')
           .eq('organization_id', orgData.id)
           .in('status', ['published', 'completed']);
 
@@ -70,7 +70,7 @@ const ImpactDashboard: React.FC = () => {
             completedApps.forEach((app: any) => {
               const gig = gigs?.find((g: any) => g.id === app.gig_id);
               if (gig) {
-                hoursContributed += (parseInt(gig.duration) || 0);
+                hoursContributed += (gig.hours_required || 0);
 
                 // Aggregate skills
                 if (gig.skills_required && Array.isArray(gig.skills_required)) {

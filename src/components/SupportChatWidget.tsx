@@ -47,7 +47,7 @@ const SupportChatWidget: React.FC = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const saved = localStorage.getItem('sabihands_support_chat');
+    const saved = localStorage.getItem('ralvo_support_chat');
     if (saved) {
       setMessages(JSON.parse(saved));
     } else {
@@ -58,25 +58,25 @@ const SupportChatWidget: React.FC = () => {
         timestamp: new Date().toISOString()
       };
       setMessages([initMsg]);
-      localStorage.setItem('sabihands_support_chat', JSON.stringify([initMsg]));
+      localStorage.setItem('ralvo_support_chat', JSON.stringify([initMsg]));
     }
 
     const handleStorage = (e: StorageEvent) => {
-      if (e.key === 'sabihands_support_chat' && e.newValue) {
+      if (e.key === 'ralvo_support_chat' && e.newValue) {
         setMessages(JSON.parse(e.newValue));
       }
     };
     window.addEventListener('storage', handleStorage);
     
     const handleCustom = () => {
-      const saved = localStorage.getItem('sabihands_support_chat');
+      const saved = localStorage.getItem('ralvo_support_chat');
       if (saved) setMessages(JSON.parse(saved));
     };
-    window.addEventListener('sabihands_chat_update', handleCustom);
+    window.addEventListener('ralvo_chat_update', handleCustom);
 
     return () => {
       window.removeEventListener('storage', handleStorage);
-      window.removeEventListener('sabihands_chat_update', handleCustom);
+      window.removeEventListener('ralvo_chat_update', handleCustom);
     };
   }, []);
 
@@ -103,8 +103,8 @@ const SupportChatWidget: React.FC = () => {
     setMessages(updated);
     setInputText('');
     
-    localStorage.setItem('sabihands_support_chat', JSON.stringify(updated));
-    window.dispatchEvent(new Event('sabihands_chat_update'));
+    localStorage.setItem('ralvo_support_chat', JSON.stringify(updated));
+    window.dispatchEvent(new Event('ralvo_chat_update'));
   };
 
   const handleSend = (e: React.FormEvent) => {
@@ -339,7 +339,7 @@ const SupportChatWidget: React.FC = () => {
             </div>
             
             <div style={{ textAlign: 'center', marginTop: 'auto', fontSize: '12px', color: 'rgba(255,255,255,0.5)', paddingTop: '10px', flexShrink: 0 }}>
-              Powered by <span style={{ fontWeight: 600, color: 'white' }}>Sabihands</span>
+              Powered by <span style={{ fontWeight: 600, color: 'white' }}>Ralvo</span>
             </div>
           </div>
         )}
@@ -394,7 +394,7 @@ const SupportChatWidget: React.FC = () => {
 
             {/* Privacy Notice */}
             <div style={{ padding: '16px 20px', fontSize: '12px', color: '#64748B', lineHeight: 1.5, borderBottom: '1px solid #E2E8F0', backgroundColor: 'white', flexShrink: 0 }}>
-              By talking to this bot, I understand that Sabihands will process my personal information. <Link to="/privacy" style={{ color: '#3B82F6', textDecoration: 'none' }}>View privacy policy</Link>
+              By talking to this bot, I understand that Ralvo will process my personal information. <Link to="/privacy" style={{ color: '#3B82F6', textDecoration: 'none' }}>View privacy policy</Link>
             </div>
 
             {/* Messages Area */}

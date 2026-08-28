@@ -108,7 +108,7 @@ const OrganizationOnboarding: React.FC = () => {
             name="name"
             value={orgData.name} 
             onChange={handleChange} 
-            placeholder="e.g. SabiHands Initiative"
+            placeholder="e.g. Ralvo Initiative"
             style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '2px solid #E2E8F0', fontSize: '16px', outline: 'none' }}
           />
         </div>

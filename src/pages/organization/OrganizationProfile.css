@@ -1,36 +1,31 @@
+/* OrganizationProfile.css (Internal Dashboard - LinkedIn Style) */
+
 .modern-profile-container {
-  max-width: 1120px;
+  max-width: 1128px; /* LinkedIn standard width */
   margin: 0 auto;
   width: 100%;
-  padding: 100px 16px 64px 16px; /* Added top padding to clear fixed navbar and horizontal padding */
+  padding: 24px 16px 80px 16px;
 }
 
-/* ── Hero Section ── */
-.profile-hero-card {
-  background-color: var(--white);
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 16px 40px -10px rgba(38, 33, 92, 0.08);
-  margin-bottom: 32px;
+/* ── Hero Section (LinkedIn Company Style) ── */
+.public-hero-card {
+  background-color: var(--white, #fff);
+  border-radius: 8px;
+  border: 1px solid #EBEBEB;
+  margin-bottom: 16px;
   position: relative;
 }
 
-.profile-cover-area {
-  height: 240px;
-  background-color: #E4E1F5;
+.public-cover-area {
+  height: 220px;
+  background-color: #D1CEDF;
   background-size: cover;
   background-position: center;
   position: relative;
+  border-radius: 8px 8px 0 0;
 }
 
-.profile-cover-area::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 100%);
-  pointer-events: none;
-}
-
+/* Edit Overlays */
 .uploading-overlay {
   position: absolute;
   inset: 0;
@@ -45,11 +40,13 @@
 
 .image-edit-btn {
   position: absolute;
+  top: 16px;
+  right: 16px;
   z-index: 5;
-  background: rgba(0, 0, 0, 0.6);
-  color: white;
+  background: rgba(255, 255, 255, 0.9);
+  color: rgba(0,0,0,0.9);
   border-radius: 8px;
-  padding: 8px 12px;
+  padding: 8px 16px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -57,326 +54,366 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   opacity: 0;
 }
 
-.profile-hero-card:hover .image-edit-btn {
+.public-hero-card:hover .image-edit-btn {
   opacity: 1;
 }
 
 .image-edit-btn:hover {
-  background: rgba(0, 0, 0, 0.8);
+  background: #ffffff;
 }
 
-.cover-edit-btn {
-  top: 16px;
-  right: 16px;
-}
-
-.profile-hero-info {
-  padding: 0 40px 40px;
-  position: relative;
-  z-index: 2;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-top: -64px;
-}
-
-.profile-avatar-container {
-  position: relative;
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  background-color: var(--white);
-  padding: 6px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-  overflow: visible;
-}
-
-.profile-avatar-img,
-.profile-avatar-placeholder {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
+/* Avatar and Title Layout */
+.public-hero-body {
+  padding: 0 24px 0 24px;
   position: relative;
 }
 
-.profile-avatar-placeholder {
-  background: linear-gradient(135deg, var(--purple-400), var(--purple-600));
-  color: white;
+.public-avatar-wrapper {
+  position: relative;
+  width: 136px;
+  height: 136px;
+  border-radius: 4px;
+  background-color: var(--white, #fff);
+  padding: 4px;
+  border: 1px solid #EBEBEB;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  margin-top: -68px;
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 48px;
-  font-weight: 700;
+  overflow: hidden;
+}
+
+.public-avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 2px;
+  object-fit: cover;
+}
+
+.public-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 2px;
+  background-color: var(--purple-50);
+  color: var(--purple-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-family: var(--display);
+  font-size: 32px;
+  font-weight: 700;
 }
 
 .avatar-edit-overlay {
   position: absolute;
-  inset: 6px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.5);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  color: #fff;
   cursor: pointer;
   opacity: 0;
   transition: opacity 0.2s ease;
   z-index: 5;
+  font-size: 12px;
+  font-weight: 600;
 }
 
-.profile-avatar-container:hover .avatar-edit-overlay {
+.public-avatar-wrapper:hover .avatar-edit-overlay {
   opacity: 1;
 }
 
-.profile-verified-badge {
-  position: absolute;
-  bottom: 8px;
-  right: 8px;
-  width: 32px;
-  height: 32px;
-  background-color: var(--teal-500);
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 4px solid var(--white);
-  z-index: 6;
-}
-
-.profile-header-details {
+.public-header-details {
+  margin-top: 16px;
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
-  flex: 1;
-  margin-left: 24px;
-}
-
-.profile-title-block {
-  margin-bottom: 8px;
-}
-
-.profile-name {
-  font-size: 32px;
-  font-family: var(--display);
-  color: var(--ink);
-  margin: 0 0 8px 0;
-  line-height: 1.1;
-  font-weight: 700;
-}
-
-.profile-headline {
-  font-size: 16px;
-  color: var(--body);
-  margin: 0 0 8px 0;
-  font-weight: 500;
-}
-
-.profile-location {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 14px;
-  color: var(--muted);
-  font-weight: 500;
-}
-
-.profile-btn-secondary {
-  padding: 10px 20px;
-  background-color: var(--paper);
-  color: var(--ink);
-  border-radius: 10px;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 14px;
-  border: 1px solid #E4E1F5;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.profile-btn-secondary:hover {
-  background-color: var(--purple-50);
-  border-color: var(--purple-200);
-}
-
-
-/* ── Grid Layout ── */
-.modern-profile-grid {
-  display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 32px;
-}
-
-.profile-content-card {
-  background-color: var(--white);
-  border-radius: 20px;
-  padding: 32px;
-  box-shadow: 0 8px 30px rgba(38, 33, 92, 0.04), 0 1px 3px rgba(38, 33, 92, 0.02);
-  margin-bottom: 24px;
-}
-
-.profile-section-title {
-  font-size: 18px;
-  font-family: var(--display);
-  color: var(--ink);
-  margin: 0 0 24px 0;
-  font-weight: 700;
-}
-
-.profile-bio-text {
-  font-size: 15px;
-  color: var(--body);
-  line-height: 1.6;
-  margin: 0;
-  white-space: pre-line;
-}
-
-/* Stats */
-.stats-card {
-  background: linear-gradient(145deg, #26215C, #3F3795);
-  color: white;
-}
-.stats-card .profile-section-title {
-  color: white;
-  opacity: 0.9;
-}
-.profile-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  align-items: flex-start;
+  flex-wrap: wrap;
   gap: 16px;
-  text-align: center;
-}
-.stat-box {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.stat-number {
-  font-size: 28px;
-  font-family: var(--display);
-  font-weight: 700;
-  color: white;
-}
-.stat-label {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 600;
-  color: rgba(255,255,255,0.7);
 }
 
-/* Links */
-.profile-links-list {
+.public-org-name {
+  font-size: 24px;
+  font-weight: 600;
+  color: rgba(0,0,0,0.9);
+  line-height: 1.2;
+  margin: 0 0 4px 0;
+}
+
+.public-org-headline {
+  font-size: 14px;
+  color: rgba(0,0,0,0.9);
+  max-width: 600px;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.public-org-meta {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 14px;
+  color: rgba(0,0,0,0.6);
+  margin-bottom: 16px;
+}
+
+.public-meta-item {
+  display: flex;
+  align-items: center;
+}
+
+.public-meta-dot {
+  margin: 0 6px;
+  font-size: 12px;
+}
+
+.public-hero-actions {
+  display: flex;
   gap: 12px;
 }
 
-.profile-social-link {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
+.btn-li-primary {
+  background-color: #0a66c2;
+  color: #fff;
   font-weight: 600;
-  color: var(--purple-600);
-  text-decoration: none;
-  padding: 12px;
-  background-color: var(--purple-50);
-  border-radius: 12px;
+  font-size: 16px;
+  padding: 6px 16px;
+  border-radius: 100px;
+  border: none;
+  cursor: pointer;
   transition: background-color 0.2s;
-  word-break: break-all; /* prevent long emails/urls from breaking layout */
-}
-.profile-social-link:hover {
-  background-color: var(--purple-100);
-}
-
-.profile-link-viewall {
-  font-size: 13px;
-  color: var(--purple-600);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   text-decoration: none;
+}
+.btn-li-primary:hover {
+  background-color: #004182;
+  color: #fff;
+}
+
+.btn-li-secondary {
+  background-color: transparent;
+  color: #0a66c2;
   font-weight: 600;
+  font-size: 16px;
+  padding: 6px 16px;
+  border-radius: 100px;
+  border: 1px solid #0a66c2;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+.btn-li-secondary:hover {
+  background-color: rgba(10, 102, 194, 0.08);
+  box-shadow: inset 0 0 0 1px #0a66c2;
 }
 
-.profile-empty-state {
-  padding: 24px 0;
-  text-align: center;
-  color: var(--muted);
+/* ── Navigation Tabs ── */
+.public-tabs-nav {
+  display: flex;
+  gap: 8px;
+  border-top: 1px solid #EBEBEB;
+  padding: 0 24px;
+  background-color: var(--white);
+  border-radius: 0 0 8px 8px;
+  margin-top: 16px;
+}
+
+.public-tab {
+  padding: 16px 8px;
   font-size: 14px;
+  font-weight: 600;
+  color: rgba(0,0,0,0.6);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-/* Org Specific Grid for Gigs */
-.org-gigs-grid {
+.public-tab:hover {
+  color: rgba(0,0,0,0.9);
+}
+
+.public-tab.active {
+  color: #01754f; /* LinkedIn green for active tabs */
+  border-bottom: 2px solid #01754f;
+}
+
+/* ── Layout Restructuring (2-Column Grid) ── */
+.public-layout-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: 2.5fr 1fr;
   gap: 24px;
-}
-
-/* Responsive */
-@media (max-width: 992px) {
-  .modern-profile-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .profile-hero-info {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .profile-header-details {
-    margin-left: 0;
-    margin-top: 16px;
-    width: 100%;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
-  }
-  
-  .profile-actions {
-    width: 100%;
-  }
-
-  .profile-btn-secondary {
-    width: 100%;
-    justify-content: center;
-  }
+  align-items: start;
 }
 
 @media (max-width: 768px) {
-  .modern-profile-container {
-    padding: 90px 16px 48px 16px;
+  .public-layout-grid {
+    grid-template-columns: 1fr;
   }
+}
 
-  .profile-cover-area {
-    height: 180px;
-  }
+/* LinkedIn style cards */
+.li-card {
+  background: var(--white, #fff);
+  border-radius: 8px;
+  padding: 24px;
+  border: 1px solid #EBEBEB;
+  margin-bottom: 16px;
+}
 
-  .profile-hero-info {
-    padding: 0 24px 32px;
-    margin-top: -48px;
-  }
+.li-card h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: rgba(0,0,0,0.9);
+}
 
-  .profile-avatar-container {
-    width: 100px;
-    height: 100px;
-    padding: 4px;
-  }
+.bento-about-text {
+  font-size: 14px;
+  color: rgba(0,0,0,0.9);
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
 
-  .profile-avatar-placeholder {
-    font-size: 32px;
-  }
+/* ── Feed/Posts Design (Gigs) ── */
+.li-post-card {
+  background: var(--white, #fff);
+  border-radius: 8px;
+  border: 1px solid #EBEBEB;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+}
 
-  .profile-name {
-    font-size: 24px;
-  }
+.li-post-header {
+  padding: 16px 16px 8px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
 
-  .profile-content-card {
-    padding: 24px;
-  }
+.li-post-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 4px;
+  object-fit: cover;
+  border: 1px solid #EBEBEB;
+}
+
+.li-post-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.li-post-meta strong {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(0,0,0,0.9);
+}
+
+.li-post-meta span {
+  font-size: 12px;
+  color: rgba(0,0,0,0.6);
+  line-height: 1.4;
+}
+
+.li-post-body {
+  padding: 0 16px 16px 16px;
+  font-size: 14px;
+  color: rgba(0,0,0,0.9);
+  line-height: 1.5;
+}
+
+.li-post-body a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.li-post-image {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-top: 1px solid #EBEBEB;
+  border-bottom: 1px solid #EBEBEB;
+}
+
+.li-post-footer {
+  padding: 4px 16px;
+  display: flex;
+  border-top: 1px solid #EBEBEB;
+  gap: 8px;
+}
+
+.li-post-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: rgba(0,0,0,0.6);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 12px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  text-decoration: none;
+}
+
+.li-post-action-btn:hover {
+  background-color: rgba(0,0,0,0.05);
+  color: rgba(0,0,0,0.9);
+}
+
+/* Sidebar lists */
+.li-sidebar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.li-sidebar-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.li-sidebar-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(0,0,0,0.9);
+  margin-bottom: 4px;
+}
+
+.li-sidebar-value {
+  font-size: 14px;
+  color: rgba(0,0,0,0.6);
+}
+
+.li-sidebar-link {
+  font-size: 14px;
+  color: #0a66c2;
+  font-weight: 600;
+  text-decoration: none;
+}
+.li-sidebar-link:hover {
+  text-decoration: underline;
+}
+
+/* Profile Completeness Specific */
+.profile-completeness-prompt {
+  margin-bottom: 24px;
 }

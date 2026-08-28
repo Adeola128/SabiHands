@@ -87,7 +87,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ role = 'volunteer' })
     location.pathname.endsWith('/edit') || 
     location.pathname.includes('/dashboard/notifications') || 
     location.pathname.includes('/dashboard/volunteer/profile') || 
-    location.pathname.includes('/dashboard/volunteer/settings');
+    location.pathname.includes('/dashboard/volunteer/settings') ||
+    location.pathname.includes('/dashboard/community/recommendations');
 
   const needsMaxWidth = location.pathname.includes('/dashboard/organization/profile') || 
     location.pathname.endsWith('/apply') || 
@@ -216,13 +217,13 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ role = 'volunteer' })
         </div>
       </nav>
 
-      <main className={`dashboard-main ${location.pathname.includes('/dashboard/messages') ? 'messages-main' : ''}`}>
+      <main className={`dashboard-main ${location.pathname.includes('/dashboard/messages') ? 'messages-main' : ''} ${location.pathname.includes('/dashboard/community') ? 'community-main' : ''}`}>
         {isFullWidthRoute ? (
           <div style={{ width: '100%', maxWidth: needsMaxWidth ? '1440px' : 'none', display: 'flex', justifyContent: 'center' }}>
             <Outlet />
           </div>
         ) : (
-          <div className="dashboard-grid-immersive">
+          <div className={location.pathname.includes('/dashboard/community') ? "dashboard-grid-community" : "dashboard-grid-immersive"}>
             <Outlet />
           </div>
         )}

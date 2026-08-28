@@ -264,7 +264,7 @@ const MyGigs: React.FC = () => {
                     <div className="gig-media-header">
                       <div>
                         <h3 className="gig-media-title">{gig.title}</h3>
-                        <Link to="/dashboard/organization/profile" className="gig-media-org" style={{ textDecoration: 'none' }}>
+                        <Link to={`/organization/${gig.org_id}`} className="gig-media-org" style={{ textDecoration: 'none' }}>
                           <img src={gig.orgImg} alt={gig.org} />
                           <strong>{gig.org}</strong>
                           <span style={{ color: '#D1CEDF', margin: '0 4px' }}>•</span>
@@ -350,7 +350,7 @@ const MyGigs: React.FC = () => {
                     <div className="gig-media-header">
                       <div>
                         <h3 className="gig-media-title">{gig.title}</h3>
-                        <Link to="/dashboard/organization/profile" className="gig-media-org" style={{ textDecoration: 'none' }}>
+                        <Link to={`/organization/${gig.org_id}`} className="gig-media-org" style={{ textDecoration: 'none' }}>
                           <img src={gig.orgImg} alt={gig.org} />
                           <strong>{gig.org}</strong>
                         </Link>

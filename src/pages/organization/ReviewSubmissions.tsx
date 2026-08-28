@@ -70,7 +70,7 @@ const ReviewSubmissions: React.FC = () => {
           application_id: applicationId,
           confirmed_by: user?.id,
           attended: true,
-          hours: gig.hours || 0
+          hours: gig.hours_required || 0
         });
         
       // If it fails with unique constraint (already exists), we update it instead.

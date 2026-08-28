@@ -18,6 +18,7 @@ const EditGig: React.FC = () => {
   const [step, setStep] = useState<Step>(1);
   const [isPublishing, setIsPublishing] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
+  const [suggestingHours, setSuggestingHours] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({
     title: '', type: 'skilled', category: '', description: '',
@@ -44,8 +45,8 @@ const EditGig: React.FC = () => {
           timeStr = d.toTimeString().substring(0, 5);
         }
         
-        let durationStr = '';
-        if (gigData.date_start && gigData.date_end) {
+        let durationStr = gigData.hours_required ? gigData.hours_required.toString() : '';
+        if (!durationStr && gigData.date_start && gigData.date_end) {
           durationStr = Math.round((new Date(gigData.date_end).getTime() - new Date(gigData.date_start).getTime()) / (1000 * 60 * 60)).toString();
         }
 
@@ -124,6 +125,7 @@ const EditGig: React.FC = () => {
           location: form.remote ? 'Remote' : form.location,
           date_start: dateStart,
           date_end: dateEnd,
+          hours_required: parseInt(form.duration) || 0,
           resume_requirement: form.requireResume,
           linkedin_requirement: form.requireLinkedin,
           portfolio_requirement: form.requirePortfolio,
@@ -352,8 +354,37 @@ const EditGig: React.FC = () => {
 
                 <div className="post-gig-logistics-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
                   <div>
-                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: 'var(--ink)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Duration (hours)</label>
-                    <input type="number" min="1" value={form.duration} onChange={e => update('duration', e.target.value)} placeholder="e.g. 4" style={{ width: '100%', padding: '16px 20px', borderRadius: '12px', border: '2px solid transparent', boxShadow: '0 0 0 1px #E4E1F5', fontSize: '16px', color: 'var(--ink)', outline: 'none', fontFamily: 'var(--sans)', backgroundColor: 'var(--white)', transition: 'all 0.2s' }} onFocus={e => e.currentTarget.style.boxShadow = '0 0 0 2px var(--purple-400)'} onBlur={e => e.currentTarget.style.boxShadow = '0 0 0 1px #E4E1F5'} />
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <label style={{ fontSize: '13px', fontWeight: 700, color: 'var(--ink)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Duration (hours) <span style={{color: 'var(--purple-600)'}}>*</span></label>
+                      <button 
+                        type="button" 
+                        disabled={suggestingHours || !form.title || !form.description}
+                        onClick={async () => {
+                          setSuggestingHours(true);
+                          try {
+                            const { data, error } = await supabase.functions.invoke('suggest-hours', {
+                              body: { title: form.title, description: form.description, type: form.type }
+                            });
+                            if (error) throw error;
+                            if (data?.hours) update('duration', data.hours.toString());
+                            toast.success("Hours suggested based on gig details!");
+                          } catch (err: any) {
+                            toast.error("Failed to suggest hours");
+                          } finally {
+                            setSuggestingHours(false);
+                          }
+                        }}
+                        style={{ fontSize: '12px', fontWeight: 600, color: 'var(--purple-600)', background: 'none', border: 'none', cursor: (suggestingHours || !form.title) ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '4px', opacity: (suggestingHours || !form.title) ? 0.5 : 1 }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                        {suggestingHours ? 'Thinking...' : (
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3l1.9 5.8 1.9-5.8a2 2 0 0 1 1.3-1.3l5.8-1.9-5.8-1.9a2 2 0 0 1-1.3-1.3z"/></svg>
+                            Suggest Hours
+                          </span>
+                        )}
+                      </button>
+                    </div>
+                    <input type="number" min="1" value={form.duration} onChange={e => update('duration', e.target.value)} placeholder="e.g. 4" style={{ width: '100%', padding: '16px 20px', borderRadius: '12px', border: '2px solid transparent', boxShadow: '0 0 0 1px #E4E1F5', fontSize: '16px', color: 'var(--ink)', outline: 'none', fontFamily: 'var(--sans)', backgroundColor: 'var(--white)', transition: 'all 0.2s' }} onFocus={e => e.currentTarget.style.boxShadow = '0 0 0 2px var(--purple-400)'} onBlur={e => e.currentTarget.style.boxShadow = '0 0 0 1px #E4E1F5'} required />
                   </div>
                   <div>
                     <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: 'var(--ink)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Volunteers Needed</label>

@@ -2,12 +2,14 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import MainLayout from './layouts/MainLayout';
+import MinimalProfileLayout from './layouts/MinimalProfileLayout';
 import ErrorBoundary from './components/ErrorBoundary';
 import Home from './pages/Home';
 
 import ForVolunteers from './pages/ForVolunteers';
 import ForOrganizations from './pages/ForOrganizations';
 import Community from './pages/Community';
+import CommunityRecommendations from './pages/CommunityRecommendations';
 import Membership from './pages/Membership';
 import About from './pages/About';
 import CertificateVerification from './pages/CertificateVerification';
@@ -61,6 +63,7 @@ const OrganizationProfile = React.lazy(() => import('./pages/organization/Organi
 import PublicVolunteerProfile from './pages/public/PublicVolunteerProfile';
 import PublicOrganizationProfile from './pages/public/PublicOrganizationProfile';
 import PublicGigDetail from './pages/public/PublicGigDetail';
+import PublicPostDetail from './pages/public/PublicPostDetail';
 import ProgrammaticLandingPage from './pages/public/ProgrammaticLandingPage';
 import GuidesDirectory from './pages/public/guides/GuidesDirectory';
 import VolunteerNoExperience from './pages/public/guides/VolunteerNoExperience';
@@ -100,9 +103,6 @@ const App: React.FC = () => {
           <Route path="contact" element={<Contact />} />
           <Route path="terms" element={<Legal type="terms" />} />
           <Route path="privacy" element={<Legal type="privacy" />} />
-          <Route path="volunteer/:id" element={<PublicVolunteerProfile />} />
-          <Route path="organization/:id" element={<PublicOrganizationProfile />} />
-          <Route path="gig/:id" element={<PublicGigDetail />} />
           
           {/* Programmatic SEO Hubs */}
           <Route path="volunteer-opportunities/nigeria" element={<ProgrammaticLandingPage type="nigeria" />} />
@@ -119,6 +119,15 @@ const App: React.FC = () => {
           <Route path="guides/verify-ngo" element={<VerifyNGO />} />
 
           <Route path="*" element={<NotFound />} />
+        </Route>
+
+        {/* Public Entity Profiles (Minimal Header) */}
+        <Route path="/" element={<MinimalProfileLayout />} errorElement={<ErrorPage />}>
+          <Route path="volunteer/:slug" element={<PublicVolunteerProfile />} />
+          <Route path="organization/:id" element={<PublicOrganizationProfile />} />
+          <Route path="org/:id" element={<PublicOrganizationProfile />} />
+          <Route path="gig/:id" element={<PublicGigDetail />} />
+          <Route path="post/:id" element={<PublicPostDetail />} />
         </Route>
 
         {/* Auth & Onboarding Routes (Standalone full-screen) */}
@@ -155,6 +164,7 @@ const App: React.FC = () => {
           <Route path="notifications" element={<Notifications />} />
           <Route path="messages" element={<Messages />} />
           <Route path="community" element={<Community />} />
+          <Route path="community/recommendations" element={<CommunityRecommendations />} />
           <Route path="organization/profile" element={<OrganizationProfile />} />
         </Route>
 

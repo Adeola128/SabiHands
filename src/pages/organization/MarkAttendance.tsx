@@ -83,7 +83,7 @@ const MarkAttendance: React.FC = () => {
         application_id: app.id,
         confirmed_by: user.id,
         attended: attendance[app.id] || false,
-        hours: 6, // Defaulting to 6 hours for MVP
+        hours: gig.hours_required || 0,
         confirmed_at: new Date().toISOString()
       };
     });
