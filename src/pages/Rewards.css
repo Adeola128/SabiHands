@@ -37,7 +37,7 @@
   color: white !important;
 }
 
-.balance-info flex: 1;
+.balance-info { flex: 1; }
 
 .balance-info h2 {
   font-size: 2.5rem;
