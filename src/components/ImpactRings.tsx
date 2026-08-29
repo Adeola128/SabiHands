@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Check, Target, Trophy } from 'lucide-react';
+import { CheckCircle2, ChevronRight } from 'lucide-react';
 import './ImpactRings.css';
 
 interface ImpactRingsProps {

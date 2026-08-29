@@ -9,8 +9,7 @@ describe('VariableRewardReveal Component', () => {
     
     render(
       <VariableRewardReveal 
-        basePoints={500} 
-        bonusPoints={200} 
+        reward={{ type: 'points_bonus', name: 'Points Bonus', pointsAmount: 500 }} 
         onClaim={handleClaim} 
       />
     );
