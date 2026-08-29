@@ -1,0 +1,202 @@
+.rewards-page {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.rewards-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.rewards-header h1 {
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.rewards-header p {
+  color: #666;
+}
+
+.balance-card {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, #4a90e2, #357abd);
+  border-radius: 16px;
+  padding: 30px;
+  color: white;
+  margin-bottom: 32px;
+  box-shadow: 0 10px 20px rgba(74, 144, 226, 0.2);
+}
+
+.balance-icon {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 12px;
+  border-radius: 50%;
+  margin-right: 24px;
+  color: white !important;
+}
+
+.balance-info flex: 1;
+
+.balance-info h2 {
+  font-size: 2.5rem;
+  margin: 0;
+}
+
+.balance-info p {
+  margin: 4px 0 0 0;
+  opacity: 0.9;
+  font-size: 1.1rem;
+}
+
+.naira-equivalent {
+  margin-left: auto;
+  background: rgba(255,255,255,0.2);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.redemption-section {
+  background: white;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.redemption-section h3 {
+  margin-top: 0;
+  margin-bottom: 24px;
+  color: #333;
+}
+
+.reward-type-selector {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.type-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  background: #f8f9fa;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #555;
+  transition: all 0.2s;
+}
+
+.type-btn:hover {
+  background: #f1f3f5;
+}
+
+.type-btn.active {
+  background: #e3f2fd;
+  border-color: #4a90e2;
+  color: #4a90e2;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #444;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+.cost-summary {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #555;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.cost {
+  color: #333;
+  font-weight: bold;
+}
+
+.error-text {
+  color: #e53935;
+}
+
+.alert-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+}
+
+.alert-box.error {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.redeem-btn {
+  width: 100%;
+  background: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 16px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: background 0.2s;
+}
+
+.redeem-btn:hover:not(:disabled) {
+  background: #357abd;
+}
+
+.redeem-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

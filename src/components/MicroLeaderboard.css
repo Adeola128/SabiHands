@@ -1,0 +1,82 @@
+.micro-leaderboard {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  max-width: 400px;
+}
+
+.leaderboard-header {
+  margin-bottom: 20px;
+}
+
+.leaderboard-header h3 {
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+.context {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.leaderboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.leaderboard-row {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-radius: 12px;
+  background: #f8f9fa;
+  transition: transform 0.2s;
+}
+
+.leaderboard-row:hover {
+  transform: translateX(4px);
+  background: #f1f3f5;
+}
+
+.leaderboard-row.current-user {
+  background: #e3f2fd;
+  border: 1px solid #bbdefb;
+}
+
+.rank {
+  width: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.rank-num {
+  font-weight: bold;
+  color: #888;
+  font-size: 1.1rem;
+}
+
+.user-info {
+  flex: 1;
+  padding: 0 12px;
+}
+
+.name {
+  font-weight: 600;
+  color: #333;
+}
+
+.points-col {
+  text-align: right;
+}
+
+.points {
+  font-weight: bold;
+  color: #4a90e2;
+}

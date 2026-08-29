@@ -9,6 +9,7 @@ import Home from './pages/Home';
 import ForVolunteers from './pages/ForVolunteers';
 import ForOrganizations from './pages/ForOrganizations';
 import Community from './pages/Community';
+import CommunityLayoutWrapper from './layouts/CommunityLayoutWrapper';
 import CommunityRecommendations from './pages/CommunityRecommendations';
 import Membership from './pages/Membership';
 import About from './pages/About';
@@ -63,11 +64,11 @@ const OrganizationProfile = React.lazy(() => import('./pages/organization/Organi
 import PublicVolunteerProfile from './pages/public/PublicVolunteerProfile';
 import PublicOrganizationProfile from './pages/public/PublicOrganizationProfile';
 import PublicGigDetail from './pages/public/PublicGigDetail';
-import PublicPostDetail from './pages/public/PublicPostDetail';
 import ProgrammaticLandingPage from './pages/public/ProgrammaticLandingPage';
 import GuidesDirectory from './pages/public/guides/GuidesDirectory';
 import VolunteerNoExperience from './pages/public/guides/VolunteerNoExperience';
 import VerifyNGO from './pages/public/guides/VerifyNGO';
+import { Rewards } from './pages/Rewards';
 
 import AdminLogin from './pages/auth/AdminLogin';
 const AdminLayout = React.lazy(() => import('./layouts/AdminLayout'));
@@ -95,7 +96,6 @@ const App: React.FC = () => {
 
           <Route path="volunteers" element={<ForVolunteers />} />
           <Route path="organizations" element={<ForOrganizations />} />
-          <Route path="community" element={<Community />} />
           <Route path="membership" element={<Membership />} />
           <Route path="about" element={<About />} />
           <Route path="verify" element={<CertificateVerification />} />
@@ -121,13 +121,15 @@ const App: React.FC = () => {
           <Route path="*" element={<NotFound />} />
         </Route>
 
+        {/* Dynamic Layout for Community (Checks auth internally) */}
+        <Route path="/community" element={<CommunityLayoutWrapper />} />
+
         {/* Public Entity Profiles (Minimal Header) */}
         <Route path="/" element={<MinimalProfileLayout />} errorElement={<ErrorPage />}>
           <Route path="volunteer/:slug" element={<PublicVolunteerProfile />} />
           <Route path="organization/:id" element={<PublicOrganizationProfile />} />
           <Route path="org/:id" element={<PublicOrganizationProfile />} />
           <Route path="gig/:id" element={<PublicGigDetail />} />
-          <Route path="post/:id" element={<PublicPostDetail />} />
         </Route>
 
         {/* Auth & Onboarding Routes (Standalone full-screen) */}
@@ -156,6 +158,7 @@ const App: React.FC = () => {
           <Route path="certificates/:id" element={<CertificateDetail />} />
           <Route path="profile" element={<VolunteerProfile />} />
           <Route path="settings" element={<EditProfile />} />
+          <Route path="rewards" element={<Rewards />} />
         </Route>
 
         {/* Global Dashboard Routes */}

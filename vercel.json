@@ -24,6 +24,17 @@
     }
   ],
   "rewrites": [
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept",
+          "value": "(?i).*text/markdown.*"
+        }
+      ],
+      "destination": "/api/markdown?path=$1"
+    },
     { "source": "/sitemap.xml", "destination": "/api/sitemap" },
     { "source": "/sitemaps/static.xml", "destination": "/api/sitemap-static" },
     { "source": "/sitemaps/opportunities.xml", "destination": "/api/sitemap-opportunities" },

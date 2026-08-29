@@ -77,6 +77,7 @@ const Community: React.FC = () => {
   const [showSavedOnly, setShowSavedOnly] = useState(false);
 
   const handleSavePost = (postId: string) => {
+    if (!currentUser) return alert('Please log in to save posts.');
     setSavedPosts(prev => {
       const updated = prev.includes(postId) ? prev.filter(id => id !== postId) : [...prev, postId];
       localStorage.setItem('community_saved_posts', JSON.stringify(updated));
@@ -332,6 +333,7 @@ const Community: React.FC = () => {
   };
 
   const toggleComments = (postId: string) => {
+    if (!currentUser) return alert('Please log in to view or post comments.');
     setOpenComments(prev => ({ ...prev, [postId]: !prev[postId] }));
   };
 
@@ -388,51 +390,62 @@ const Community: React.FC = () => {
       {/* Left Sidebar */}
       {/* Left Sidebar */}
       <aside className="context-col hidden-on-mobile">
-        <div className="community-sidebar-card">
-          <div className="community-sidebar-header">
+        {currentUser ? (
+          <div className="community-sidebar-card">
+            <div className="community-sidebar-header">
+              <div 
+                className="community-sidebar-cover" 
+                style={{ 
+                  background: userProfile?.cover_url ? `url(${userProfile.cover_url}) center/cover no-repeat` : 'var(--gray-100)',
+                  borderBottom: userProfile?.cover_url ? 'none' : '1px solid #f3f4f6'
+                }}
+              ></div>
+              <img 
+                src={userProfile?.avatar_url || '/images/hero_illustration.png'} 
+                alt="Profile" 
+                className="community-sidebar-avatar" 
+              />
+            </div>
+            <div className="community-sidebar-info">
+              <Link to={userProfile?.role === 'organization' ? '/dashboard/organization/profile' : '/dashboard/volunteer/profile'} className="community-sidebar-name">
+                {userProfile?.full_name || 'My Profile'}
+              </Link>
+              <div className="community-sidebar-bio">
+                {userProfile?.role === 'organization' ? 'Organization' : 'Volunteer'}
+              </div>
+            </div>
+            <div className="community-sidebar-stats">
+              <Link to="#" className="community-sidebar-stat-row">
+                <span>{userProfile?.role === 'organization' ? 'Followers' : 'Gigs completed'}</span>
+                <span>{userProfile?.role === 'organization' ? userStats.followers : userStats.gigsCompleted}</span>
+              </Link>
+              <Link to="#" className="community-sidebar-stat-row">
+                <span>Posts published</span>
+                <span>{userStats.posts}</span>
+              </Link>
+            </div>
             <div 
-              className="community-sidebar-cover" 
+              className={`community-sidebar-footer ${showSavedOnly ? 'active' : ''}`}
+              onClick={() => setShowSavedOnly(!showSavedOnly)}
               style={{ 
-                background: userProfile?.cover_url ? `url(${userProfile.cover_url}) center/cover no-repeat` : 'var(--gray-100)',
-                borderBottom: userProfile?.cover_url ? 'none' : '1px solid #f3f4f6'
+                background: showSavedOnly ? 'var(--purple-50)' : 'transparent',
+                color: showSavedOnly ? 'var(--purple-600)' : 'inherit'
               }}
-            ></div>
-            <img 
-              src={userProfile?.avatar_url || '/images/hero_illustration.png'} 
-              alt="Profile" 
-              className="community-sidebar-avatar" 
-            />
-          </div>
-          <div className="community-sidebar-info">
-            <Link to={userProfile?.role === 'organization' ? '/dashboard/organization/profile' : '/dashboard/volunteer/profile'} className="community-sidebar-name">
-              {userProfile?.full_name || 'My Profile'}
-            </Link>
-            <div className="community-sidebar-bio">
-              {userProfile?.role === 'organization' ? 'Organization' : 'Volunteer'}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill={showSavedOnly ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg>
+              My items ({savedPosts.length})
             </div>
           </div>
-          <div className="community-sidebar-stats">
-            <Link to="#" className="community-sidebar-stat-row">
-              <span>{userProfile?.role === 'organization' ? 'Followers' : 'Gigs completed'}</span>
-              <span>{userProfile?.role === 'organization' ? userStats.followers : userStats.gigsCompleted}</span>
-            </Link>
-            <Link to="#" className="community-sidebar-stat-row">
-              <span>Posts published</span>
-              <span>{userStats.posts}</span>
-            </Link>
+        ) : (
+          <div className="community-sidebar-card" style={{ padding: '24px', textAlign: 'center' }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '12px' }}>Welcome to Ralvo</h3>
+            <p style={{ color: 'var(--gray-500)', fontSize: '14px', marginBottom: '16px' }}>Join our community to connect with volunteers and organizations making a difference.</p>
+            <Link to="/signup" className="composer-submit" style={{ textDecoration: 'none', display: 'block', width: '100%', marginBottom: '12px' }}>Sign Up</Link>
+            <p style={{ color: 'var(--gray-500)', fontSize: '14px', margin: 0 }}>
+              Already have an account? <Link to="/login" style={{ color: 'var(--primary-color, #4F46E5)', fontWeight: 600 }}>Log in</Link>
+            </p>
           </div>
-          <div 
-            className={`community-sidebar-footer ${showSavedOnly ? 'active' : ''}`}
-            onClick={() => setShowSavedOnly(!showSavedOnly)}
-            style={{ 
-              background: showSavedOnly ? 'var(--purple-50)' : 'transparent',
-              color: showSavedOnly ? 'var(--purple-600)' : 'inherit'
-            }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill={showSavedOnly ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg>
-            My items ({savedPosts.length})
-          </div>
-        </div>
+        )}
       </aside>
 
       {/* Main Feed */}
@@ -458,67 +471,68 @@ const Community: React.FC = () => {
         </motion.div>
 
         {/* Create Post Composer */}
-        <motion.div variants={fadeUpVariant} className="composer-card community-glass-panel">
-          <div className="dash-card-padding" style={{ padding: '12px 16px' }}>
-            <div className="composer-input-area">
-              <img src={userProfile?.avatar_url || "/images/hero_illustration.png"} alt="Current User" className="composer-avatar" style={{ width: '48px', height: '48px', objectFit: 'cover' }} />
-              <div className="composer-input-wrapper">
-                <textarea 
-                  className={`composer-textarea ${postText || selectedImage ? 'expanded' : ''}`} 
-                  placeholder={currentUser ? "Start a post" : "Please sign in to post..."}
-                  value={postText}
-                  onChange={(e) => setPostText(e.target.value)}
-                  disabled={!currentUser}
-                ></textarea>
-                {selectedImage && (
-                  <div style={{ marginTop: '8px', position: 'relative', display: 'inline-block' }}>
-                    <img src={URL.createObjectURL(selectedImage)} alt="Selected" style={{ maxHeight: '150px', borderRadius: '8px' }} />
-                    <button 
-                      onClick={() => setSelectedImage(null)}
-                      style={{ position: 'absolute', top: '4px', right: '4px', background: 'rgba(0,0,0,0.6)', color: 'white', border: 'none', borderRadius: '50%', width: '24px', height: '24px', cursor: 'pointer' }}
-                    >
-                      &times;
-                    </button>
-                  </div>
+        {currentUser && (
+          <motion.div variants={fadeUpVariant} className="composer-card community-glass-panel">
+            <div className="dash-card-padding" style={{ padding: '12px 16px' }}>
+              <div className="composer-input-area">
+                <img src={userProfile?.avatar_url || "/images/hero_illustration.png"} alt="Current User" className="composer-avatar" style={{ width: '48px', height: '48px', objectFit: 'cover' }} />
+                <div className="composer-input-wrapper">
+                  <textarea 
+                    className={`composer-textarea ${postText || selectedImage ? 'expanded' : ''}`} 
+                    placeholder="Start a post, share a resource, or ask a question..."
+                    value={postText}
+                    onChange={(e) => setPostText(e.target.value)}
+                  />
+                  {selectedImage && (
+                    <div style={{ marginTop: '8px', position: 'relative', display: 'inline-block' }}>
+                      <img src={URL.createObjectURL(selectedImage)} alt="Selected" style={{ maxHeight: '150px', borderRadius: '8px' }} />
+                      <button 
+                        onClick={() => setSelectedImage(null)}
+                        style={{ position: 'absolute', top: '4px', right: '4px', background: 'rgba(0,0,0,0.6)', color: 'white', border: 'none', borderRadius: '50%', width: '24px', height: '24px', cursor: 'pointer' }}
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="composer-actions">
+                <div className="composer-tools">
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    ref={fileInputRef} 
+                    style={{ display: 'none' }} 
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) setSelectedImage(e.target.files[0]);
+                    }} 
+                  />
+                  <button className="composer-tool-btn image" onClick={() => fileInputRef.current?.click()}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                    <span>Media</span>
+                  </button>
+                  <button className="composer-tool-btn event" onClick={() => setIsEventModalOpen(true)}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    <span>Event</span>
+                  </button>
+                  <button className="composer-tool-btn article" onClick={() => setIsArticleModalOpen(true)}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    <span>Write article</span>
+                  </button>
+                </div>
+                {(postText.trim() || selectedImage) && (
+                  <button 
+                    className="composer-submit" 
+                    disabled={(!postText.trim() && !selectedImage) || isSubmitting}
+                    onClick={handlePostSubmit}
+                  >
+                    {isSubmitting ? 'Posting...' : 'Post'}
+                  </button>
                 )}
               </div>
             </div>
-            <div className="composer-actions">
-              <div className="composer-tools">
-                <input 
-                  type="file" 
-                  accept="image/*" 
-                  ref={fileInputRef} 
-                  hidden 
-                  onChange={(e) => {
-                    if (e.target.files && e.target.files[0]) setSelectedImage(e.target.files[0]);
-                  }} 
-                />
-                <button className="composer-tool-btn image" disabled={!currentUser} onClick={() => fileInputRef.current?.click()}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                  <span>Media</span>
-                </button>
-                <button className="composer-tool-btn event" disabled={!currentUser} onClick={() => setIsEventModalOpen(true)}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                  <span>Event</span>
-                </button>
-                <button className="composer-tool-btn article" disabled={!currentUser} onClick={() => setIsArticleModalOpen(true)}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                  <span>Write article</span>
-                </button>
-              </div>
-              {(postText.trim() || selectedImage) && (
-                <button 
-                  className="composer-submit" 
-                  disabled={(!postText.trim() && !selectedImage) || !currentUser || isSubmitting}
-                  onClick={handlePostSubmit}
-                >
-                  {isSubmitting ? 'Posting...' : 'Post'}
-                </button>
-              )}
-            </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        )}
 
         {/* Post Feed */}
         {loading ? (
@@ -573,7 +587,7 @@ const Community: React.FC = () => {
                         {currentUser?.id === post.author_id && (
                           <button onClick={() => handleDeletePost(post.id)} style={{ width: '100%', padding: '8px 16px', background: 'none', border: 'none', textAlign: 'left', cursor: 'pointer', color: 'red', fontSize: '14px' }}>Delete post</button>
                         )}
-                        <button onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/post/${post.id}`); setActiveDropdown(null); alert('Link copied!'); }} style={{ width: '100%', padding: '8px 16px', background: 'none', border: 'none', textAlign: 'left', cursor: 'pointer', fontSize: '14px' }}>Copy Link</button>
+                        <button onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/community#post-${post.id}`); setActiveDropdown(null); alert('Link copied!'); }} style={{ width: '100%', padding: '8px 16px', background: 'none', border: 'none', textAlign: 'left', cursor: 'pointer', fontSize: '14px' }}>Copy Link</button>
                       </div>
                     )}
                   </div>
@@ -617,8 +631,8 @@ const Community: React.FC = () => {
                   <button 
                     className="post-action-btn"
                     onClick={() => {
-                      navigator.clipboard.writeText(`${window.location.origin}/post/${post.id}`);
-                      alert('Link copied to clipboard!');
+                      navigator.clipboard.writeText(`${window.location.origin}/community#post-${post.id}`);
+                      alert('Post link copied to clipboard!');
                     }}
                   >
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3l4 4-4 4"></path><path d="M3 17l4 4 4-4"></path><path d="M21 7H7a4 4 0 0 0-4 4v0"></path><path d="M3 17h14a4 4 0 0 0 4-4v0"></path></svg>

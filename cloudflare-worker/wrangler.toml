@@ -1,0 +1,12 @@
+name = "markdown-agent-interceptor"
+main = "index.js"
+compatibility_date = "2024-03-29"
+
+account_id = "79ac11c9a4c11f28a4c2ae596df6ee49"
+
+# We will attach this worker to your domain so it intercepts requests.
+# Replace with your actual zone_id or route later if you want custom routing,
+# or we can rely on Cloudflare Dashboard UI to attach the custom domain route.
+routes = [
+  { pattern = "*ralvo.com.ng/*", zone_name = "ralvo.com.ng" }
+]
